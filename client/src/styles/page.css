@@ -1,0 +1,56 @@
+.page { --aside-w: 340px; flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: var(--bar-h) minmax(0, 1fr); }
+
+.page-bar { display: flex; align-items: center; padding: 0 148px 0 20px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; background: #fff; border-bottom: var(--edge-soft); }
+.page-bar::-webkit-scrollbar { display: none; }
+.page-tabs { position: relative; display: flex; align-items: center; gap: 4px; width: max-content; padding: 0 3px 3px 0; }
+.page-tabs a { position: relative; z-index: 1; display: flex; align-items: center; gap: 8px; padding: 5px 14px; color: var(--muted); text-decoration: none; border: 2px solid transparent; border-radius: var(--r-s); font-family: var(--font-display); font-weight: 600; font-size: 14px; white-space: nowrap; }
+.page-tabs a:hover { color: var(--ink); }
+.page-tabs a.active { color: var(--ink); }
+.tab-pill { position: absolute; z-index: 0; top: 0; background: var(--tint-2); border: var(--edge); border-radius: var(--r-s); box-shadow: 3px 3px 0 var(--ink); pointer-events: none; height: calc(100% - 3px); }
+.page-bar-end { flex: none; margin-left: auto; padding: 0 0 3px 16px; }
+.tab-sep { width: 1px; height: 18px; margin: 0 8px; background: var(--line-2); border-radius: 1px; }
+
+.page-body { min-width: 0; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); gap: 24px; padding: 20px 28px; }
+.page-body--aside { grid-template-columns: minmax(0, 1fr) var(--aside-w); }
+.page-main { min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 16px; }
+.page-body > .panel { min-height: 0; display: flex; flex-direction: column; }
+
+.scroll { flex: 1; min-height: 0; overflow-y: auto; }
+
+.page-aside, .split-aside { align-self: start; max-height: 100%; min-height: 0; overflow-y: auto; padding: 18px; background: #fff; border: var(--edge); border-radius: var(--r-l); box-shadow: var(--shadow-1); }
+.page-aside h2 { margin-bottom: 14px; font-size: 17px; }
+
+.aside-sec + .aside-sec { margin-top: 20px; padding-top: 18px; border-top: var(--edge-soft); }
+.aside-h { margin-bottom: 12px; font-family: var(--font-display); font-weight: 600; font-size: 13px; color: var(--muted); }
+.aside-rows { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.aside-rows li { display: flex; align-items: center; gap: 10px; min-width: 0; font-size: 14px; }
+.aside-rows li > span:first-of-type { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.aside-rows .num { margin-left: auto; flex: none; }
+.aside-rows small { display: block; }
+
+.page-loading { padding: 28px; color: var(--muted); }
+
+/* ---------- Desktop: panels run edge to edge, split by hard rules ---------- */
+@media (min-width: 901px) {
+  .page-body--flush { padding: 0; gap: 0; }
+
+  .page-body--aside { padding: 0; gap: 0; }
+  .page-body--aside > .page-main { padding: 20px 28px; }
+  .page-body--aside > .page-aside { align-self: stretch; max-height: none; padding: 0; border: 0; border-left: var(--edge-soft); border-radius: 0; box-shadow: none; }
+  .page-aside h2 { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; height: 48px; margin: 0; padding: 0 20px; background: var(--tint); border-bottom: var(--edge-soft); font-size: 16px; }
+  .page-aside .aside-sec { padding: 18px 20px; }
+  .page-aside .aside-sec + .aside-sec { margin-top: 0; }
+}
+
+@media (max-width: 900px) {
+  .page-bar { padding: 0 12px; }
+  .page-body, .page-body--aside { display: flex; flex-direction: column; gap: 20px; overflow-y: auto; padding: 16px 16px 96px; }
+  .page-body > * { flex: none; min-height: auto; }
+  .page-main { min-height: auto; }
+  .scroll { flex: none; overflow: visible; }
+  .page-aside, .split-aside { overflow: visible; max-height: none; min-height: auto; align-self: stretch; }
+  .page-aside { order: -1; }
+  .page-body > .panel { flex: none; display: block; }
+  .page-body > .panel--fill { flex: 1 1 0; min-height: 420px; display: flex; flex-direction: column; }
+  .page-body > .panel--fill:has(.split) { flex: none; display: block; min-height: 0; }
+}

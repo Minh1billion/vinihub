@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      retries: 10
+
+  minio:
+    image: docker.io/pgsty/silo:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+    volumes: [miniodata:/data]
+    ports: ["9000:9000", "9001:9001"]
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports: ["8025:8025"]
+
+  core:
+    build: ./core
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      MINIO_ENDPOINT: minio:9000
+    volumes:
+      - ./core/providers:/srv/providers:ro
+      - ./core/presets:/srv/presets:ro
+    depends_on:
+      postgres: { condition: service_healthy }
+      minio: { condition: service_started }
+    ports: ["8000:8000"]
+
+  client:
+    build: ./client
+    depends_on: [core]
+    ports: ["3000:80"]
+
+volumes:
+  pgdata:
+  miniodata:

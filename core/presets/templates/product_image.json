@@ -1,0 +1,9 @@
+{
+  "name": "Ảnh sản phẩm",
+  "description": "Các prompt ảnh sản phẩm theo nhiều góc và bối cảnh để chuyển sang tab Ảnh.",
+  "fields": [
+    { "label": "Ý tưởng chủ đạo", "type": "string", "hint": "phong cách và cảm xúc chung của bộ ảnh" },
+    { "label": "Prompt ảnh", "type": "list", "hint": "mỗi phần tử là một prompt ảnh chi tiết: chủ thể, bối cảnh, ánh sáng, góc chụp", "send": "image" },
+    { "label": "Bảng màu", "type": "list", "hint": "các màu chủ đạo, mỗi phần tử một màu" }
+  ]
+}

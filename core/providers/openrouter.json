@@ -1,0 +1,232 @@
+{
+  "name": "OpenRouter",
+  "driver": "openrouter",
+  "base_url": "https://openrouter.ai/api/v1",
+  "config": {
+    "video_path": "/videos"
+  },
+  "enabled": true,
+  "models": [
+    {
+      "kind": "image",
+      "model_id": "google/gemini-3.1-flash-image",
+      "name": "Google: Nano Banana 2",
+      "caps": {
+        "aspect_ratios": [
+          "1:1",
+          "3:4",
+          "4:3",
+          "2:3",
+          "3:2",
+          "4:5",
+          "5:4",
+          "9:16",
+          "16:9",
+          "21:9",
+          "1:4",
+          "4:1",
+          "1:8",
+          "8:1"
+        ],
+        "image_sizes": [
+          "512",
+          "1K",
+          "2K",
+          "4K"
+        ],
+        "reference_images": 14
+      },
+      "enabled": true,
+      "is_default": true
+    },
+    {
+      "kind": "image",
+      "model_id": "google/gemini-3-pro-image",
+      "name": "Google: Nano Banana Pro",
+      "caps": {
+        "aspect_ratios": [
+          "1:1",
+          "3:4",
+          "4:3",
+          "2:3",
+          "3:2",
+          "4:5",
+          "5:4",
+          "9:16",
+          "16:9",
+          "21:9"
+        ],
+        "image_sizes": [
+          "1K",
+          "2K",
+          "4K"
+        ],
+        "reference_images": 14
+      },
+      "enabled": true
+    },
+    {
+      "kind": "video",
+      "model_id": "google/veo-3.1-fast",
+      "name": "Google: Veo 3.1 Fast",
+      "caps": {
+        "durations": [
+          4,
+          6,
+          8
+        ],
+        "resolutions": [
+          "720p",
+          "1080p"
+        ],
+        "aspect_ratios": [
+          "16:9",
+          "9:16"
+        ],
+        "frame_images": [
+          "first_frame",
+          "last_frame"
+        ],
+        "reference_images": 0,
+        "audio": true,
+        "seed": true,
+        "motion_control": false,
+        "negative_prompt_key": "negativePrompt",
+        "passthrough_providers": [
+          "google-vertex"
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "kind": "video",
+      "model_id": "google/veo-3.1",
+      "name": "Google: Veo 3.1",
+      "caps": {
+        "durations": [
+          4,
+          6,
+          8
+        ],
+        "resolutions": [
+          "720p",
+          "1080p"
+        ],
+        "aspect_ratios": [
+          "16:9",
+          "9:16"
+        ],
+        "frame_images": [
+          "first_frame",
+          "last_frame"
+        ],
+        "reference_images": 0,
+        "audio": true,
+        "seed": true,
+        "motion_control": false,
+        "negative_prompt_key": "negativePrompt",
+        "passthrough_providers": [
+          "google-vertex"
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "kind": "video",
+      "model_id": "bytedance/seedance-2.5",
+      "name": "ByteDance: Seedance 2.5",
+      "caps": {
+        "durations": [
+          5,
+          10,
+          15,
+          20,
+          30
+        ],
+        "resolutions": [
+          "480p",
+          "720p"
+        ],
+        "aspect_ratios": [
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ],
+        "frame_images": [
+          "first_frame",
+          "last_frame"
+        ],
+        "reference_images": 0,
+        "audio": true,
+        "seed": true,
+        "motion_control": false
+      },
+      "enabled": true
+    },
+    {
+      "kind": "video",
+      "model_id": "alibaba/wan-3.0",
+      "name": "Alibaba: Wan 3.0",
+      "caps": {
+        "durations": [
+          5,
+          10,
+          15,
+          20,
+          30
+        ],
+        "resolutions": [
+          "720p",
+          "1080p"
+        ],
+        "aspect_ratios": [
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4"
+        ],
+        "frame_images": [
+          "first_frame"
+        ],
+        "reference_images": 0,
+        "audio": true,
+        "seed": true,
+        "motion_control": false
+      },
+      "enabled": true
+    },
+    {
+      "kind": "video",
+      "model_id": "kwaivgi/kling-v3.0-std",
+      "name": "Kling: Video v3.0 Standard",
+      "caps": {
+        "durations": [
+          5,
+          10,
+          15
+        ],
+        "resolutions": [
+          "720p"
+        ],
+        "aspect_ratios": [
+          "16:9",
+          "9:16",
+          "1:1"
+        ],
+        "frame_images": [
+          "first_frame",
+          "last_frame"
+        ],
+        "reference_images": 0,
+        "audio": true,
+        "seed": false,
+        "motion_control": false
+      },
+      "enabled": true
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "OpenAI",
+  "driver": "openai_compat",
+  "base_url": "https://api.openai.com/v1",
+  "config": {},
+  "enabled": true,
+  "models": [
+    {
+      "kind": "image",
+      "model_id": "gpt-image-1.5",
+      "name": "OpenAI: GPT Image 1.5",
+      "caps": {
+        "aspect_ratios": [
+          "1:1",
+          "3:2",
+          "2:3"
+        ],
+        "image_sizes": [],
+        "reference_images": 16,
+        "qualities": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "backgrounds": [
+          "opaque",
+          "transparent"
+        ],
+        "output_formats": [
+          "png",
+          "jpeg",
+          "webp"
+        ]
+      },
+      "enabled": true
+    }
+  ]
+}

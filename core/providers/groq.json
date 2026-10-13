@@ -1,0 +1,75 @@
+{
+  "name": "Groq",
+  "driver": "openai_compat",
+  "base_url": "https://api.groq.com/openai/v1",
+  "config": {},
+  "enabled": true,
+  "models": [
+    {
+      "kind": "chat",
+      "model_id": "openai/gpt-oss-120b",
+      "name": "OpenAI: GPT-OSS 120B",
+      "caps": {
+        "context_window": 131072,
+        "max_output": 65536,
+        "vision": false
+      },
+      "enabled": true
+    },
+    {
+      "kind": "chat",
+      "model_id": "openai/gpt-oss-20b",
+      "name": "OpenAI: GPT-OSS 20B",
+      "caps": {
+        "context_window": 131072,
+        "max_output": 65536,
+        "vision": false
+      },
+      "enabled": true
+    },
+    {
+      "kind": "chat",
+      "model_id": "llama-3.3-70b-versatile",
+      "name": "Meta: Llama 3.3 70B",
+      "caps": {
+        "context_window": 131072,
+        "max_output": 32768,
+        "vision": false
+      },
+      "enabled": true
+    },
+    {
+      "kind": "chat",
+      "model_id": "llama-3.1-8b-instant",
+      "name": "Meta: Llama 3.1 8B Instant",
+      "caps": {
+        "context_window": 131072,
+        "max_output": 131072,
+        "vision": false
+      },
+      "enabled": true
+    },
+    {
+      "kind": "chat",
+      "model_id": "qwen/qwen3.8-27b",
+      "name": "Alibaba: Qwen 3.8 27B",
+      "caps": {
+        "context_window": 131072,
+        "max_output": 16384,
+        "vision": true
+      },
+      "enabled": true
+    },
+    {
+      "kind": "chat",
+      "model_id": "minimaxai/minimax-m2.7",
+      "name": "MiniMax: M2.7",
+      "caps": {
+        "context_window": 196608,
+        "max_output": 131072,
+        "vision": false
+      },
+      "enabled": true
+    }
+  ]
+}

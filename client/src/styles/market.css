@@ -1,0 +1,44 @@
+.mk { gap: 12px; }
+.mk-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.mk-search { flex: 1 1 240px; max-width: 420px; }
+.mk-target { display: block; }
+.mk-scroll { padding: 4px 6px 24px 2px; }
+.mk-scroll .empty-state p { max-width: none; text-wrap: nowrap; white-space: nowrap; }
+@media (max-width: 900px) {
+  .mk-scroll .empty-state p { white-space: normal; text-wrap: balance; max-width: 52ch; }
+}
+.mk-note { margin-bottom: 14px; color: var(--muted); font-size: 14px; }
+
+.mk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 20px; align-items: start; }
+.mk-card { display: flex; flex-direction: column; gap: 12px; min-width: 0; padding: 16px 18px; background: #fff; border: var(--edge); border-radius: var(--r-l); box-shadow: var(--shadow-1); transition: transform 0.2s var(--ease-out), box-shadow 0.2s; }
+.mk-card header { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.mk-card h3 { overflow-wrap: anywhere; }
+.mk-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; min-width: 0; }
+.mk-code { display: inline-flex; align-items: center; gap: 5px; padding: 1px 8px; cursor: pointer; font: 600 12px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: 0.02em; color: var(--ink); background: var(--surface); border: 1px solid var(--line-2); border-radius: 6px; }
+.mk-code:hover { background: var(--tint-2); }
+.mk-publish { margin-left: auto; }
+.mk-author { display: inline-flex; align-items: center; gap: 8px; min-width: 0; color: var(--muted); font-size: 13px; }
+.mk-author span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mk-author img, .mk-author .avatar-dot { width: 22px; height: 22px; flex: none; border-width: 1px; }
+.mk-desc { color: var(--ink); font-size: 14px; overflow-wrap: anywhere; }
+
+.mk-fields { display: flex; flex-direction: column; gap: 4px; margin: 0; padding: 10px 12px; list-style: none; background: var(--surface); border: var(--edge-soft); border-radius: var(--r-m); }
+.mk-fields li { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; min-width: 0; font-size: 13.5px; }
+.mk-fields li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mk-fields li small { flex: none; font-size: 12px; }
+.mk-fields .mk-more { justify-content: flex-start; color: var(--muted); font-size: 12.5px; }
+
+.mk-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.mk-tag { padding: 0 10px; font-family: var(--font-display); font-weight: 600; font-size: 12px; background: var(--tint); border: 1px solid var(--line-2); border-radius: 999px; }
+
+.mk-card footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 12px; border-top: var(--edge-soft); }
+.mk-installs { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; }
+.mk-actions { display: inline-flex; align-items: center; gap: 8px; padding-bottom: 3px; }
+.mk-actions .icon-btn { width: 32px; height: 32px; }
+
+@media (hover: hover) {
+  .mk-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); }
+}
+@media (max-width: 900px) {
+  .mk-grid { grid-template-columns: minmax(0, 1fr); }
+}

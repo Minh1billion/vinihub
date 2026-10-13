@@ -1,0 +1,48 @@
+.modal.share-modal { width: min(560px, 100%); }
+
+.sh-invite { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+.sh-invite label { font-family: var(--font-display); font-weight: 600; font-size: 14px; }
+.sh-row { display: flex; gap: 10px; align-items: stretch; }
+.sh-row input { flex: 1; min-width: 0; }
+.sh-row .btn { flex: none; white-space: nowrap; }
+.sh-note { color: var(--muted); margin-bottom: 14px; }
+
+.sh-notice { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 18px; padding: 14px; border: var(--edge-soft); border-radius: var(--r-m); font-size: 14px; }
+.sh-notice > svg { flex: none; margin-top: 1px; }
+.sh-notice > div { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.sh-notice p { margin: 0; color: var(--ink); overflow-wrap: anywhere; }
+.sh-notice .sh-row { margin-top: 4px; }
+.sh-notice.ok { background: var(--ok-bg); }
+.sh-notice.ok > svg { color: var(--ok); }
+.sh-notice.warn { background: var(--tint); }
+.sh-notice.warn > svg { color: var(--orange-d); }
+
+.sh-h { display: flex; align-items: center; gap: 8px; margin: 22px 0 4px; padding-top: 18px; border-top: var(--edge-soft); font-size: 16px; }
+.sh-h span { display: grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border: 1px solid var(--line-2); border-radius: 11px; background: var(--surface); color: var(--ink); font-family: var(--font-body); font-size: 12px; font-weight: 600; }
+
+.sh-list { margin: 0; padding: 0; list-style: none; }
+.sh-list li { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+.sh-list li:first-child { border-top: 0; }
+.sh-avatar { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border: var(--edge); border-radius: 50%; background: var(--tint-2); color: var(--ink); font-family: var(--font-display); font-weight: 700; object-fit: cover; }
+.sh-avatar.invited { background: #fff; border: 2px dashed var(--line-2); color: var(--muted); }
+.sh-who { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.sh-name { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.sh-name b, .sh-email { overflow-wrap: anywhere; }
+.sh-who small { overflow-wrap: anywhere; }
+.sh-tag { padding: 0 8px; border: 1px solid var(--line-2); border-radius: 10px; background: var(--surface); color: var(--ink); font-size: 12px; font-weight: 600; }
+.sh-tag.owner { background: var(--tint-2); }
+.sh-tag.me { background: var(--ink); color: #fff; }
+.sh-actions { display: flex; align-items: center; gap: 10px; flex: none; padding-bottom: 3px; }
+
+@media (max-width: 520px) {
+  .sh-row { flex-direction: column; }
+  .sh-list li { flex-wrap: wrap; }
+  .sh-actions { margin-left: 48px; }
+}
+
+.invite-page { min-height: 100%; display: grid; place-items: center; padding: 24px; background: var(--tint); }
+.invite-card { width: min(420px, 100%); padding: 36px; background: #fff; border: var(--edge); border-radius: var(--r-l); box-shadow: 8px 8px 0 var(--ink); }
+.invite-card .brand { margin-bottom: 20px; }
+.invite-card h2 { margin-bottom: 8px; }
+.invite-card p { color: var(--muted); margin-bottom: 18px; }
+.invite-actions { display: flex; flex-direction: column; gap: 14px; padding-bottom: 3px; }

@@ -1,0 +1,9 @@
+{
+  "name": "Bài đăng mạng xã hội",
+  "description": "Nội dung bài đăng kèm hashtag và gợi ý hình ảnh minh họa.",
+  "fields": [
+    { "label": "Nội dung bài đăng", "type": "string", "hint": "nội dung hoàn chỉnh, giọng văn gần gũi, có thể xuống dòng" },
+    { "label": "Hashtag", "type": "list", "hint": "5 đến 8 hashtag phù hợp, mỗi phần tử một hashtag" },
+    { "label": "Ảnh minh họa", "type": "string", "hint": "mô tả một ảnh minh họa phù hợp với bài đăng", "send": "image" }
+  ]
+}

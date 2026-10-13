@@ -1,0 +1,43 @@
+:root {
+  --orange: #ff6a13;
+  --orange-d: #c44708;
+  --orange-press: #a63d05;
+  --tint: #fff4ec;
+  --tint-2: #ffdcc2;
+  --ink: #1f1a16;
+  --on-orange: var(--ink);
+  --muted: #6b635c;
+  --line: #ddd4ca;
+  --line-2: #b8ada1;
+  --scroll: #cfc4b8;
+  --scroll-hover: #a99d90;
+  --surface: #f1ebe3;
+  --bg: #f6f1ea;
+  --danger: #c4381a;
+  --info: #3d5666;
+  --info-bg: #e8eef2;
+  --warn: #a8670a;
+  --warn-bg: #fff2d6;
+  --danger-bg: #fff0ec;
+  --ok: #1f7a45;
+  --ok-bg: #e7f6ec;
+  --r-s: 8px;
+  --r-m: 12px;
+  --r-l: 16px;
+
+  /* Bold edges: every boundary is a 2px black line; depth comes from hard offset shadows, never blur. */
+  --edge: 2px solid var(--ink);
+  --edge-soft: 1px solid var(--line);
+  --shadow-btn: 0 3px 0 var(--ink);
+  --shadow-1: 3px 3px 0 var(--ink);
+  --shadow-2: 5px 5px 0 var(--ink);
+  --shadow-pop: 6px 6px 0 var(--ink);
+  --ring: 3px 3px 0 var(--orange);
+
+  --bar-h: 56px;
+  --side-w: 248px;
+  --lib-w: 340px;
+  --rail-w: 56px;
+  --font-body: 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-display: 'Be Vietnam Pro', system-ui, sans-serif;
+}

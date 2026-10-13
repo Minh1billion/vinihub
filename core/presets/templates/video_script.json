@@ -1,0 +1,10 @@
+{
+  "name": "Kịch bản video ngắn",
+  "description": "Ý tưởng video ngắn kèm danh sách cảnh để chuyển sang tab Video.",
+  "fields": [
+    { "label": "Tiêu đề", "type": "string", "hint": "tiêu đề hấp dẫn, dưới 10 từ" },
+    { "label": "Mở đầu", "type": "string", "hint": "câu mở đầu thu hút trong 3 giây đầu" },
+    { "label": "Cảnh quay", "type": "list", "hint": "mỗi phần tử mô tả một cảnh bằng một câu: bối cảnh, chủ thể, chuyển động máy quay", "send": "video" },
+    { "label": "Lời kêu gọi", "type": "string", "hint": "câu kêu gọi hành động ở cuối video" }
+  ]
+}

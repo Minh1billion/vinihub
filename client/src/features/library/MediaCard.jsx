@@ -1,0 +1,28 @@
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import Icon from '../../components/Icon.jsx'
+
+export default function MediaCard({ asset, onOpen, onDelete }) {
+  const { t } = useTranslation()
+  const isVideo = asset.kind === 'video'
+  const [ready, setReady] = useState(false)
+  const show = () => setReady(true)
+  return (
+    <figure className="media">
+      <button type="button" className="media-hit" onClick={() => onOpen(asset)} aria-label={t('media.view')}>
+        {isVideo ? <video src={asset.url} muted preload="metadata" /> : <img className={ready ? 'is-ready' : ''} src={asset.url} alt={asset.prompt || ''} loading="lazy" onLoad={show} onError={show} />}
+        {isVideo && <span className="badge"><Icon name="play" size={14} /></span>}
+      </button>
+      <div className="media-actions">
+        <a className="icon-btn" href={asset.url} download target="_blank" rel="noreferrer" aria-label={t('common.download')}><Icon name="download" /></a>
+        {onDelete && <button className="icon-btn danger" onClick={() => onDelete(asset)} aria-label={t('common.delete')}><Icon name="trash" /></button>}
+      </div>
+      {asset.prompt && <figcaption title={asset.prompt}>{asset.prompt}</figcaption>}
+      {asset.negative_prompt && (
+        <figcaption className="media-neg" title={asset.negative_prompt}>
+          <b>{t('model.negativePrompt')}:</b> {asset.negative_prompt}
+        </figcaption>
+      )}
+    </figure>
+  )
+}

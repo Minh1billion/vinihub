@@ -1,0 +1,5 @@
+.bulk-help { color: var(--muted); }
+.bulk-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 8px 0 12px; }
+.bulk-file { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 40%; }
+.bulk-json { width: 100%; font-family: ui-monospace, monospace; font-size: 13px; resize: vertical; }
+.bulk-done { margin: 8px 0 0; padding: 8px 12px; background: var(--ok-bg); color: var(--ok); border-radius: var(--r-m); font-size: 14px; }

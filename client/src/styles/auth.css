@@ -1,0 +1,46 @@
+.login { position: relative; min-height: 100%; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); background: var(--bg); }
+.login .lang-dd { top: 16px; right: 16px; }
+
+.login-intro { display: flex; flex-direction: column; justify-content: center; padding: 64px clamp(24px, 8vw, 110px); border-right: var(--edge); background: linear-gradient(160deg, var(--tint) 0%, #fff6ef 55%, #fff 100%); }
+.login-intro h1 { font-size: clamp(30px, 4vw, 44px); max-width: 16ch; margin-bottom: 14px; }
+.login-intro > p { color: var(--muted); max-width: 44ch; margin-bottom: 28px; }
+.login-intro ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.login-intro li { display: flex; align-items: center; gap: 12px; font-weight: 500; }
+.login-ico { flex: none; display: grid; place-items: center; width: 32px; height: 32px; color: var(--orange-d); background: #fff; border: var(--edge); border-radius: var(--r-s); box-shadow: 2px 2px 0 var(--ink); }
+
+.hub { position: relative; width: min(420px, 100%); aspect-ratio: 420 / 160; margin-top: 44px; }
+.hub-lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.hub-lines path { stroke: var(--ink); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.hub-core, .hub-node { position: absolute; display: grid; place-items: center; background: #fff; border: var(--edge); }
+.hub-core { left: 14.29%; top: 50%; width: 76px; height: 76px; margin: -38px 0 0 -38px; border-radius: 50%; box-shadow: var(--shadow-2); }
+.hub-core img { width: 46px; height: 46px; object-fit: contain; }
+.hub-node { left: 80.95%; top: var(--y); width: 48px; height: 48px; margin: -24px 0 0 -24px; color: var(--ink); border-radius: var(--r-m); box-shadow: var(--shadow-1); }
+.hub-node:nth-of-type(3) { background: var(--orange); }
+
+.login-side { display: grid; place-items: center; padding: 72px 24px 48px; background-color: var(--bg); background-image: radial-gradient(var(--line-2) 1.2px, transparent 1.2px); background-size: 22px 22px; }
+.login-card { width: min(400px, 100%); padding: 36px 32px; background: #fff; border: var(--edge); border-radius: var(--r-l); box-shadow: 8px 8px 0 var(--ink); }
+.login-card h2 { font-size: 24px; margin-bottom: 8px; }
+.login-card p { color: var(--muted); margin-bottom: 24px; }
+.login-card .login-invite { display: flex; align-items: flex-start; gap: 12px; margin: 4px 0 24px; padding: 12px 14px; background: var(--tint); border: var(--edge); border-radius: var(--r-m); }
+.login-card .login-invite svg { flex: none; margin-top: 2px; color: var(--orange-d); }
+.login-card .login-invite p { margin: 0; color: var(--ink); }
+.login-card .login-invite.is-warn { background: var(--warn-bg); }
+.login-card .login-invite.is-warn svg { color: var(--warn); }
+.login-google { gap: 12px; padding: 11px 18px; font-size: 15.5px; }
+.g-badge { flex: none; display: grid; place-items: center; width: 28px; height: 28px; background: #fff; border: var(--edge); border-radius: 50%; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .hub-lines path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: hub-draw 0.7s 0.35s var(--ease-out) forwards; }
+  .hub-core { animation: hub-pop 0.4s 0.2s var(--ease-spring) backwards; }
+  .hub-node { animation: hub-pop 0.4s calc(0.8s + var(--i) * 0.1s) var(--ease-spring) backwards; }
+}
+@keyframes hub-draw { to { stroke-dashoffset: 0; } }
+@keyframes hub-pop { from { opacity: 0; transform: scale(0.6); } }
+
+@media (max-width: 800px) {
+  .login { grid-template-columns: 1fr; }
+  .login-intro { padding: 72px 24px 36px; border-right: 0; border-bottom: var(--edge); }
+  .hub { display: none; }
+  .login-side { padding: 36px 24px 48px; }
+}
+@media (max-height: 700px) { .hub { display: none; } }
