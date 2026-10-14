@@ -27,6 +27,21 @@ const TOOLS = [
   { key: 'text', icon: 'type' },
 ]
 
+const BLANK = { width: 1080, height: 1080 }
+
+function blankThumb() {
+  const c = document.createElement('canvas')
+  c.width = 128
+  c.height = 128
+  const g = c.getContext('2d')
+  const grad = g.createLinearGradient(0, 0, 128, 128)
+  grad.addColorStop(0, '#ffdcc2')
+  grad.addColorStop(1, '#f1ebe3')
+  g.fillStyle = grad
+  g.fillRect(0, 0, 128, 128)
+  return c
+}
+
 export default function EditorPanel({ active, onSend }) {
   const { t } = useTranslation()
   const { wid } = useApp()
@@ -55,6 +70,7 @@ export default function EditorPanel({ active, onSend }) {
   const thumb = useMemo(() => (oriented ? makeThumb(oriented) : null), [oriented])
   const lock = oriented ? ratioValue(ratioKey, oriented.width, oriented.height) : null
   const crop = oriented ? rectOf(oriented, edit.crop) : null
+  const placeholderThumb = useMemo(blankThumb, [])
 
   useEffect(() => () => doc?.bitmap.close(), [doc])
   useEffect(() => { setSaved(null) }, [edit])
@@ -139,32 +155,18 @@ export default function EditorPanel({ active, onSend }) {
   const onMoveText = (id, x, y) => commit((e) => ({ ...e, texts: e.texts.map((v) => (v.id === id ? { ...v, x, y } : v)) }), `move:${id}`)
   const onCrop = (rect) => commit((e) => ({ ...e, crop: rect }), 'crop')
 
-  if (!doc) {
-    return (
-      <div className="ed ed-empty">
-        {loading ? <p className="page-loading">{t('editor.loading')}</p> : (
-          <EmptyState title={t('editor.emptyTitle')} text={t('editor.emptyText')}>
-            <FieldError>{err}</FieldError>
-            <Dropzone accept="image/*" cta={t('editor.upload')} value={null}
-              onChange={(a) => a && navigate(`/studio/editor?asset=${a.id}`)} />
-          </EmptyState>
-        )}
-      </div>
-    )
-  }
-
   return (
     <div className="ed">
       <header className="ed-bar">
         <strong className="ed-name">{t('editor.title')}</strong>
-        <span className="num ed-dims">{crop.w} × {crop.h}</span>
+        <span className="num ed-dims">{crop ? `${crop.w} × ${crop.h}` : '– × –'}</span>
         <button type="button" className="icon-btn" disabled={!canUndo} onClick={undo} aria-label={t('editor.undo')} title={t('editor.undo')}><Icon name="undo" /></button>
         <button type="button" className="icon-btn" disabled={!canRedo} onClick={redo} aria-label={t('editor.redo')} title={t('editor.redo')}><Icon name="redo" /></button>
-        <button type="button" className="icon-btn" aria-label={t('editor.compare')} title={t('editor.compare')}
+        <button type="button" className="icon-btn" disabled={!doc} aria-label={t('editor.compare')} title={t('editor.compare')}
           onPointerDown={() => setOriginal(true)} onPointerUp={() => setOriginal(false)}
           onPointerLeave={() => setOriginal(false)} onPointerCancel={() => setOriginal(false)}><Icon name="eye" /></button>
         <Button variant="ghost" size="sm" icon="refresh" disabled={!canUndo} onClick={() => { setRatioKey('free'); commit(() => initialEdit) }}>{t('editor.reset')}</Button>
-        <Button size="sm" icon="download" onClick={() => setExporting(true)}>{t('editor.export.open')}</Button>
+        <Button size="sm" icon="download" disabled={!doc} onClick={() => setExporting(true)}>{t('editor.export.open')}</Button>
       </header>
       {saved && (
         <div className="ed-saved" role="status">
@@ -185,16 +187,30 @@ export default function EditorPanel({ active, onSend }) {
             </button>
           ))}
         </nav>
-        <Stage source={doc.bitmap} oriented={oriented} edit={edit} tool={tool} lock={lock} original={original} active={active}
-          onSelect={setSelected} onMoveText={onMoveText} onCrop={onCrop} />
+        {doc ? (
+          <Stage source={doc.bitmap} oriented={oriented} edit={edit} tool={tool} lock={lock} original={original} active={active}
+            onSelect={setSelected} onMoveText={onMoveText} onCrop={onCrop} />
+        ) : (
+          <section className="ed-stage">
+            {loading ? <p className="page-loading">{t('editor.loading')}</p> : (
+              <EmptyState title={t('editor.emptyTitle')} text={t('editor.emptyText')}>
+                <FieldError>{err}</FieldError>
+                <Dropzone accept="image/*" cta={t('editor.upload')} value={null}
+                  onChange={(a) => a && navigate(`/studio/editor?asset=${a.id}`)} />
+              </EmptyState>
+            )}
+          </section>
+        )}
         <aside className="ed-props">
-          {tool === 'crop' && <CropPanel edit={edit} commit={commit} oriented={oriented} ratioKey={ratioKey} setRatioKey={setRatioKey} />}
-          {tool === 'adjust' && <AdjustPanel edit={edit} commit={commit} />}
-          {tool === 'filters' && <FilterPanel edit={edit} commit={commit} thumb={thumb} />}
-          {tool === 'text' && <TextPanel edit={edit} commit={commit} selected={selected} onSelect={setSelected} />}
+          <fieldset className="ed-lock" disabled={!doc}>
+            {tool === 'crop' && <CropPanel edit={edit} commit={commit} oriented={oriented || BLANK} ratioKey={ratioKey} setRatioKey={setRatioKey} />}
+            {tool === 'adjust' && <AdjustPanel edit={edit} commit={commit} />}
+            {tool === 'filters' && <FilterPanel edit={edit} commit={commit} thumb={thumb || placeholderThumb} />}
+            {tool === 'text' && <TextPanel edit={edit} commit={commit} selected={selected} onSelect={setSelected} />}
+          </fieldset>
         </aside>
       </div>
-      {exporting && <ExportModal size={crop} onSave={save} onDownload={download} onClose={() => setExporting(false)} />}
+      {exporting && doc && <ExportModal size={crop} onSave={save} onDownload={download} onClose={() => setExporting(false)} />}
     </div>
   )
 }
