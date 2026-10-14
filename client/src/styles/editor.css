@@ -3,6 +3,7 @@
 .ed-name { flex: 1; min-width: 0; font-family: var(--font-display); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ed-dims { color: var(--muted); font-size: 13px; margin-right: 8px; }
 .ed-saved { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 14px; padding: 8px 16px; color: var(--ok); background: var(--ok-bg); border-bottom: var(--edge-soft); font-size: 14px; }
+.ed-saved.is-err { color: var(--danger); background: #fdeae5; }
 .ed-saved strong { color: var(--ink); }
 .ed-saved .icon-btn { margin-left: auto; }
 .ed-body { flex: 1; min-height: 0; display: grid; grid-template-columns: 76px minmax(0, 1fr) 300px; }
@@ -23,6 +24,10 @@
 .ed-props .field { margin-bottom: 0; }
 .ed-props input[type='range'] { width: 100%; padding: 0; border: 0; box-shadow: none; background: none; accent-color: var(--orange); }
 .ed-color { width: 56px; height: 36px; padding: 2px; cursor: pointer; }
+.ed-presets { display: flex; flex-wrap: wrap; gap: 6px; }
+.ed-preset { padding: 4px 10px; font-size: 13px; }
+.ed-preset.on { background: var(--tint-2); box-shadow: var(--shadow-1); }
+.ed-warn { color: var(--warn); }
 .ed-btnrow { display: flex; flex-wrap: wrap; gap: 8px; }
 .ed-mirror svg { transform: scaleX(-1); }
 .ed-vert svg { transform: rotate(90deg); }

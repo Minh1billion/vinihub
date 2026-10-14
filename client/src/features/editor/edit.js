@@ -24,6 +24,19 @@ export const FILTERS = {
 export const FILTER_KEYS = Object.keys(FILTERS)
 export const RATIOS = ['1:1', '4:5', '3:4', '9:16', '16:9', '4:3']
 
+export const PLATFORM_PRESETS = [
+  { key: 'instagram:post', platform: 'instagram', format: 'post', ratio: '4:5', w: 1080, h: 1350 },
+  { key: 'instagram:reel', platform: 'instagram', format: 'reel', ratio: '9:16', w: 1080, h: 1920 },
+  { key: 'instagram:story', platform: 'instagram', format: 'story', ratio: '9:16', w: 1080, h: 1920 },
+  { key: 'facebook:post', platform: 'facebook', format: 'post', ratio: '1:1', w: 1080, h: 1080 },
+  { key: 'facebook:reel', platform: 'facebook', format: 'reel', ratio: '9:16', w: 1080, h: 1920 },
+  { key: 'facebook:story', platform: 'facebook', format: 'story', ratio: '9:16', w: 1080, h: 1920 },
+  { key: 'tiktok:video', platform: 'tiktok', format: 'video', ratio: '9:16', w: 1080, h: 1920 },
+  { key: 'threads:post', platform: 'threads', format: 'post', ratio: '4:5', w: 1080, h: 1350 },
+  { key: 'youtube:video', platform: 'youtube', format: 'video', ratio: '16:9', w: 1280, h: 720 },
+  { key: 'youtube:shorts', platform: 'youtube', format: 'shorts', ratio: '9:16', w: 1080, h: 1920 },
+]
+
 const FONT = "'Be Vietnam Pro', system-ui, 'Segoe UI', Roboto, Arial, sans-serif"
 
 export function ratioValue(key, width, height) {

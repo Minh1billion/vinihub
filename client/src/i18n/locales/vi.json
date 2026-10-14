@@ -557,7 +557,10 @@
       "platforms": "4:5 hợp feed Instagram, 9:16 hợp TikTok, Reels và Shorts, 16:9 hợp YouTube.",
       "size": "Kích thước kết quả",
       "hint": "Kéo khung để di chuyển, kéo các điểm góc để đổi kích thước.",
-      "clear": "Đặt lại vùng cắt"
+      "clear": "Đặt lại vùng cắt",
+      "presets": "Cỡ theo nền tảng",
+      "presetSize": "Kích thước khuyến nghị: {{w}} × {{h}} px.",
+      "presetSmall": "Vùng cắt nhỏ hơn khuyến nghị nên ảnh có thể bị mờ."
     },
     "adjust": {
       "brightness": "Độ sáng",
@@ -608,6 +611,7 @@
       "continue": "Tiếp tục sửa bản mới",
       "asReference": "Dùng làm ảnh tham chiếu ở Ảnh",
       "asFrame": "Dùng làm khung đầu ở Video"
-    }
+    },
+    "preview": "Xem thử trong Trình mô phỏng"
   }
 }

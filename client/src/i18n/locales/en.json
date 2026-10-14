@@ -563,7 +563,10 @@
       "platforms": "4:5 suits Instagram feed, 9:16 TikTok, Reels and Shorts, 16:9 YouTube.",
       "size": "Result size",
       "hint": "Drag the frame to move it and the handles to resize it.",
-      "clear": "Reset crop"
+      "clear": "Reset crop",
+      "presets": "Platform presets",
+      "presetSize": "Recommended size: {{w}} × {{h}} px.",
+      "presetSmall": "Your crop is smaller than recommended and may look soft."
     },
     "adjust": {
       "brightness": "Brightness",
@@ -614,6 +617,7 @@
       "continue": "Keep editing the copy",
       "asReference": "Use as reference in Image",
       "asFrame": "Use as first frame in Video"
-    }
+    },
+    "preview": "Preview in Simulator"
   }
 }

@@ -30,6 +30,7 @@ export default function StudioPage() {
   const body = useRef(null)
   const [drafts, setDrafts] = useState({ image: '', video: '' })
   const [seeds, setSeeds] = useState({ imageRef: null, videoFrame: null })
+  const [simSeed, setSimSeed] = useState(null)
 
   useEffect(() => { body.current?.scrollTo(0, 0) }, [section])
 
@@ -42,6 +43,10 @@ export default function StudioPage() {
   const sendAsset = (kind, asset) => {
     setSeeds((s) => ({ ...s, [kind]: asset }))
     navigate(kind === 'imageRef' ? '/studio/image' : '/studio/video')
+  }
+  const sendToSimulator = (seed) => {
+    setSimSeed(seed)
+    navigate('/studio/simulator')
   }
   const clearSeed = (kind) => () => setSeeds((s) => ({ ...s, [kind]: null }))
   const setDraft = (kind) => (value) => setDrafts((d) => ({ ...d, [kind]: value }))
@@ -57,10 +62,10 @@ export default function StudioPage() {
         <VideoPanel prompt={drafts.video} setPrompt={setDraft('video')} frame={seeds.videoFrame} onFrameUsed={clearSeed('videoFrame')} />
       </div>
       <div className="panel panel--fill" hidden={section !== 'editor'}>
-        <EditorPanel active={section === 'editor'} onSend={sendAsset} />
+        <EditorPanel active={section === 'editor'} onSend={sendAsset} onPreview={sendToSimulator} />
       </div>
       <div className="panel panel--fill" hidden={section !== 'simulator'}>
-        <SimulatorPanel active={section === 'simulator'} />
+        <SimulatorPanel active={section === 'simulator'} seed={simSeed} onSeedUsed={() => setSimSeed(null)} />
       </div>
     </PageFrame>
   )

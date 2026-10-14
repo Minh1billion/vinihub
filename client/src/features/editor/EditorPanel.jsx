@@ -16,7 +16,7 @@ import AdjustPanel from './panels/AdjustPanel.jsx'
 import CropPanel from './panels/CropPanel.jsx'
 import FilterPanel from './panels/FilterPanel.jsx'
 import TextPanel from './panels/TextPanel.jsx'
-import { drawResult, initialEdit, makeThumb, orient, ratioValue, rectOf } from './edit.js'
+import { PLATFORM_PRESETS, drawResult, initialEdit, makeThumb, orient, ratioValue, rectOf } from './edit.js'
 import { loadBitmap } from './source.js'
 import useEditor from './useEditor.js'
 
@@ -42,7 +42,7 @@ function blankThumb() {
   return c
 }
 
-export default function EditorPanel({ active, onSend }) {
+export default function EditorPanel({ active, onSend, onPreview }) {
   const { t } = useTranslation()
   const { wid } = useApp()
   const dialog = useDialog()
@@ -56,6 +56,8 @@ export default function EditorPanel({ active, onSend }) {
   const [err, setErr] = useState('')
   const [tool, setTool] = useState('crop')
   const [ratioKey, setRatioKey] = useState('free')
+  const [presetKey, setPresetKey] = useState(null)
+  const [previewing, setPreviewing] = useState(false)
   const [selected, setSelected] = useState(null)
   const [original, setOriginal] = useState(false)
   const [exporting, setExporting] = useState(false)
@@ -95,6 +97,7 @@ export default function EditorPanel({ active, onSend }) {
         setSaved(null)
         setSelected(null)
         setRatioKey('free')
+        setPresetKey(null)
         setTool('crop')
       } catch (e) {
         if (alive) setErr(e.message || t('editor.loadFailed'))
@@ -152,6 +155,24 @@ export default function EditorPanel({ active, onSend }) {
     setTimeout(() => URL.revokeObjectURL(url), 2000)
   }
 
+  const preview = async () => {
+    setPreviewing(true)
+    setErr('')
+    try {
+      const { blob, width, height, ext } = await render({ format: 'jpeg', quality: 0.92, scale: Math.min(1, 1600 / crop.w) })
+      const target = PLATFORM_PRESETS.find((p) => p.key === presetKey)
+      onPreview({
+        platform: target?.platform,
+        format: target?.format,
+        media: { id: `edit-${Date.now()}`, url: URL.createObjectURL(blob), kind: 'image', name: `edit.${ext}`, w: width, h: height },
+      })
+    } catch (e) {
+      setErr(e.message || t('editor.export.failed'))
+    } finally {
+      setPreviewing(false)
+    }
+  }
+
   const onMoveText = (id, x, y) => commit((e) => ({ ...e, texts: e.texts.map((v) => (v.id === id ? { ...v, x, y } : v)) }), `move:${id}`)
   const onCrop = (rect) => commit((e) => ({ ...e, crop: rect }), 'crop')
 
@@ -165,9 +186,17 @@ export default function EditorPanel({ active, onSend }) {
         <button type="button" className="icon-btn" disabled={!doc} aria-label={t('editor.compare')} title={t('editor.compare')}
           onPointerDown={() => setOriginal(true)} onPointerUp={() => setOriginal(false)}
           onPointerLeave={() => setOriginal(false)} onPointerCancel={() => setOriginal(false)}><Icon name="eye" /></button>
-        <Button variant="ghost" size="sm" icon="refresh" disabled={!canUndo} onClick={() => { setRatioKey('free'); commit(() => initialEdit) }}>{t('editor.reset')}</Button>
+        <Button variant="ghost" size="sm" icon="refresh" disabled={!canUndo} onClick={() => { setRatioKey('free'); setPresetKey(null); commit(() => initialEdit) }}>{t('editor.reset')}</Button>
+        <Button variant="ghost" size="sm" icon="simulator" disabled={!doc || previewing} onClick={preview}>{t('editor.preview')}</Button>
         <Button size="sm" icon="download" disabled={!doc} onClick={() => setExporting(true)}>{t('editor.export.open')}</Button>
       </header>
+      {err && (
+        <div className="ed-saved is-err" role="alert">
+          <Icon name="alert" size={16} />
+          <strong>{err}</strong>
+          <button type="button" className="icon-btn" onClick={() => setErr('')} aria-label={t('common.close')}><Icon name="close" size={14} /></button>
+        </div>
+      )}
       {saved && (
         <div className="ed-saved" role="status">
           <Icon name="check" size={16} />
@@ -203,7 +232,7 @@ export default function EditorPanel({ active, onSend }) {
         )}
         <aside className="ed-props">
           <fieldset className="ed-lock" disabled={!doc}>
-            {tool === 'crop' && <CropPanel edit={edit} commit={commit} oriented={oriented || BLANK} ratioKey={ratioKey} setRatioKey={setRatioKey} />}
+            {tool === 'crop' && <CropPanel edit={edit} commit={commit} oriented={oriented || BLANK} ratioKey={ratioKey} setRatioKey={setRatioKey} presetKey={presetKey} setPresetKey={setPresetKey} />}
             {tool === 'adjust' && <AdjustPanel edit={edit} commit={commit} />}
             {tool === 'filters' && <FilterPanel edit={edit} commit={commit} thumb={thumb || placeholderThumb} />}
             {tool === 'text' && <TextPanel edit={edit} commit={commit} selected={selected} onSelect={setSelected} />}

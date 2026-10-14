@@ -14,7 +14,7 @@ import { DEVICES, FORMATS, TITLE_LIMIT, countTags, getIssues, isVertical, rulesF
 
 const slug = (s) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9._]/g, '')
 
-export default function SimulatorPanel({ active }) {
+export default function SimulatorPanel({ active, seed, onSeedUsed }) {
   const { t } = useTranslation()
   const { user } = useApp()
   const avatarInput = useRef(null)
@@ -37,6 +37,16 @@ export default function SimulatorPanel({ active }) {
     clearTimeout(timer.current)
     if (avatarRef.current.startsWith('blob:')) URL.revokeObjectURL(avatarRef.current)
   }, [])
+
+  useEffect(() => {
+    if (!seed) return
+    if (seed.platform) {
+      setPlatform(seed.platform)
+      setFormats((cur) => ({ ...cur, [seed.platform]: seed.format }))
+    }
+    setMedia((cur) => [...cur, seed.media])
+    onSeedUsed()
+  }, [seed])
 
   const options = FORMATS[platform]
   const format = formats[platform] ?? options[0]
