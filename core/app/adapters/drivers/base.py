@@ -47,14 +47,15 @@ class Driver:
 
     def check(self, r: httpx.Response) -> dict:
         if r.status_code >= 400:
-            raise GatewayError(f"{self.conn.name} {r.status_code}: {r.text[:300]}")
+            raise GatewayError(f"{self.conn.name} {r.status_code}: {r.text[:300]}",
+                               retryable=r.status_code == 429 or r.status_code >= 500)
         return r.json()
 
     async def request(self, method: str, path: str, **kwargs) -> dict:
         try:
             return self.check(await self.http.request(method, path, **kwargs))
         except httpx.HTTPError as e:
-            raise GatewayError(t("gw.connection", provider=self.conn.name, detail=e)) from e
+            raise GatewayError(t("gw.connection", provider=self.conn.name, detail=e), retryable=True) from e
 
     async def ping(self) -> tuple[str, str]:
         """Cheap authenticated call used to check a key. Returns (status, detail); detail never echoes the response body."""
@@ -90,7 +91,8 @@ class Driver:
             async with httpx.AsyncClient(timeout=300, follow_redirects=True) as c:
                 r = await c.get(url)
         except httpx.HTTPError as e:
-            raise GatewayError(t("gw.connection", provider=self.conn.name, detail=e)) from e
+            raise GatewayError(t("gw.connection", provider=self.conn.name, detail=e), retryable=True) from e
         if r.status_code >= 400:
-            raise GatewayError(t("gw.download_failed", status=r.status_code))
+            raise GatewayError(t("gw.download_failed", status=r.status_code),
+                               retryable=r.status_code == 429 or r.status_code >= 500)
         return r.content

@@ -88,6 +88,7 @@ class OpenRouterDriver(OpenAICompatDriver):
         if url.startswith(self.conn.base_url.rstrip("/")):
             r = await self.http.get(url)
             if r.status_code >= 400:
-                raise GatewayError(t("gw.download_failed", status=r.status_code))
+                raise GatewayError(t("gw.download_failed", status=r.status_code),
+                                   retryable=r.status_code == 429 or r.status_code >= 500)
             return r.content
         return await Driver.download(self, url)

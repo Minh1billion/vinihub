@@ -1,4 +1,6 @@
-from typing import AsyncIterator, Protocol
+import uuid
+from datetime import datetime
+from typing import Any, AsyncIterator, Protocol
 
 
 class ModelDriver(Protocol):
@@ -27,3 +29,11 @@ class BillingGateway(Protocol):
 class Mailer(Protocol):
     async def send(self, to: str, subject: str, text: str, html: str | None = None) -> None:
         ...
+
+
+class JobQueue(Protocol):
+    async def enqueue(self, kind: str, payload: dict, *, workspace_id: uuid.UUID | None = None,
+                      user_id: uuid.UUID | None = None, priority: int = 0, run_at: datetime | None = None,
+                      dedupe_key: str | None = None, db: Any = None) -> uuid.UUID: ...
+    async def get(self, job_id: uuid.UUID) -> dict | None: ...
+    async def cancel(self, job_id: uuid.UUID) -> bool: ...

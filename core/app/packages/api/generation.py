@@ -1,33 +1,29 @@
 import uuid
 from typing import Literal
 
-from fastapi import APIRouter, BackgroundTasks, Depends
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.i18n import current as current_lang
 from app.modules.auth.models import User
 from app.modules.generation.schemas import ImageIn, VideoIn
 from app.modules.workspaces.models import Workspace
 from app.packages.api.deps import current_user, workspace_ctx
 from app.packages.usecases import generation as uc
-from app.packages.usecases.video_job import run_video
 from app.shared.db import get_db
 
 router = APIRouter(prefix="/workspaces/{wid}", tags=["generation"])
 
 
-@router.post("/images")
+@router.post("/images", status_code=202)
 async def generate_image(body: ImageIn, ws: Workspace = Depends(workspace_ctx), user: User = Depends(current_user),
                          db: AsyncSession = Depends(get_db)):
     return await uc.view(db, await uc.create_image(db, ws, user, body))
 
 
 @router.post("/videos", status_code=202)
-async def generate_video(body: VideoIn, bg: BackgroundTasks, ws: Workspace = Depends(workspace_ctx),
+async def generate_video(body: VideoIn, ws: Workspace = Depends(workspace_ctx),
                          user: User = Depends(current_user), db: AsyncSession = Depends(get_db)):
-    gen = await uc.create_video(db, ws, user, body)
-    bg.add_task(run_video, gen.id, current_lang())
-    return await uc.view(db, gen)
+    return await uc.view(db, await uc.create_video(db, ws, user, body))
 
 
 @router.get("/generations")

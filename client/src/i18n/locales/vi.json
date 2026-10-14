@@ -117,7 +117,8 @@
     "video": "Video",
     "simulator": "Giả lập",
     "resetLayout": "Đặt lại bố cục",
-    "resetLayoutHint": "Khôi phục độ rộng mặc định của các khung trong Studio"
+    "resetLayoutHint": "Khôi phục độ rộng mặc định của các khung trong Studio",
+    "editor": "Chỉnh sửa"
   },
   "gen": {
     "failed": "Không tạo được",
@@ -223,7 +224,8 @@
   "media": {
     "view": "Xem lớn",
     "image": "Ảnh",
-    "video": "Video"
+    "video": "Video",
+    "edit": "Chỉnh sửa"
   },
   "dropzone": {
     "pickImage": "Chọn tệp ảnh.",
@@ -522,5 +524,90 @@
     },
     "storyText": "Chữ trên story",
     "storyTextPlaceholder": "Dòng chữ ngắn hiện trên story…"
+  },
+  "editor": {
+    "title": "Chỉnh sửa ảnh",
+    "tools": "Công cụ chỉnh sửa",
+    "loading": "Đang tải ảnh…",
+    "loadFailed": "Không tải được ảnh này.",
+    "imageOnly": "Hiện chỉ chỉnh sửa được ảnh.",
+    "emptyTitle": "Chọn một ảnh để chỉnh sửa",
+    "emptyText": "Rê chuột lên ảnh trong Thư viện rồi bấm Chỉnh sửa, hoặc tải ảnh lên tại đây. Bản sửa được lưu thành ảnh mới, ảnh gốc giữ nguyên.",
+    "upload": "Tải ảnh lên",
+    "undo": "Hoàn tác",
+    "redo": "Làm lại",
+    "compare": "Giữ để so sánh với ảnh gốc",
+    "reset": "Đặt lại tất cả",
+    "confirmDiscard": "Bạn có thay đổi chưa lưu. Bỏ các thay đổi và mở ảnh khác?",
+    "discard": "Bỏ thay đổi",
+    "tool": {
+      "crop": "Cắt",
+      "adjust": "Chỉnh màu",
+      "filters": "Bộ lọc",
+      "text": "Chữ"
+    },
+    "crop": {
+      "orientation": "Hướng ảnh",
+      "rotateLeft": "Xoay trái",
+      "rotateRight": "Xoay phải",
+      "flipH": "Lật ngang",
+      "flipV": "Lật dọc",
+      "free": "Tự do",
+      "original": "Gốc",
+      "platforms": "4:5 hợp feed Instagram, 9:16 hợp TikTok, Reels và Shorts, 16:9 hợp YouTube.",
+      "size": "Kích thước kết quả",
+      "hint": "Kéo khung để di chuyển, kéo các điểm góc để đổi kích thước.",
+      "clear": "Đặt lại vùng cắt"
+    },
+    "adjust": {
+      "brightness": "Độ sáng",
+      "contrast": "Tương phản",
+      "saturation": "Bão hòa",
+      "temperature": "Nhiệt độ màu",
+      "blur": "Làm mờ",
+      "vignette": "Tối viền",
+      "reset": "Đặt lại chỉnh màu"
+    },
+    "filter": {
+      "none": "Gốc",
+      "vivid": "Rực rỡ",
+      "warm": "Ấm",
+      "cool": "Lạnh",
+      "fade": "Nhạt",
+      "mono": "Đơn sắc",
+      "noir": "Đen trắng",
+      "vintage": "Cổ điển"
+    },
+    "text": {
+      "add": "Thêm chữ",
+      "default": "Nhập chữ",
+      "empty": "(trống)",
+      "placeholder": "Nhập nội dung chữ",
+      "content": "Nội dung",
+      "color": "Màu chữ",
+      "size": "Cỡ chữ",
+      "weight": "Độ đậm",
+      "regular": "Thường",
+      "bold": "Đậm",
+      "outline": "Viền chữ",
+      "background": "Nền sau chữ",
+      "remove": "Xóa chữ",
+      "hint": "Kéo chữ trên ảnh để di chuyển."
+    },
+    "export": {
+      "open": "Xuất ảnh",
+      "title": "Xuất ảnh",
+      "format": "Định dạng",
+      "quality": "Chất lượng",
+      "scale": "Kích thước",
+      "save": "Lưu vào Thư viện",
+      "failed": "Không xuất được ảnh."
+    },
+    "saved": {
+      "title": "Đã lưu vào Thư viện dưới dạng ảnh mới.",
+      "continue": "Tiếp tục sửa bản mới",
+      "asReference": "Dùng làm ảnh tham chiếu ở Ảnh",
+      "asFrame": "Dùng làm khung đầu ở Video"
+    }
   }
 }

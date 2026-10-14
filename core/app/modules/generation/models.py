@@ -21,5 +21,6 @@ class Generation(Base):
     provider_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("providers.id", ondelete="SET NULL"), nullable=True)
     external_id: Mapped[str | None] = mapped_column(String(200), nullable=True)
     asset_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("assets.id", ondelete="SET NULL"), nullable=True)
+    job_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("jobs.id", ondelete="SET NULL"), nullable=True)
     credits: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = ts()

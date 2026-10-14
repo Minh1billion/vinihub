@@ -19,7 +19,7 @@ import { useGenerations } from '../shared/useGenerations.js'
 
 const first = (list, prefer) => (list.includes(prefer) ? prefer : list[0] ?? '')
 
-export default function ImagePanel({ prompt, setPrompt }) {
+export default function ImagePanel({ prompt, setPrompt, seed, onSeedUsed }) {
   const { t } = useTranslation()
   const { wid, refreshSubscription } = useApp()
   const { items, add, loaded } = useGenerations('image')
@@ -45,6 +45,12 @@ export default function ImagePanel({ prompt, setPrompt }) {
     setRefs((r) => (r.length > live.reference_images ? r.slice(0, live.reference_images) : r))
     if (!live.negative_prompt_key) setNegative('')
   }, [live])
+
+  useEffect(() => {
+    if (!seed || !live.reference_images) return
+    setRefs((r) => (r.some((x) => x.id === seed.id) ? r : [...r, seed].slice(0, live.reference_images)))
+    onSeedUsed()
+  }, [seed, live.reference_images])
 
   const run = async () => {
     setBusy(true); setErr('')

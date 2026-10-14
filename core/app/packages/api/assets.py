@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, UploadFile
+from fastapi import APIRouter, Depends, Form, Response, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.auth.models import User
@@ -19,9 +19,22 @@ async def list_assets(kind: str | None = None, ws: Workspace = Depends(workspace
 
 
 @router.post("", status_code=201)
-async def upload(file: UploadFile, ws: Workspace = Depends(workspace_ctx),
-                 user: User = Depends(current_user), db: AsyncSession = Depends(get_db)):
-    return await uc.upload_asset(db, ws, user, file)
+async def upload(file: UploadFile, parent_id: uuid.UUID | None = Form(None), meta: str | None = Form(None),
+                 ws: Workspace = Depends(workspace_ctx), user: User = Depends(current_user),
+                 db: AsyncSession = Depends(get_db)):
+    return await uc.upload_asset(db, ws, user, file, parent_id, meta)
+
+
+@router.get("/{asset_id}")
+async def get_asset(asset_id: uuid.UUID, ws: Workspace = Depends(workspace_ctx), db: AsyncSession = Depends(get_db)):
+    return await uc.get_asset(db, ws, asset_id)
+
+
+@router.get("/{asset_id}/content")
+async def asset_content(asset_id: uuid.UUID, ws: Workspace = Depends(workspace_ctx),
+                        db: AsyncSession = Depends(get_db)):
+    data, mime = await uc.read_content(db, ws, asset_id)
+    return Response(content=data, media_type=mime, headers={"Cache-Control": "private, max-age=300"})
 
 
 @router.delete("/{asset_id}", status_code=204)

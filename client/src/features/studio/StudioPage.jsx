@@ -8,6 +8,7 @@ import IdeaPanel from './idea/IdeaPanel.jsx'
 import ImagePanel from './image/ImagePanel.jsx'
 import VideoPanel from './video/VideoPanel.jsx'
 import SimulatorPanel from '../simulator/SimulatorPanel.jsx'
+import EditorPanel from '../editor/EditorPanel.jsx'
 
 const TABS = [
   [
@@ -15,9 +16,12 @@ const TABS = [
     { to: '/studio/image', labelKey: 'studio.image', icon: 'image' },
     { to: '/studio/video', labelKey: 'studio.video', icon: 'video' },
   ],
-  [{ to: '/studio/simulator', labelKey: 'studio.simulator', icon: 'simulator' }],
+  [
+    { to: '/studio/editor', labelKey: 'studio.editor', icon: 'edit' },
+    { to: '/studio/simulator', labelKey: 'studio.simulator', icon: 'simulator' },
+  ],
 ]
-const SECTIONS = ['idea', 'image', 'video', 'simulator']
+const SECTIONS = ['idea', 'image', 'video', 'editor', 'simulator']
 
 export default function StudioPage() {
   const { t } = useTranslation()
@@ -25,6 +29,7 @@ export default function StudioPage() {
   const navigate = useNavigate()
   const body = useRef(null)
   const [drafts, setDrafts] = useState({ image: '', video: '' })
+  const [seeds, setSeeds] = useState({ imageRef: null, videoFrame: null })
 
   useEffect(() => { body.current?.scrollTo(0, 0) }, [section])
 
@@ -34,6 +39,11 @@ export default function StudioPage() {
     setDrafts((d) => ({ ...d, [kind]: text }))
     navigate(`/studio/${kind}`)
   }
+  const sendAsset = (kind, asset) => {
+    setSeeds((s) => ({ ...s, [kind]: asset }))
+    navigate(kind === 'imageRef' ? '/studio/image' : '/studio/video')
+  }
+  const clearSeed = (kind) => () => setSeeds((s) => ({ ...s, [kind]: null }))
   const setDraft = (kind) => (value) => setDrafts((d) => ({ ...d, [kind]: value }))
 
   return (
@@ -41,10 +51,13 @@ export default function StudioPage() {
       actions={<Button variant="ghost" size="sm" icon="refresh" title={t('studio.resetLayoutHint')} onClick={resetLayouts}>{t('studio.resetLayout')}</Button>}>
       <div className="panel panel--fill" hidden={section !== 'idea'}><IdeaPanel onSend={sendToStudio} /></div>
       <div className="panel panel--fill" hidden={section !== 'image'}>
-        <ImagePanel prompt={drafts.image} setPrompt={setDraft('image')} />
+        <ImagePanel prompt={drafts.image} setPrompt={setDraft('image')} seed={seeds.imageRef} onSeedUsed={clearSeed('imageRef')} />
       </div>
       <div className="panel panel--fill" hidden={section !== 'video'}>
-        <VideoPanel prompt={drafts.video} setPrompt={setDraft('video')} />
+        <VideoPanel prompt={drafts.video} setPrompt={setDraft('video')} frame={seeds.videoFrame} onFrameUsed={clearSeed('videoFrame')} />
+      </div>
+      <div className="panel panel--fill" hidden={section !== 'editor'}>
+        <EditorPanel active={section === 'editor'} onSend={sendAsset} />
       </div>
       <div className="panel panel--fill" hidden={section !== 'simulator'}>
         <SimulatorPanel active={section === 'simulator'} />

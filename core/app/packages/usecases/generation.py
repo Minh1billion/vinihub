@@ -1,9 +1,8 @@
 import uuid
 
-from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.container import gateway
+from app.container import queue
 from app.modules.assets import service as assets_svc
 from app.modules.assets.service import asset_out
 from app.modules.auth.models import User
@@ -15,7 +14,6 @@ from app.modules.generation.rules import check_image_request, check_video_reques
 from app.modules.generation.schemas import ImageIn, VideoIn
 from app.modules.workspaces.models import Workspace
 from app.packages.usecases.billing import ensure_credits
-from app.shared.errors import GatewayError
 
 
 async def view(db: AsyncSession, gen: Generation) -> dict:
@@ -32,24 +30,19 @@ async def create_image(db: AsyncSession, ws: Workspace, user: User, body: ImageI
                         refs=len(body.reference_asset_ids), negative=bool(negative),
                         quality=body.quality, background=body.background, output_format=body.output_format)
     passthrough = _passthrough(caps, negative)
-    refs = [await assets_svc.data_url(await assets_svc.own_asset(db, ws.id, i, "image"))
-            for i in body.reference_asset_ids]
+    for asset_id in body.reference_asset_ids:
+        await assets_svc.own_asset(db, ws.id, asset_id, "image")
     config = {k: v for k, v in {"aspect_ratio": body.aspect_ratio, "image_size": body.image_size,
                                 "quality": body.quality, "background": body.background,
                                 "output_format": body.output_format}.items() if v}
     gen = await gen_svc.add_generation(db, ws_id=ws.id, user_id=user.id, kind="image", model=model,
-                                       prompt=body.prompt, status="running",
+                                       prompt=body.prompt, status="pending",
                                        params={**config, "negative_prompt": negative if passthrough else None,
-                                               "passthrough": passthrough},
+                                               "passthrough": passthrough,
+                                               "reference_asset_ids": [str(i) for i in body.reference_asset_ids]},
                                        credits=COSTS["image"], provider_id=chosen.provider.id)
-    try:
-        data, mime = await gateway.for_provider(chosen.provider).image(gen.model, body.prompt, config, refs, passthrough)
-    except GatewayError as e:
-        gen_svc.mark_failed(gen, str(e))
-        await db.commit()
-        raise HTTPException(502, str(e))
-    asset = await assets_svc.save_asset(db, ws.id, user.id, data, mime, prompt=body.prompt)
-    gen_svc.mark_succeeded(gen, asset.id)
+    gen.job_id = await queue.enqueue("image.generate", {"generation_id": str(gen.id)},
+                                     workspace_id=ws.id, user_id=user.id, db=db)
     await db.commit()
     return gen
 
@@ -96,6 +89,8 @@ async def create_video(db: AsyncSession, ws: Workspace, user: User, body: VideoI
                 "motion_mode": body.motion_mode, "motion_asset_id": _id(body.motion_asset_id),
                 "negative_prompt": negative if passthrough else None, "passthrough": passthrough},
     )
+    gen.job_id = await queue.enqueue("video.generate", {"generation_id": str(gen.id)},
+                                     workspace_id=ws.id, user_id=user.id, db=db)
     await db.commit()
     return gen
 

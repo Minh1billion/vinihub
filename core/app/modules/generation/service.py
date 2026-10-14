@@ -62,4 +62,5 @@ async def credits_used_since(db, user_id: uuid.UUID, since: datetime) -> int:
 
 def generation_out(g: Generation, asset: dict | None) -> dict:
     return {"id": str(g.id), "kind": g.kind, "status": g.status, "error": g.error, "prompt": g.prompt,
-            "negative_prompt": (g.params or {}).get("negative_prompt"), "model": g.model, "asset": asset}
+            "negative_prompt": (g.params or {}).get("negative_prompt"), "model": g.model, "asset": asset,
+            "job_id": str(g.job_id) if g.job_id else None}

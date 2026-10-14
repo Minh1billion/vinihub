@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import Icon from '../../components/Icon.jsx'
 
 export default function MediaCard({ asset, onOpen, onDelete }) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const isVideo = asset.kind === 'video'
   const [ready, setReady] = useState(false)
   const show = () => setReady(true)
@@ -14,6 +16,7 @@ export default function MediaCard({ asset, onOpen, onDelete }) {
         {isVideo && <span className="badge"><Icon name="play" size={14} /></span>}
       </button>
       <div className="media-actions">
+        {!isVideo && asset.id && <button type="button" className="icon-btn" onClick={() => navigate(`/studio/editor?asset=${asset.id}`)} aria-label={t('media.edit')} title={t('media.edit')}><Icon name="edit" /></button>}
         <a className="icon-btn" href={asset.url} download target="_blank" rel="noreferrer" aria-label={t('common.download')}><Icon name="download" /></a>
         {onDelete && <button className="icon-btn danger" onClick={() => onDelete(asset)} aria-label={t('common.delete')}><Icon name="trash" /></button>}
       </div>

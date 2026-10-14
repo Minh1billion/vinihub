@@ -22,13 +22,14 @@ def check_size(size: int) -> None:
         raise HTTPException(413, t("asset.too_large"))
 
 
-async def save_asset(db, ws_id, user_id, data: bytes, mime: str, source="generated", prompt=None) -> Asset:
+async def save_asset(db, ws_id, user_id, data: bytes, mime: str, source="generated", prompt=None,
+                     parent_id=None, meta=None) -> Asset:
     kind = "video" if mime.startswith("video/") else "image"
     ext = (mimetypes.guess_extension(mime) or ".bin").lstrip(".")
     key = f"{ws_id}/{kind}/{uuid.uuid4()}.{ext}"
     await storage.put(key, data, mime)
     asset = Asset(workspace_id=ws_id, user_id=user_id, kind=kind, source=source,
-                  object_key=key, mime=mime, size=len(data), prompt=prompt)
+                  object_key=key, mime=mime, size=len(data), prompt=prompt, parent_id=parent_id, meta=meta)
     db.add(asset)
     await db.flush()
     return asset
@@ -36,7 +37,12 @@ async def save_asset(db, ws_id, user_id, data: bytes, mime: str, source="generat
 
 def asset_out(a: Asset) -> dict:
     return {"id": str(a.id), "user_id": str(a.user_id), "kind": a.kind, "source": a.source, "mime": a.mime, "size": a.size,
-            "prompt": a.prompt, "url": storage.url(a.object_key), "created_at": a.created_at}
+            "prompt": a.prompt, "parent_id": str(a.parent_id) if a.parent_id else None, "meta": a.meta,
+            "url": storage.url(a.object_key), "created_at": a.created_at}
+
+
+async def read_bytes(a: Asset) -> bytes:
+    return await storage.get(a.object_key)
 
 
 async def data_url(a: Asset) -> str:

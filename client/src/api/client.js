@@ -27,9 +27,10 @@ export const api = {
   del: (p) => req(p, { method: 'DELETE' }),
 }
 
-export function uploadFile(wid, file) {
+export function uploadFile(wid, file, extra = {}) {
   const fd = new FormData()
   fd.append('file', file)
+  for (const [key, value] of Object.entries(extra)) if (value != null) fd.append(key, value)
   return req(`/workspaces/${wid}/assets`, { method: 'POST', body: fd })
 }
 

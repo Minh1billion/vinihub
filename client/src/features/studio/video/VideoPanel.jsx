@@ -22,7 +22,7 @@ import { useGenerations } from '../shared/useGenerations.js'
 
 const pick = (list, value, prefer) => (list.includes(value) ? value : list.includes(prefer) ? prefer : list[0] ?? '')
 
-export default function VideoPanel({ prompt, setPrompt }) {
+export default function VideoPanel({ prompt, setPrompt, frame, onFrameUsed }) {
   const { t } = useTranslation()
   const { wid, refreshSubscription } = useApp()
   const { items, add, loaded } = useGenerations('video')
@@ -65,6 +65,13 @@ export default function VideoPanel({ prompt, setPrompt }) {
     if (!caps.negative_prompt_key) setNegative('')
     if (!caps.motion_control) { setMotionOn(false); setMotion(null) }
   }, [caps, canFirst, canLast])
+
+  useEffect(() => {
+    if (!frame || !canFirst) return
+    setInputMode('frames')
+    setFirstFrame(frame)
+    onFrameUsed()
+  }, [frame, canFirst])
 
   const toggleMotion = (on) => { setMotionOn(on); if (!on) setMotion(null) }
 

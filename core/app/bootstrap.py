@@ -9,6 +9,7 @@ from app.shared.db import SessionLocal
 
 
 importlib.import_module("app.models")
+importlib.import_module("app.packages.jobs")
 
 
 async def startup() -> None:

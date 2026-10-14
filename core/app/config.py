@@ -17,6 +17,13 @@ class Settings(BaseSettings):
     encryption_key: str = ""
     chat_context_chars: int = 48000
 
+    worker_poll_seconds: float = 1.0
+    job_lease_seconds: float = 60.0
+    job_sweep_seconds: float = 30.0
+    job_retention_days: int = 7
+    worker_grace_seconds: float = 30.0
+    worker_kinds: str = ""
+
     smtp_host: str = ""
     smtp_port: int = 587
     smtp_security: str = "starttls"

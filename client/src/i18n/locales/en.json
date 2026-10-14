@@ -117,7 +117,8 @@
     "video": "Video",
     "simulator": "Simulator",
     "resetLayout": "Reset layout",
-    "resetLayoutHint": "Restore all Studio panels to their default width"
+    "resetLayoutHint": "Restore all Studio panels to their default width",
+    "editor": "Editor"
   },
   "gen": {
     "failed": "Couldn't generate",
@@ -226,7 +227,8 @@
   "media": {
     "view": "View larger",
     "image": "Image",
-    "video": "Video"
+    "video": "Video",
+    "edit": "Edit"
   },
   "dropzone": {
     "pickImage": "Please choose an image file.",
@@ -528,5 +530,90 @@
     },
     "storyText": "Text on story",
     "storyTextPlaceholder": "Short text shown over the story…"
+  },
+  "editor": {
+    "title": "Image editor",
+    "tools": "Editing tools",
+    "loading": "Loading image…",
+    "loadFailed": "Could not load this image.",
+    "imageOnly": "Only images can be edited for now.",
+    "emptyTitle": "Pick an image to edit",
+    "emptyText": "Hover an image in the Library and press Edit, or upload one here. Edits are saved as a new image; the original stays untouched.",
+    "upload": "Upload an image",
+    "undo": "Undo",
+    "redo": "Redo",
+    "compare": "Hold to compare with the original",
+    "reset": "Reset all",
+    "confirmDiscard": "You have unsaved edits. Discard them and open another image?",
+    "discard": "Discard",
+    "tool": {
+      "crop": "Crop",
+      "adjust": "Adjust",
+      "filters": "Filters",
+      "text": "Text"
+    },
+    "crop": {
+      "orientation": "Orientation",
+      "rotateLeft": "Rotate left",
+      "rotateRight": "Rotate right",
+      "flipH": "Flip horizontal",
+      "flipV": "Flip vertical",
+      "free": "Free",
+      "original": "Original",
+      "platforms": "4:5 suits Instagram feed, 9:16 TikTok, Reels and Shorts, 16:9 YouTube.",
+      "size": "Result size",
+      "hint": "Drag the frame to move it and the handles to resize it.",
+      "clear": "Reset crop"
+    },
+    "adjust": {
+      "brightness": "Brightness",
+      "contrast": "Contrast",
+      "saturation": "Saturation",
+      "temperature": "Temperature",
+      "blur": "Blur",
+      "vignette": "Vignette",
+      "reset": "Reset adjustments"
+    },
+    "filter": {
+      "none": "Original",
+      "vivid": "Vivid",
+      "warm": "Warm",
+      "cool": "Cool",
+      "fade": "Fade",
+      "mono": "Mono",
+      "noir": "Noir",
+      "vintage": "Vintage"
+    },
+    "text": {
+      "add": "Add text",
+      "default": "Your text",
+      "empty": "(empty)",
+      "placeholder": "Type your text",
+      "content": "Text",
+      "color": "Color",
+      "size": "Size",
+      "weight": "Weight",
+      "regular": "Regular",
+      "bold": "Bold",
+      "outline": "Outline",
+      "background": "Background box",
+      "remove": "Remove text",
+      "hint": "Drag text on the image to move it."
+    },
+    "export": {
+      "open": "Export",
+      "title": "Export image",
+      "format": "Format",
+      "quality": "Quality",
+      "scale": "Size",
+      "save": "Save to Library",
+      "failed": "Could not export the image."
+    },
+    "saved": {
+      "title": "Saved to the Library as a new image.",
+      "continue": "Keep editing the copy",
+      "asReference": "Use as reference in Image",
+      "asFrame": "Use as first frame in Video"
+    }
   }
 }
