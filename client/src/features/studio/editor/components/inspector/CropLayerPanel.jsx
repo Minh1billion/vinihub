@@ -28,11 +28,11 @@ export default function CropLayerPanel({ layer, crop, setCrop, onApply, onCancel
         <span className="num ed-readout">{Math.round(rect.w * o.width)} × {Math.round(rect.h * o.height)} px</span>
         <small>{t('editor.crop.hint')}</small>
       </Field>
-      <div className="ed-btnrow">
+      <Button variant="soft" size="sm" block icon="refresh" onClick={() => setCrop({ ratio: null, rect: FULL })}>{t('editor.crop.clear')}</Button>
+      <div className="ed-btnrow ed-sticky">
         <Button size="sm" block icon="check" onClick={onApply}>{t('editor.crop.apply')}</Button>
         <Button variant="ghost" size="sm" block onClick={onCancel}>{t('editor.crop.cancel')}</Button>
       </div>
-      <Button variant="soft" size="sm" block icon="refresh" onClick={() => setCrop({ ratio: null, rect: FULL })}>{t('editor.crop.clear')}</Button>
     </section>
   )
 }

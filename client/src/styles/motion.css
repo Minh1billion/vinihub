@@ -47,6 +47,7 @@ input, select, textarea { transition: border-color 0.15s, box-shadow 0.15s, back
 @media (prefers-reduced-motion: no-preference) {
   .page-body--aside > * { animation: rise-in 0.32s var(--ease-out) backwards; }
   .panel { animation: rise-in 0.26s var(--ease-out) backwards; }
+  .ed-cropbar { animation: rise-in 0.22s var(--ease-out) backwards; }
   .lib-side { animation: lib-in 0.22s var(--ease-out) backwards; }
   .lib-rail { animation: fade-in 0.2s ease-out; }
   .shell, .login { animation: fade-in 0.3s ease-out; }

@@ -488,6 +488,12 @@ export default function EditorPanel({ active, onSend, onPreview }) {
               )}
             </div>
           )}
+          {crop && (
+            <div className="ed-cropbar" role="group" aria-label={t('editor.tool.crop')} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.preventDefault()}>
+              <Button variant="ghost" size="sm" onClick={cropActions.cancel}>{t('editor.crop.cancel')}<kbd>Esc</kbd></Button>
+              <Button size="sm" icon="check" onClick={cropActions.apply}>{t('editor.crop.apply')}<kbd>Enter</kbd></Button>
+            </div>
+          )}
           <div className="ed-zoom" role="group" aria-label={t('editor.zoom.label')} onPointerDown={(e) => e.stopPropagation()}>
             <button type="button" className="icon-btn" disabled={cam.z <= MIN_ZOOM} onClick={() => zoomBy(1 / 1.25)} aria-label={t('editor.zoom.out')} title={t('editor.zoom.out')}><Icon name="minus" size={16} /></button>
             <button type="button" className="ed-zoom-val num" onClick={() => setCam((c) => ({ ...c, z: 1 }))} data-tip={t('editor.zoom.reset')}>{Math.round(cam.z * 100)}%</button>
