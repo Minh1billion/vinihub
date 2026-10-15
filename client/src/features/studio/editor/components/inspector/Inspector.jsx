@@ -8,14 +8,15 @@ import CanvasPanel from './CanvasPanel.jsx'
 import CropLayerPanel from './CropLayerPanel.jsx'
 import FilterPanel from './FilterPanel.jsx'
 import ImageProps from './ImageProps.jsx'
+import PositionBar from './PositionBar.jsx'
 import ShapeProps from './ShapeProps.jsx'
 import TextProps from './TextProps.jsx'
 
-export default function Inspector({ layer, actions, thumb, section, setSection, canvas, content, setCanvas, onToggleCanvas, crop, cropActions, frame }) {
+export default function Inspector({ layer, actions, thumb, section, setSection, canvas, content, setCanvas, crop, cropActions, frame }) {
   const { t } = useTranslation()
 
   if (!layer) {
-    return <CanvasPanel canvas={canvas} content={content} setCanvas={setCanvas} onToggle={onToggleCanvas} />
+    return <CanvasPanel canvas={canvas} content={content} setCanvas={setCanvas} />
   }
 
   const cropping = crop?.id === layer.id
@@ -34,26 +35,32 @@ export default function Inspector({ layer, actions, thumb, section, setSection, 
           <Icon name="trash" size={16} />
         </button>
       </header>
-      {!cropping && <AlignBar layer={layer} frame={frame} patch={actions.patch} />}
-      {layer.type === 'image' && !cropping && (
-        <div className="ed-itabs">
-          <Segmented label={t('editor.inspector.sections')} value={section} onChange={setSection}
-            options={[
-              { value: 'transform', label: t('editor.inspector.transform') },
-              { value: 'adjust', label: t('editor.tool.adjust') },
-              { value: 'filters', label: t('editor.tool.filters') },
-            ]} />
-        </div>
-      )}
       <div className="ed-ibody">
+        {layer.type === 'image' && !cropping && (
+          <div className="ed-itabs">
+            <h4 className="ed-sec-title">{t('editor.inspector.sections')}</h4>
+            <Segmented label={t('editor.inspector.sections')} value={section} onChange={setSection}
+              options={[
+                { value: 'transform', label: t('editor.inspector.transform') },
+                { value: 'adjust', label: t('editor.tool.adjust') },
+                { value: 'filters', label: t('editor.tool.filters') },
+              ]} />
+          </div>
+        )}
         {layer.locked && (
           <small className="ed-lockhint"><Icon name="lock" size={14} />{t('editor.layers.lockedHint')}</small>
         )}
         {cropping && <CropLayerPanel layer={layer} crop={crop} setCrop={cropActions.set} onApply={cropActions.apply} onCancel={cropActions.cancel} />}
         {!cropping && <fieldset className="ed-lock" disabled={layer.locked}>
+          {(layer.type !== 'image' || section === 'transform') && (
+            <>
+              <AlignBar layer={layer} frame={frame} patch={actions.patch} />
+              <PositionBar layer={layer} canvas={canvas} patch={actions.patch} />
+            </>
+          )}
           {layer.type === 'text' && <TextProps layer={layer} patch={actions.patch} actions={actions} />}
           {layer.type === 'shape' && <ShapeProps layer={layer} patch={actions.patch} actions={actions} />}
-          {layer.type === 'image' && section === 'transform' && <ImageProps layer={layer} patch={actions.patch} actions={actions} canvas={canvas} onCrop={() => cropActions.start(layer)} />}
+          {layer.type === 'image' && section === 'transform' && <ImageProps layer={layer} patch={actions.patch} actions={actions} />}
           {layer.type === 'image' && section === 'adjust' && <AdjustPanel layer={layer} patch={actions.patch} />}
           {layer.type === 'image' && section === 'filters' && <FilterPanel layer={layer} patch={actions.patch} thumb={thumb} />}
         </fieldset>}

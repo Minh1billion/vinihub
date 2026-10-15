@@ -36,7 +36,7 @@ function Tool({ icon, label, onClick, disabled, on, danger }) {
   )
 }
 
-export default function LayersPanel({ edit, actions, selected, onSelect, onFiles }) {
+export default function LayersPanel({ edit, actions, selected, onSelect, onFiles, onMenu }) {
   const { t } = useTranslation()
   const list = [...edit.layers].reverse()
   const [dragId, setDragId] = useState(null)
@@ -76,6 +76,7 @@ export default function LayersPanel({ edit, actions, selected, onSelect, onFiles
             onDragOver={(e) => { if (!dragId) return; e.preventDefault(); setOverId(x.id) }}
             onDrop={(e) => { if (!dragId) return; e.preventDefault(); actions.reorder(dragId, x.id); finish() }}
             onDragEnd={finish}
+            onContextMenu={(e) => { e.preventDefault(); onMenu({ x: e.clientX, y: e.clientY, id: x.id }) }}
             onClick={() => onSelect(x.id)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(x.id) } }}>
             <Kind layer={x} />
             <span className="ed-lname">{layerName(x, emptyLabel(x, t))}</span>

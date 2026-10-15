@@ -20,6 +20,7 @@ export default function ShapeProps({ layer, patch, actions }) {
   return (
     <>
       <section className="ed-sec">
+        <h4 className="ed-sec-title">{t('editor.group.shape')}</h4>
         <Field label={t('editor.shape.kind')} group>
           <Segmented label={t('editor.shape.kind')} value={layer.kind} onChange={setKind}
             options={SHAPE_KINDS.map((k) => ({ value: k, label: t(`editor.shape.${k}`) }))} />

@@ -2,12 +2,11 @@ import { useTranslation } from 'react-i18next'
 import Button from '../../../../../components/Button.jsx'
 import { Field } from '../../../../../components/Field.jsx'
 import Segmented from '../../../../../components/Segmented.jsx'
-import Toggle from '../../../../../components/Toggle.jsx'
 import PlatformLogo from '../../../simulator/components/PlatformLogo.jsx'
 import RatioPicker from '../../../shared/components/RatioPicker.jsx'
 import { DEFAULT_AREA, MIN_FRAME, PLATFORM_PRESETS, RATIOS, fitRect, ratioOf } from '../../utils/edit.js'
 
-export default function CanvasPanel({ canvas, content, setCanvas, onToggle }) {
+export default function CanvasPanel({ canvas, content, setCanvas }) {
   const { t } = useTranslation()
   const base = content || DEFAULT_AREA
   const preset = PLATFORM_PRESETS.find((p) => p.key === canvas?.preset)
@@ -25,10 +24,7 @@ export default function CanvasPanel({ canvas, content, setCanvas, onToggle }) {
   return (
     <div className="ed-ibody">
       <section className="ed-sec">
-        <div className="ed-sec-head">
-          <h4 className="ed-sec-title">{t('editor.layers.canvas')}</h4>
-          <Toggle checked={Boolean(canvas)} onChange={onToggle} label={t('editor.canvas.enable')} />
-        </div>
+        <h4 className="ed-sec-title">{t('editor.layers.canvas')}</h4>
         <Field label={t('common.aspectRatio')} group>
           <Segmented label={t('common.aspectRatio')} value={canvas && !canvas.ratio ? 'free' : ''}
             onChange={() => setCanvas({ ratio: null, preset: null, ...(canvas ? {} : { ...base, x: Math.round(base.x), y: Math.round(base.y), w: Math.round(base.w), h: Math.round(base.h) }) })}

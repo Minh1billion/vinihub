@@ -8,7 +8,8 @@ export default function Slider({ label, value, min, max, step = 1, onChange, ico
         <span className="ed-slabel">{label}</span>
         <span className="field-count num">{value}</span>
       </span>
-      <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} />
+      <input type="range" min={min} max={max} step={step} value={value} style={{ '--p': `${Math.min(100, Math.max(0, ((value - min) / (max - min)) * 100))}%` }}
+        onChange={(e) => onChange(Number(e.target.value))} />
     </label>
   )
 }

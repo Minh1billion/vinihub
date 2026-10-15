@@ -648,6 +648,7 @@
     "image": {
       "add": "Thêm ảnh",
       "size": "Kích thước",
+      "scale": "Tỉ lệ",
       "reset": "Kích thước gốc",
       "width": "Rộng",
       "height": "Cao",
@@ -683,6 +684,10 @@
       "asFrame": "Dùng làm khung đầu video"
     },
     "preview": "Xem thử",
+    "menu": {
+      "copy": "Sao chép",
+      "paste": "Dán"
+    },
     "rail": {
       "canvas": "Khung",
       "text": "Chữ",
@@ -720,7 +725,11 @@
     },
     "group": {
       "style": "Kiểu",
-      "layer": "Lớp"
+      "layer": "Lớp",
+      "align": "Căn chỉnh",
+      "position": "Vị trí",
+      "size": "Kích thước",
+      "shape": "Hình dạng"
     },
     "shape": {
       "add": "Thêm hình",

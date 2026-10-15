@@ -1,9 +1,9 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Icon from '../../../../components/Icon.jsx'
-import { drawLayers } from '../utils/layers.js'
+import { drawLayers, handlesOf, resizePatch } from '../utils/layers.js'
 import { ASSET_MIME } from '../utils/source.js'
-import { aabb, boundsOf, ratioOf, resizeFrame, zoomAt } from '../utils/edit.js'
+import { aabb, boundsOf, clamp, ratioOf, resizeBox, resizeFrame, zoomAt } from '../utils/edit.js'
 
 const CORNERS = ['nw', 'ne', 'se', 'sw']
 const EDGES = ['n', 'e', 's', 'w']
@@ -20,7 +20,6 @@ function snapAxis(mine, targets, thr) {
   return best
 }
 
-const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v))
 const turn = (deg) => ((((deg + 180) % 360) + 360) % 360) - 180
 
 function useBox(ref) {
@@ -34,7 +33,7 @@ function useBox(ref) {
   return box
 }
 
-export default function Stage({ edit, originalEdit, original, active, selected, onSelect, onPatch, onCanvas, crop, onCrop, fontTick, cam, setCam, onBox, onFiles, snap = true, children }) {
+export default function Stage({ edit, originalEdit, original, active, selected, onSelect, onPatch, onCanvas, crop, onCrop, fontTick, cam, setCam, onBox, onFiles, onMenu, snap = true, children }) {
   const { t } = useTranslation()
   const stage = useRef(null)
   const canvas = useRef(null)
@@ -125,6 +124,14 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
   const toWorld = (p) => ({ x: cam.cx + (p.x - box.w / 2) / z, y: cam.cy + (p.y - box.h / 2) / z })
   const toScreen = (x, y) => ({ x: (x - cam.cx) * z + box.w / 2, y: (y - cam.cy) * z + box.h / 2 })
   const layerOf = (id) => edit.layers.find((x) => x.id === id)
+  const hitAt = (p, withLocked = false) => {
+    const w = toWorld(p)
+    return [...bounds].reverse().find((b) => {
+      if (!withLocked && layerOf(b.id)?.locked) return false
+      const lp = localOf(w, b)
+      return Math.abs(lp.x) <= b.w / 2 && Math.abs(lp.y) <= b.h / 2
+    })
+  }
 
   const startPan = (p) => {
     drag.current = { kind: 'pan', p, cx: cam.cx, cy: cam.cy, z }
@@ -138,16 +145,7 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
     if (e.button !== 0) return
     stage.current.setPointerCapture(e.pointerId)
     if (crop) { startPan(p); return }
-    const w = toWorld(p)
-    const hit = [...bounds].reverse().find((b) => {
-      if (layerOf(b.id)?.locked) return false
-      const r = (-b.rot * Math.PI) / 180
-      const dx = w.x - b.cx
-      const dy = w.y - b.cy
-      const lx = dx * Math.cos(r) - dy * Math.sin(r)
-      const ly = dx * Math.sin(r) + dy * Math.cos(r)
-      return Math.abs(lx) <= b.w / 2 && Math.abs(ly) <= b.h / 2
-    })
+    const hit = hitAt(p)
     if (!hit) { onSelect(null); startPan(p); return }
     onSelect(hit.id)
     const layer = layerOf(hit.id)
@@ -167,19 +165,26 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
     drag.current = { kind: 'move', id: hit.id, p, x: layer.x, y: layer.y, aw: self.w, ah: self.h, targets }
   }
 
-  const grab = (kind) => (e) => {
+  const grabRotate = (e) => {
+    if (e.button !== 0) return
     e.stopPropagation()
     stage.current.setPointerCapture(e.pointerId)
     const layer = layerOf(selBox.id)
     const w = toWorld(point(e))
-    const v = { x: w.x - selBox.cx, y: w.y - selBox.cy }
-    drag.current = {
-      kind, id: layer.id, start: Math.max(1e-6, Math.hypot(v.x, v.y)), angle: Math.atan2(v.y, v.x),
-      rotation: layer.rotation, shape: layer.type === 'shape' && layer.kind !== 'line' ? layer.h : null, w: layer.type === 'text' ? undefined : layer.w, size: layer.size,
-    }
+    drag.current = { kind: 'rotate', id: layer.id, angle: Math.atan2(w.y - selBox.cy, w.x - selBox.cx), rotation: layer.rotation }
+  }
+
+  const grabSize = (dir) => (e) => {
+    if (e.button !== 0) return
+    e.stopPropagation()
+    stage.current.setPointerCapture(e.pointerId)
+    const layer = layerOf(selBox.id)
+    const b = { cx: selBox.cx, cy: selBox.cy, rot: selBox.rot }
+    drag.current = { kind: 'resize', dir, id: layer.id, layer: { ...layer }, b, w: selBox.w, h: selBox.h, p: localOf(toWorld(point(e)), b) }
   }
 
   const grabFrame = (kind, dir) => (e) => {
+    if (e.button !== 0) return
     e.stopPropagation()
     stage.current.setPointerCapture(e.pointerId)
     drag.current = { kind, dir, p: toWorld(point(e)), r0: { x: edit.canvas.x, y: edit.canvas.y, w: edit.canvas.w, h: edit.canvas.h }, ratio: edit.canvas.ratio ? ratioOf(edit.canvas.ratio) : null }
@@ -193,6 +198,7 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
   }
 
   const grabCrop = (kind, dir) => (e) => {
+    if (e.button !== 0) return
     e.stopPropagation()
     stage.current.setPointerCapture(e.pointerId)
     const { w: W, h: H, cx, cy, rot } = cropBox
@@ -256,14 +262,15 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
       queue(() => { onPatch(d.id, { x, y }); setGuides(g) })
       return
     }
-    const w = toWorld(p)
-    const v = { x: w.x - selBox.cx, y: w.y - selBox.cy }
-    if (d.kind === 'scale') {
-      const k = Math.hypot(v.x, v.y) / d.start
-      const change = d.w === undefined ? { size: clamp(d.size * k, 4, 20000) } : d.shape ? { w: clamp(d.w * k, 4, 200000), h: clamp(d.shape * k, 4, 200000) } : { w: clamp(d.w * k, 4, 200000) }
+    if (d.kind === 'resize') {
+      const lp = localOf(toWorld(p), d.b)
+      const next = resizeBox({ ...d.b, w: d.w, h: d.h }, d.dir, { x: lp.x - d.p.x, y: lp.y - d.p.y })
+      const change = { ...resizePatch(d.layer, d.dir, next), x: next.cx, y: next.cy }
       queue(() => onPatch(d.id, change))
       return
     }
+    const w = toWorld(p)
+    const v = { x: w.x - selBox.cx, y: w.y - selBox.cy }
     let rotation = d.rotation + ((Math.atan2(v.y, v.x) - d.angle) * 180) / Math.PI
     if (e.shiftKey) rotation = Math.round(rotation / 15) * 15
     const change = { rotation: Math.round(turn(rotation) * 10) / 10 }
@@ -295,6 +302,14 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
     setMode('')
   }
 
+  const menu = (e) => {
+    if (e.target.closest('.ed-zoom, .ed-stage-hint')) return
+    e.preventDefault()
+    if (original || crop) return
+    const hit = hitAt(point(e), true)
+    onMenu({ x: e.clientX, y: e.clientY, id: hit ? hit.id : null })
+  }
+
   const cv = !original ? edit.canvas : null
   const cvPos = cv && toScreen(cv.x, cv.y)
   const cvEdit = Boolean(cv) && !selected && !crop
@@ -313,7 +328,7 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
 
   return (
     <section className={'ed-stage' + (space || mode === 'pan' ? ' is-pan' : '') + (mode === 'pan' ? ' is-panning' : '')} ref={stage} style={grid}
-      onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}
+      onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} onContextMenu={menu}
       onDragOver={dragOver} onDragLeave={dragLeave} onDrop={drop}>
       <canvas ref={canvas} className="ed-world" style={{ width: box.w, height: box.h }} />
       {!original && sel && !crop && (
@@ -324,9 +339,9 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
           }}>
           {!sel.locked && (
             <>
-              {CORNERS.map((c) => <i key={c} className={`ed-sh ed-sh--${c}`} onPointerDown={grab('scale')} />)}
+              {handlesOf(sel).map((c) => <i key={c} className={`ed-sh ed-sh--${c}`} onPointerDown={grabSize(c)} />)}
               <span className="ed-rline" />
-              <i className="ed-sh ed-rot" onPointerDown={grab('rotate')} />
+              <i className="ed-sh ed-rot" onPointerDown={grabRotate} />
             </>
           )}
         </div>

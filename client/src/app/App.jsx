@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AppProvider, useApp } from './AppContext.jsx'
 import { DialogProvider } from './DialogContext.jsx'
+import { SessionProvider } from './SessionContext.jsx'
 import { LibraryProvider } from '../features/library/LibraryContext.jsx'
 import Shell from '../layout/Shell.jsx'
 import LoginPage from '../features/auth/LoginPage.jsx'
@@ -15,6 +16,7 @@ function Gate() {
   if (user === undefined) return <div className="boot" />
   if (user === null) return <LoginPage />
   return (
+    <SessionProvider userId={user.id}>
     <BrowserRouter>
       <Routes>
         <Route path="/invite/:token" element={<AcceptInvitePage />} />
@@ -28,6 +30,7 @@ function Gate() {
         </Route>
       </Routes>
     </BrowserRouter>
+    </SessionProvider>
   )
 }
 

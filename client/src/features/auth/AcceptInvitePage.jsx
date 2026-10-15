@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api } from '../../api/client.js'
 import { useApp } from '../../app/AppContext.jsx'
+import { clearSession } from '../../app/sessionDb.js'
 import Brand from '../../components/Brand.jsx'
 import Button from '../../components/Button.jsx'
 import { FieldError } from '../../components/Field.jsx'
@@ -37,6 +38,7 @@ export default function AcceptInvitePage() {
   }
 
   const switchAccount = async () => {
+    await clearSession()
     await api.post('/auth/logout')
     window.location.reload()
   }

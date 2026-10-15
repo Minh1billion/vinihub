@@ -1,4 +1,5 @@
-import { useCallback, useReducer } from 'react'
+import { useCallback, useEffect, useReducer } from 'react'
+import { useSessionStore } from '../../../../app/SessionContext.jsx'
 import { initialEdit } from '../utils/edit.js'
 
 const LIMIT = 100
@@ -46,7 +47,9 @@ function reducer(state, action) {
 }
 
 export default function useEditor() {
-  const [state, dispatch] = useReducer(reducer, undefined, blank)
+  const store = useSessionStore()
+  const [state, dispatch] = useReducer(reducer, undefined, () => store.current.get('editor.history') || blank())
+  useEffect(() => { store.current.set('editor.history', state) }, [store, state])
   const commit = useCallback((change, key) => dispatch({ type: 'commit', change, key, at: Date.now() }), [])
   const undo = useCallback(() => dispatch({ type: 'undo' }), [])
   const redo = useCallback(() => dispatch({ type: 'redo' }), [])

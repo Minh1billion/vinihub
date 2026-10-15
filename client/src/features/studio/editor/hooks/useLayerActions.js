@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { rememberSource } from '../../../../app/sessionDb.js'
 import { newImage, newShape, newText, uid } from '../utils/layers.js'
 
 export default function useLayerActions({ commit, getView, onSelect, onError }) {
@@ -20,7 +21,9 @@ export default function useLayerActions({ commit, getView, onSelect, onError }) 
 
   const addImage = async (file, at) => {
     try {
-      addBitmap(await createImageBitmap(file), file.name.replace(/\.[^.]+$/, ''), at)
+      const bitmap = await createImageBitmap(file)
+      rememberSource(bitmap, file)
+      addBitmap(bitmap, file.name.replace(/\.[^.]+$/, ''), at)
     } catch {
       onError(t('editor.layers.imageFailed'))
     }

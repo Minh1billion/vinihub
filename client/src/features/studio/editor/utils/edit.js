@@ -61,6 +61,37 @@ export function resizeFrame(r0, dir, d, ratio) {
   return { x: Math.round(x), y: Math.round(y), w: Math.round(w), h: Math.round(h) }
 }
 
+export const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v))
+
+const MIN_SIDE = 4
+const MAX_SIDE = 200000
+
+export function resizeBox(box, dir, delta) {
+  const sx = dir.includes('e') ? 1 : dir.includes('w') ? -1 : 0
+  const sy = dir.includes('s') ? 1 : dir.includes('n') ? -1 : 0
+  let w = box.w
+  let h = box.h
+  if (sx && sy) {
+    const dx = sx * box.w
+    const dy = sy * box.h
+    const k = clamp(1 + (delta.x * dx + delta.y * dy) / (dx * dx + dy * dy), Math.max(MIN_SIDE / box.w, MIN_SIDE / box.h), MAX_SIDE / Math.max(box.w, box.h))
+    w = box.w * k
+    h = box.h * k
+  } else if (sx) {
+    w = clamp(box.w + sx * delta.x, MIN_SIDE, MAX_SIDE)
+  } else {
+    h = clamp(box.h + sy * delta.y, MIN_SIDE, MAX_SIDE)
+  }
+  const ox = (sx * (w - box.w)) / 2
+  const oy = (sy * (h - box.h)) / 2
+  const r = (box.rot * Math.PI) / 180
+  return {
+    w, h, kx: w / box.w, ky: h / box.h,
+    cx: box.cx + ox * Math.cos(r) - oy * Math.sin(r),
+    cy: box.cy + ox * Math.sin(r) + oy * Math.cos(r),
+  }
+}
+
 export const frameOf = (edit) => (edit.canvas ? { x: edit.canvas.x, y: edit.canvas.y, w: edit.canvas.w, h: edit.canvas.h } : contentBox(edit.layers))
 
 export const MIN_ZOOM = 0.02

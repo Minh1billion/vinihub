@@ -19,6 +19,7 @@ export default function AdjustPanel({ layer, patch }) {
   const changed = ROWS.some(([key]) => layer.adjust[key] !== 0)
   return (
     <section className="ed-sec">
+      <h4 className="ed-sec-title">{t('editor.tool.adjust')}</h4>
       {ROWS.map(([key, min, max, icon]) => (
         <Slider key={key} label={t(`editor.adjust.${key}`)} min={min} max={max} value={layer.adjust[key]} onChange={set(key)} icon={icon} />
       ))}

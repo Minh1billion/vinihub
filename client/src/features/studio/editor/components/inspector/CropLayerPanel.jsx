@@ -18,6 +18,7 @@ export default function CropLayerPanel({ layer, crop, setCrop, onApply, onCancel
 
   return (
     <section className="ed-sec">
+      <h4 className="ed-sec-title">{t('editor.tool.crop')}</h4>
       <Field label={t('common.aspectRatio')} group>
         <Segmented label={t('common.aspectRatio')} value={crop.ratio ? '' : 'free'} onChange={() => setCrop({ ratio: null })}
           options={[{ value: 'free', label: t('editor.crop.free') }]} />

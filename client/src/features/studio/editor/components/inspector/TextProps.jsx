@@ -13,6 +13,7 @@ export default function TextProps({ layer, patch, actions }) {
   return (
     <>
       <section className="ed-sec">
+        <h4 className="ed-sec-title">{t('editor.text.content')}</h4>
         <Field label={t('editor.text.content')}>
           <textarea rows={3} value={layer.text} placeholder={t('editor.text.placeholder')} onChange={(e) => set({ text: e.target.value }, `text:${layer.id}`)} />
         </Field>

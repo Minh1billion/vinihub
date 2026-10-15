@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { NavLink } from 'react-router-dom'
 import { api } from '../api/client.js'
 import { useApp } from '../app/AppContext.jsx'
+import { clearSession } from '../app/sessionDb.js'
 import Brand from '../components/Brand.jsx'
 import Button from '../components/Button.jsx'
 import Icon from '../components/Icon.jsx'
@@ -12,7 +13,7 @@ import WorkspaceMenu from '../features/workspace/WorkspaceMenu.jsx'
 export default function Sidebar({ collapsed = false, onToggle }) {
   const { t } = useTranslation()
   const { user } = useApp()
-  const logout = async () => { await api.post('/auth/logout'); location.href = '/' }
+  const logout = async () => { await clearSession(); await api.post('/auth/logout'); location.href = '/' }
   const toggleLabel = t(collapsed ? 'nav.expand' : 'nav.collapse')
   const displayName = user.name || user.email
 

@@ -48,7 +48,7 @@ export default function ImagePanel({ prompt, setPrompt, seed, onSeedUsed }) {
 
   useEffect(() => {
     if (!seed || !live.reference_images) return
-    setRefs((r) => (r.some((x) => x.id === seed.id) ? r : [...r, seed].slice(0, live.reference_images)))
+    setRefs([seed])
     onSeedUsed()
   }, [seed, live.reference_images])
 

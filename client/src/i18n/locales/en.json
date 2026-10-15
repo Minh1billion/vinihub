@@ -654,6 +654,7 @@
     "image": {
       "add": "Add image",
       "size": "Size",
+      "scale": "Scale",
       "reset": "Original size",
       "width": "Width",
       "height": "Height",
@@ -689,6 +690,10 @@
       "asFrame": "Use as video frame"
     },
     "preview": "Preview",
+    "menu": {
+      "copy": "Copy",
+      "paste": "Paste"
+    },
     "rail": {
       "canvas": "Canvas",
       "text": "Text",
@@ -726,7 +731,11 @@
     },
     "group": {
       "style": "Style",
-      "layer": "Layer"
+      "layer": "Layer",
+      "align": "Align",
+      "position": "Position",
+      "size": "Size",
+      "shape": "Shape"
     },
     "shape": {
       "add": "Add shape",

@@ -31,12 +31,15 @@ export default function AlignBar({ layer, frame, patch }) {
   }
 
   return (
-    <div className="ed-align" role="group" aria-label={t('editor.align.left')}>
-      {ACTIONS.map(([kind, icon]) => (
-        <button key={kind} type="button" className="ed-lbtn" disabled={layer.locked} data-tip={t(`editor.align.${kind}`)} aria-label={t(`editor.align.${kind}`)} onClick={() => run(kind)}>
-          <Icon name={icon} size={16} />
-        </button>
-      ))}
-    </div>
+    <section className="ed-sec">
+      <h4 className="ed-sec-title">{t('editor.group.align')}</h4>
+      <div className="ed-align" role="group" aria-label={t('editor.group.align')}>
+        {ACTIONS.map(([kind, icon]) => (
+          <button key={kind} type="button" className="ed-lbtn" disabled={layer.locked} data-tip={t(`editor.align.${kind}`)} aria-label={t(`editor.align.${kind}`)} onClick={() => run(kind)}>
+            <Icon name={icon} size={16} />
+          </button>
+        ))}
+      </div>
+    </section>
   )
 }

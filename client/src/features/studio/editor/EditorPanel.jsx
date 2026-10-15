@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { api, uploadFile } from '../../../api/client.js'
 import { useApp } from '../../../app/AppContext.jsx'
 import { useDialog } from '../../../app/DialogContext.jsx'
+import { useSessionRef, useSessionState } from '../../../app/SessionContext.jsx'
 import Button from '../../../components/Button.jsx'
 import Dropzone from '../../../components/Dropzone.jsx'
 import EmptyState from '../../../components/EmptyState.jsx'
@@ -15,11 +16,13 @@ import useResizable from '../../../hooks/useResizable.js'
 import { useLibrary } from '../../library/LibraryContext.jsx'
 import ExportModal from './components/ExportModal.jsx'
 import AddImage from './components/AddImage.jsx'
+import ContextMenu from './components/ContextMenu.jsx'
+import ImageToolbar from './components/ImageToolbar.jsx'
 import LayersPanel from './components/LayersPanel.jsx'
 import Stage from './components/Stage.jsx'
 import Inspector from './components/inspector/Inspector.jsx'
 import { DEFAULT_AREA, HOME, MAX_ZOOM, MIN_ZOOM, clampZoom, contentBox, drawExport, exportWidth, fitCam, frameOf, initialEdit, makeThumb } from './utils/edit.js'
-import { FULL, cropChange, loadFonts, newImage, sourceOf, uncrop } from './utils/layers.js'
+import { FULL, cropChange, flipImage, loadFonts, newImage, sourceOf, turnImage, uncrop } from './utils/layers.js'
 import { loadBitmap } from './utils/source.js'
 import useEditor from './hooks/useEditor.js'
 import useLayerActions from './hooks/useLayerActions.js'
@@ -33,22 +36,23 @@ export default function EditorPanel({ active, onSend, onPreview }) {
   const [params] = useSearchParams()
   const wanted = params.get('asset')
   const { edit, commit, undo, redo, clear, canUndo, canRedo } = useEditor()
-  const [doc, setDoc] = useState(null)
+  const [doc, setDoc] = useSessionState('editor.doc', null)
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState('')
-  const [cam, setCam] = useState(HOME)
+  const [cam, setCam] = useSessionState('editor.cam', HOME)
   const [box, setBox] = useState({ w: 0, h: 0 })
-  const [section, setSection] = useState('transform')
+  const [section, setSection] = useSessionState('editor.section', 'transform')
   const [previewing, setPreviewing] = useState(false)
-  const [selected, setSelected] = useState(null)
-  const [crop, setCropState] = useState(null)
+  const [selected, setSelected] = useSessionState('editor.selected', null)
+  const [crop, setCropState] = useSessionState('editor.crop', null)
   const [fontTick, setFontTick] = useState(0)
   const [original, setOriginal] = useState(false)
   const [exporting, setExporting] = useState(false)
-  const [saved, setSaved] = useState(null)
+  const [saved, setSaved] = useSessionState('editor.saved', null)
   const [full, setFull] = useState(false)
-  const [snap, setSnap] = useState(true)
+  const [snap, setSnap] = useSessionState('editor.snap', true)
   const [copied, setCopied] = useState(false)
+  const [menu, setMenu] = useState(null)
   const select = (id) => {
     setSelected(id)
     setCropState((c) => (c && c.id !== id ? null : c))
@@ -56,7 +60,7 @@ export default function EditorPanel({ active, onSend, onPreview }) {
   const rzSide = useResizable({ id: 'editor.side', def: 320, min: 260, max: 560, minRest: 500, reverse: true })
   const rzLayers = useResizable({ id: 'editor.layers', def: 280, min: 150, max: 640, minRest: 200, axis: 'y', reverse: true })
   const latest = useRef({})
-  const clip = useRef(null)
+  const clip = useSessionRef('editor.clip')
   const getView = () => {
     const { cam: c, box: b } = latest.current
     return { cx: c.cx, cy: c.cy, vw: (b.w || 800) / c.z, vh: (b.h || 600) / c.z }
@@ -73,6 +77,8 @@ export default function EditorPanel({ active, onSend, onPreview }) {
   const content = useMemo(() => contentBox(edit.layers), [edit.layers])
   const frame = useMemo(() => frameOf(edit), [edit.layers, edit.canvas])
   const target = layer?.type === 'image' ? layer : null
+  const lastImage = useRef(null)
+  if (target) lastImage.current = target
   const thumb = useMemo(
     () => (target ? makeThumb(sourceOf(target)) : null),
     [target?.bitmap, target?.flipH, target?.flipV, target?.spin, target?.crop]
@@ -95,15 +101,16 @@ export default function EditorPanel({ active, onSend, onPreview }) {
   latest.current.edit = edit
   latest.current.cropActions = cropActions
   const setCanvas = (change, key) => commit((e) => ({ ...e, canvas: change === null ? null : { ...e.canvas, ...change } }), key && `canvas:${key}`)
-  const lastCanvas = useRef(null)
-  if (edit.canvas) lastCanvas.current = edit.canvas
   const enableCanvas = () => {
     const a = content || DEFAULT_AREA
-    setCanvas(lastCanvas.current || { x: Math.round(a.x), y: Math.round(a.y), w: Math.round(a.w), h: Math.round(a.h), bg: null, ratio: null, preset: null })
+    setCanvas({ x: Math.round(a.x), y: Math.round(a.y), w: Math.round(a.w), h: Math.round(a.h), bg: null, ratio: null, preset: null })
   }
-  const toggleCanvas = (on) => (on ? enableCanvas() : setCanvas(null))
-  const openCanvas = () => {
-    if (!edit.canvas) enableCanvas()
+  const toggleCanvas = () => {
+    if (edit.canvas) {
+      setCanvas(null)
+      return
+    }
+    enableCanvas()
     select(null)
   }
 
@@ -166,8 +173,17 @@ export default function EditorPanel({ active, onSend, onPreview }) {
     return () => { window.removeEventListener('dragover', stop); window.removeEventListener('drop', stop) }
   }, [active])
 
-  useEffect(() => () => doc?.bitmap.close(), [doc])
-  useEffect(() => { setSaved(null) }, [edit])
+  const prevDoc = useRef(doc)
+  useEffect(() => {
+    if (prevDoc.current && prevDoc.current !== doc) prevDoc.current.bitmap.close()
+    prevDoc.current = doc
+  }, [doc])
+  const prevEdit = useRef(edit)
+  useEffect(() => {
+    if (prevEdit.current === edit) return
+    prevEdit.current = edit
+    setSaved(null)
+  }, [edit])
 
   const fontKey = edit.layers.filter((l) => l.type === 'text').map((l) => `${l.font}|${l.weight}|${l.text}`).join('\n')
   useEffect(() => {
@@ -194,7 +210,6 @@ export default function EditorPanel({ active, onSend, onPreview }) {
         const base = newImage(bitmap, asset.name || asset.original_name || asset.filename || '', { cx: 0, cy: 0 }, false)
         setDoc({ asset, bitmap, base })
         clear({ layers: [base], canvas: null })
-        lastCanvas.current = null
         setCam(fitCam(contentBox([base]), latest.current.box))
         setSaved(null)
         setSelected(base.id)
@@ -319,6 +334,49 @@ export default function EditorPanel({ active, onSend, onPreview }) {
 
   const onPatch = (id, change) => actions.patch(id, change, `transform:${id}`)
 
+  const closeMenu = useCallback(() => setMenu(null), [])
+  const openMenu = (m) => {
+    if (m.id) select(m.id)
+    setMenu(m)
+  }
+
+  const menuItems = (id) => {
+    const l = id ? edit.layers.find((x) => x.id === id) : null
+    const paste = { id: 'paste', icon: 'layers', label: t('editor.menu.paste'), disabled: !clip.current, run: () => clip.current && actions.paste(clip.current) }
+    if (!l) return clip.current ? [paste] : []
+    const i = edit.layers.indexOf(l)
+    const top = i === edit.layers.length - 1
+    const bottom = i === 0
+    const items = [
+      { id: 'copy', icon: 'copy', label: t('editor.menu.copy'), run: () => { clip.current = l; navigator.clipboard?.writeText?.('vinihub').catch(() => null) } },
+      paste,
+      { id: 'duplicate', icon: 'plus', label: t('editor.layers.duplicate'), run: () => actions.duplicate(l) },
+      { id: 'sepA', sep: true },
+    ]
+    if (l.type === 'image') {
+      items.push(
+        { id: 'crop', icon: 'crop', label: t('editor.tool.crop'), disabled: l.locked, run: () => cropActions.start(l) },
+        { id: 'rotate', icon: 'rotate', label: t('editor.crop.rotateRight'), disabled: l.locked, run: () => actions.patch(l.id, turnImage(l)) },
+        { id: 'flipH', icon: 'flip', label: t('editor.crop.flipH'), disabled: l.locked, run: () => actions.patch(l.id, flipImage(l, 'h')) },
+        { id: 'flipV', icon: 'flip', label: t('editor.crop.flipV'), disabled: l.locked, run: () => actions.patch(l.id, flipImage(l, 'v')) },
+        { id: 'sepB', sep: true }
+      )
+    }
+    items.push(
+      { id: 'toFront', icon: 'toFront', label: t('editor.layers.toFront'), disabled: l.locked || top, run: () => actions.place(l.id, true) },
+      { id: 'up', icon: 'arrowUp', label: t('editor.layers.up'), disabled: l.locked || top, run: () => actions.move(l.id, 1) },
+      { id: 'down', icon: 'arrowDown', label: t('editor.layers.down'), disabled: l.locked || bottom, run: () => actions.move(l.id, -1) },
+      { id: 'toBack', icon: 'toBack', label: t('editor.layers.toBack'), disabled: l.locked || bottom, run: () => actions.place(l.id, false) },
+      { id: 'sepC', sep: true },
+      { id: 'lock', icon: l.locked ? 'unlock' : 'lock', label: l.locked ? t('editor.layers.unlock') : t('editor.layers.lock'), run: () => actions.patch(l.id, { locked: !l.locked }) },
+      { id: 'hide', icon: l.hidden ? 'eye' : 'eyeOff', label: l.hidden ? t('editor.layers.show') : t('editor.layers.hide'), run: () => actions.patch(l.id, { hidden: !l.hidden }) },
+      { id: 'sepD', sep: true },
+      { id: 'remove', icon: 'trash', label: t('editor.layers.remove'), danger: true, disabled: l.locked, run: () => actions.remove(l.id) }
+    )
+    return items
+  }
+  const items = menu ? menuItems(menu.id) : []
+
   return (
     <div className={'ed ed-theme' + (full ? ' is-full' : '')}>
       <Tip />
@@ -337,6 +395,10 @@ export default function EditorPanel({ active, onSend, onPreview }) {
           <button type="button" className="icon-btn" disabled={!canUndo} aria-label={t('editor.reset')} data-tip={t('editor.reset')}
             onClick={() => commit(() => originalEdit)}><Icon name="refresh" /></button>
         </div>
+        {lastImage.current && (
+          <ImageToolbar layer={lastImage.current} canvas={edit.canvas} patch={actions.patch} onCrop={() => cropActions.start(lastImage.current)}
+            open={layer?.type === 'image'} disabled={lastImage.current.locked || Boolean(crop)} />
+        )}
         <div className="ed-group">
           {canCopy && (
             <button type="button" className="icon-btn" disabled={!frame} onClick={copy} aria-label={t('editor.copy')}
@@ -367,7 +429,7 @@ export default function EditorPanel({ active, onSend, onPreview }) {
       )}
       <div className="ed-body" ref={rzSide.box} style={{ '--props-w': `${rzSide.width}px` }}>
         <nav className="ed-rail" aria-label={t('editor.tools')}>
-          <button type="button" className={'ed-tool' + (edit.canvas && !layer ? ' on' : '')} data-tip={t('editor.rail.canvas')} aria-label={t('editor.rail.canvas')} onClick={openCanvas}>
+          <button type="button" className={'ed-tool' + (edit.canvas ? ' on' : '')} aria-pressed={Boolean(edit.canvas)} data-tip={t('editor.rail.canvas')} aria-label={t('editor.rail.canvas')} onClick={toggleCanvas}>
             <span className="ed-tool-ic"><Icon name="crop" size={18} /></span>
           </button>
           <button type="button" className="ed-tool" data-tip={t('editor.rail.text')} aria-label={t('editor.rail.text')} onClick={() => actions.addText()}>
@@ -385,7 +447,7 @@ export default function EditorPanel({ active, onSend, onPreview }) {
           </AddImage>
         </nav>
         <Stage edit={stageEdit} originalEdit={originalEdit} original={original} active={active}
-          selected={selected} onSelect={select} onPatch={onPatch} onCanvas={(c) => setCanvas(c, 'frame')} crop={crop} onCrop={(rect) => cropActions.set({ rect })} fontTick={fontTick} cam={cam} setCam={setCam} onBox={setBox} onFiles={addFiles} snap={snap}>
+          selected={selected} onSelect={select} onPatch={onPatch} onCanvas={(c) => setCanvas(c, 'frame')} crop={crop} onCrop={(rect) => cropActions.set({ rect })} fontTick={fontTick} cam={cam} setCam={setCam} onBox={setBox} onFiles={addFiles} onMenu={openMenu} snap={snap}>
           {!edit.layers.length && (
             <div className="ed-stage-hint" onPointerDown={(e) => e.stopPropagation()}>
               {loading ? <p className="page-loading">{t('editor.loading')}</p> : (
@@ -411,12 +473,13 @@ export default function EditorPanel({ active, onSend, onPreview }) {
         <Resizer rz={rzSide} label={t('common.resize')} />
         <aside className="ed-props" ref={rzLayers.box} style={{ '--layers-h': `${rzLayers.width}px` }}>
           <div className="ed-tool-panel">
-            <Inspector layer={layer} actions={actions} thumb={thumb} section={section} setSection={setSection} canvas={edit.canvas} content={content} setCanvas={setCanvas} onToggleCanvas={toggleCanvas} crop={crop} cropActions={cropActions} frame={frame} />
+            <Inspector layer={layer} actions={actions} thumb={thumb} section={section} setSection={setSection} canvas={edit.canvas} content={content} setCanvas={setCanvas} crop={crop} cropActions={cropActions} frame={frame} />
           </div>
           <Resizer rz={rzLayers} axis="y" label={t('common.resize')} />
-          <LayersPanel edit={edit} actions={actions} selected={selected} onSelect={select} onFiles={addFiles} />
+          <LayersPanel edit={edit} actions={actions} selected={selected} onSelect={select} onFiles={addFiles} onMenu={openMenu} />
         </aside>
       </div>
+      {menu && items.length > 0 && <ContextMenu x={menu.x} y={menu.y} items={items} onClose={closeMenu} />}
       {exporting && <ExportModal hasSelection={Boolean(layer)} measure={(what) => (what === 'selection' && layer ? contentBox([layer]) : frame)} onSave={save} onDownload={download} onClose={() => setExporting(false)} />}
     </div>
   )

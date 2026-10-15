@@ -19,15 +19,18 @@ export default function FilterPanel({ layer, patch, thumb }) {
   const { t } = useTranslation()
   if (!layer) return <small>{t('editor.needImage')}</small>
   return (
-    <div className="ed-filters" role="radiogroup" aria-label={t('editor.tool.filters')}>
-      {FILTER_KEYS.map((name) => (
-        <button key={name} type="button" role="radio" aria-checked={layer.filter === name}
-          className={'ed-filter' + (layer.filter === name ? ' on' : '')}
-          onClick={() => patch(layer.id, { filter: name })}>
-          <Thumb thumb={thumb} name={name} />
-          <span>{t(`editor.filter.${name}`)}</span>
-        </button>
-      ))}
+    <div className="ed-block">
+      <h4 className="ed-sec-title">{t('editor.tool.filters')}</h4>
+      <div className="ed-filters" role="radiogroup" aria-label={t('editor.tool.filters')}>
+        {FILTER_KEYS.map((name) => (
+          <button key={name} type="button" role="radio" aria-checked={layer.filter === name}
+            className={'ed-filter' + (layer.filter === name ? ' on' : '')}
+            onClick={() => patch(layer.id, { filter: name })}>
+            <Thumb thumb={thumb} name={name} />
+            <span>{t(`editor.filter.${name}`)}</span>
+          </button>
+        ))}
+      </div>
     </div>
   )
 }

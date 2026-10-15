@@ -83,6 +83,21 @@ export function fitImage(l, mode, frame) {
   return { ...base, w: o.width * k, sy: 1, stretch: false }
 }
 
+export const handlesOf = (l) => {
+  if (l.type === 'text') return ['nw', 'ne', 'se', 'sw']
+  if (l.type === 'shape' && l.kind === 'line') return ['w', 'e']
+  return ['nw', 'ne', 'se', 'sw', 'n', 'e', 's', 'w']
+}
+
+export function resizePatch(l, dir, next) {
+  const corner = dir.length === 2
+  if (l.type === 'text') return { size: Math.min(20000, Math.max(4, l.size * next.kx)) }
+  if (l.type === 'shape') return l.kind === 'line' ? { w: l.w * next.kx } : { w: l.w * next.kx, h: l.h * next.ky }
+  if (corner) return { w: l.w * next.kx }
+  if (dir === 'n' || dir === 's') return { sy: skewOf(l) * next.ky, stretch: true }
+  return { w: l.w * next.kx, sy: skewOf(l) / next.kx, stretch: true }
+}
+
 const spun = (x, y, deg) => {
   const r = (deg * Math.PI) / 180
   return { x: x * Math.cos(r) - y * Math.sin(r), y: x * Math.sin(r) + y * Math.cos(r) }

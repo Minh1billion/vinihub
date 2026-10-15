@@ -1,4 +1,5 @@
 import i18n from '../../../../i18n/index.js'
+import { rememberSource } from '../../../../app/sessionDb.js'
 
 const MAX_SIDE = 8192
 
@@ -21,5 +22,6 @@ export async function loadBitmap(wid, id) {
     bitmap.close()
     bitmap = next
   }
+  rememberSource(bitmap, blob)
   return bitmap
 }
