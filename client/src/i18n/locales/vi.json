@@ -23,8 +23,38 @@
     "billing": "Gói",
     "providers": "Provider",
     "market": "Market",
+    "profile": "Hồ sơ",
     "collapse": "Thu gọn thanh bên",
     "expand": "Mở rộng thanh bên"
+  },
+  "profile": {
+    "title": "Hồ sơ",
+    "intro": "Cách bạn xuất hiện trên ViniHub.",
+    "photo": "Ảnh đại diện",
+    "upload": "Tải ảnh lên",
+    "useGoogle": "Dùng ảnh Google",
+    "removePhoto": "Xóa ảnh",
+    "photoHint": "PNG, JPG, WEBP hoặc GIF, tối đa 5 MB.",
+    "fileType": "Vui lòng chọn ảnh PNG, JPG, WEBP hoặc GIF.",
+    "fileSize": "Ảnh tối đa 5 MB.",
+    "details": "Thông tin",
+    "name": "Tên hiển thị",
+    "randomName": "Tên ngẫu nhiên",
+    "nameRequired": "Vui lòng nhập tên hiển thị.",
+    "handle": "Handle",
+    "handleHint": "3–30 ký tự: a–z, 0–9, dấu chấm hoặc gạch dưới. Dùng làm handle mặc định trong Simulator.",
+    "bio": "Giới thiệu",
+    "bioPlaceholder": "Bạn sáng tạo nội dung gì?",
+    "email": "Email",
+    "emailHint": "Lấy từ tài khoản Google.",
+    "save": "Lưu thay đổi",
+    "saved": "Đã lưu",
+    "onboard": {
+      "title": "Chào mừng đến ViniHub!",
+      "text": "Chọn tên và ảnh đại diện. Bạn có thể đổi bất cứ lúc nào trong Hồ sơ.",
+      "cta": "Bắt đầu",
+      "skip": "Để sau"
+    }
   },
   "auth": {
     "logout": "Đăng xuất"

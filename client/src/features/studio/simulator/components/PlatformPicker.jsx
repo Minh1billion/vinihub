@@ -7,7 +7,7 @@ export default function PlatformPicker({ value, onChange, label }) {
   return (
     <div className="plat-grid" role="radiogroup" aria-label={label}>
       {PLATFORMS.map((p) => (
-        <button key={p} type="button" role="radio" aria-checked={p === value} className={'plat-tile' + (p === value ? ' on' : '')} onClick={() => onChange(p)}>
+        <button key={p} type="button" role="radio" aria-checked={p === value} data-platform={p} className={'plat-tile' + (p === value ? ' on' : '')} onClick={() => onChange(p)}>
           <PlatformLogo platform={p} size={34} />
           <span>{t(`sim.platform.${p}`)}</span>
         </button>

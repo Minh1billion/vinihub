@@ -5,6 +5,7 @@ import { useApp } from '../app/AppContext.jsx'
 import { useLibrary } from '../features/library/LibraryContext.jsx'
 import useSidebarCollapsed from '../hooks/useSidebarCollapsed.js'
 import LanguageSwitcher from '../components/LanguageSwitcher.jsx'
+import OnboardingModal from '../features/profile/OnboardingModal.jsx'
 import LibraryRail from '../features/library/LibraryRail.jsx'
 import LibrarySidebar from '../features/library/LibrarySidebar.jsx'
 import MobileNav from './MobileNav.jsx'
@@ -14,7 +15,7 @@ const EXIT_MS = 260
 
 export default function Shell() {
   const { t } = useTranslation()
-  const { wid } = useApp()
+  const { wid, user } = useApp()
   const { open } = useLibrary()
   const [mounted, setMounted] = useState(open)
   const { collapsed, toggle: toggleSide } = useSidebarCollapsed()
@@ -40,6 +41,7 @@ export default function Shell() {
       <main className="main">{wid ? <Outlet key={wid} /> : <p className="page-loading">{t('workspace.loading')}</p>}</main>
       {open || mounted ? <LibrarySidebar /> : <LibraryRail />}
       <MobileNav />
+      {user?.onboarded === false && <OnboardingModal />}
     </div>
   )
 }

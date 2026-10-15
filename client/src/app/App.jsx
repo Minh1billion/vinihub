@@ -9,6 +9,7 @@ import StudioPage from '../features/studio/StudioPage.jsx'
 import BillingPage from '../features/billing/BillingPage.jsx'
 import MarketPage from '../features/market/MarketPage.jsx'
 import ProvidersPage from '../features/providers/ProvidersPage.jsx'
+import ProfilePage from '../features/profile/ProfilePage.jsx'
 import AcceptInvitePage from '../features/auth/AcceptInvitePage.jsx'
 
 function Gate() {
@@ -25,6 +26,7 @@ function Gate() {
           <Route path="/studio/:section?" element={<StudioPage />} />
           <Route path="/market/:section?" element={<MarketPage />} />
           <Route path="/providers" element={<ProvidersPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/billing" element={<BillingPage />} />
           <Route path="*" element={<Navigate to="/studio" replace />} />
         </Route>

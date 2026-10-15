@@ -1,15 +1,11 @@
-/* Fixed-size controls: labels shrink to fit (see src/i18n/fit.js) rather than wrapping or growing the control. */
 .btn, .segmented button, .page-tabs a, .side-nav a, .mobile-nav a, [data-fit] {
   min-width: 0; max-width: 100%; white-space: nowrap; overflow: hidden;
 }
 .btn-link { overflow: visible; }
 
-/* Equal-width segments so the control keeps the same footprint in every language. */
 .segmented { display: inline-grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
 .segmented button { text-align: center; }
 
-/* Tabs keep a steady minimum width when the language changes. */
 .page-tabs a { min-width: 104px; justify-content: center; }
 
-/* Vietnamese stacked diacritics need a little more line room. */
 html[lang='vi'] .btn, html[lang='vi'] .segmented button, html[lang='vi'] .page-tabs a { line-height: 1.35; }

@@ -25,8 +25,7 @@
   --r-m: 12px;
   --r-l: 16px;
 
-  /* Bold edges: every boundary is a 2px black line; depth comes from hard offset shadows, never blur. */
-  --edge: 2px solid var(--ink);
+    --edge: 2px solid var(--ink);
   --edge-soft: 1px solid var(--line);
   --shadow-btn: 0 3px 0 var(--ink);
   --shadow-1: 3px 3px 0 var(--ink);

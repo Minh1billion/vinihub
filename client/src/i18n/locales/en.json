@@ -23,8 +23,38 @@
     "billing": "Plans",
     "providers": "Providers",
     "market": "Market",
+    "profile": "Profile",
     "collapse": "Collapse sidebar",
     "expand": "Expand sidebar"
+  },
+  "profile": {
+    "title": "Profile",
+    "intro": "How you appear across ViniHub.",
+    "photo": "Profile photo",
+    "upload": "Upload photo",
+    "useGoogle": "Use Google photo",
+    "removePhoto": "Remove photo",
+    "photoHint": "PNG, JPG, WEBP or GIF, up to 5 MB.",
+    "fileType": "Please choose a PNG, JPG, WEBP or GIF image.",
+    "fileSize": "Photo must be 5 MB or smaller.",
+    "details": "Details",
+    "name": "Display name",
+    "randomName": "Random name",
+    "nameRequired": "Please enter a display name.",
+    "handle": "Handle",
+    "handleHint": "3–30 characters: a–z, 0–9, dot or underscore. Used as your default handle in Simulator.",
+    "bio": "Bio",
+    "bioPlaceholder": "Tell people what you create",
+    "email": "Email",
+    "emailHint": "From your Google account.",
+    "save": "Save changes",
+    "saved": "Saved",
+    "onboard": {
+      "title": "Welcome to ViniHub!",
+      "text": "Pick a name and photo. You can change them anytime in Profile.",
+      "cta": "Let's go",
+      "skip": "Skip for now"
+    }
   },
   "auth": {
     "logout": "Sign out"

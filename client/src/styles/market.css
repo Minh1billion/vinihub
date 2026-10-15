@@ -1,6 +1,6 @@
 .mk { gap: 12px; }
 .mk-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-.mk-search { flex: 1 1 240px; max-width: 420px; }
+.mk-search { flex: 1 1 240px; }
 .mk-target { display: block; }
 .mk-scroll { padding: 4px 6px 24px 2px; }
 .mk-scroll .empty-state p { max-width: none; text-wrap: nowrap; white-space: nowrap; }

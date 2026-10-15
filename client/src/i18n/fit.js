@@ -1,8 +1,5 @@
 import i18n from './index.js'
 
-// Controls keep a fixed size in every language. When a label is wider than its
-// control (Vietnamese is ~10-30% longer than English), the font shrinks to fit
-// instead of the control growing or the text wrapping.
 const SELECTOR = [
   '[data-fit]',
   '.btn',
@@ -12,7 +9,7 @@ const SELECTOR = [
   '.mobile-nav a',
 ].join(',')
 
-const MIN_RATIO = 0.76 // never go below 76% of the designed size
+const MIN_RATIO = 0.76
 const MIN_PX = 10
 const STEP = 0.5
 const TOLERANCE = 0.5

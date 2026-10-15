@@ -30,7 +30,6 @@
 
 .page-loading { padding: 28px; color: var(--muted); }
 
-/* ---------- Desktop: panels run edge to edge, split by hard rules ---------- */
 @media (min-width: 901px) {
   .page-body--flush { padding: 0; gap: 0; }
 

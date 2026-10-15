@@ -1,5 +1,5 @@
 .prov-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 3px; }
-.prov-bar p { margin: 0; color: var(--muted); max-width: 64ch; }
+.prov-bar p { margin: 0; color: var(--muted); }
 .prov-list { display: flex; flex-direction: column; gap: 20px; align-content: start; padding: 4px 12px 28px 2px; }
 
 .prov { display: flex; flex-direction: column; gap: 12px; padding: 16px 20px; background: #fff; border: var(--edge); border-radius: var(--r-l); box-shadow: 4px 4px 0 var(--ink); }

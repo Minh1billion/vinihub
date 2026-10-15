@@ -23,6 +23,8 @@ export function AppProvider({ children }) {
     }
   }, [])
 
+  const updateUser = useCallback((patch) => setUser((u) => (u ? { ...u, ...patch } : u)), [])
+
   const refreshSubscription = useCallback(
     () => api.get('/billing/subscription').then(setSubscription).catch(() => {}),
     []
@@ -33,7 +35,7 @@ export function AppProvider({ children }) {
   useEffect(() => { if (user) refreshSubscription() }, [user, refreshSubscription, i18n.resolvedLanguage])
 
   return (
-    <Ctx.Provider value={{ user, workspaces, wid, setWid, reload, subscription, refreshSubscription }}>
+    <Ctx.Provider value={{ user, updateUser, workspaces, wid, setWid, reload, subscription, refreshSubscription }}>
       {children}
     </Ctx.Provider>
   )

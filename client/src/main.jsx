@@ -21,6 +21,7 @@ import './styles/workspace.css'
 import './styles/motion.css'
 import './styles/sidebar.css'
 import './styles/fit.css'
+import './styles/profile.css'
 
 createRoot(document.getElementById('root')).render(<App />)
 initFitText()

@@ -3,8 +3,12 @@
 .plat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 8px; }
 .plat-tile { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 6px 8px; cursor: pointer; font: inherit; font-size: 13px; font-weight: 600; color: var(--ink); background: var(--surface); border: var(--edge); border-radius: var(--r-s); transition: transform 0.12s, box-shadow 0.12s, background 0.12s; }
 .plat-tile:hover { background: #fff; transform: translateY(-1px); }
-.plat-tile.on { background: var(--orange); color: var(--on-orange); border-color: var(--ink); box-shadow: 0 2px 0 var(--ink); }
-.plat-tile.on .plat-logo { filter: drop-shadow(0 0 0 #fff); }
+.plat-tile[data-platform='tiktok'], .plat-tile[data-platform='threads'] { --brand: #000; }
+.plat-tile[data-platform='facebook'] { --brand: #1877f2; }
+.plat-tile[data-platform='instagram'] { --brand: linear-gradient(45deg, #f58529 0%, #dd2a7b 45%, #8134af 75%, #515bd4 100%); }
+.plat-tile[data-platform='youtube'] { --brand: #f00; }
+.plat-tile.on { background: var(--brand); color: #fff; border-color: var(--ink); box-shadow: 0 2px 0 var(--ink); }
+.plat-tile.on .plat-logo { box-sizing: content-box; padding: 3px; background: #fff; border-radius: 10px; }
 .plat-tile:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .sim-over { color: var(--danger); font-weight: 700; }
 .sim-thumbs .thumb video { display: block; width: 100%; height: 100%; object-fit: cover; border: var(--edge); border-radius: var(--r-s); }

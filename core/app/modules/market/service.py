@@ -5,6 +5,7 @@ from sqlalchemy import String, cast, or_, select, update
 
 from app.i18n import t
 from app.modules.auth.models import User
+from app.modules.auth.profile import avatar_of, display_name
 from app.modules.market.codes import new_code
 from app.modules.market.models import MarketInstall, MarketItem
 from app.modules.market.schema import MAX_PER_USER, InstallIn, MarketItemIn, MarketItemPatch
@@ -20,7 +21,7 @@ def out(item: MarketItem, author: User, user_id: uuid.UUID, installed: bool = Fa
         "created_at": item.created_at.isoformat(), "field_count": len(fields),
         "fields": [{"key": f["key"], "type": f["type"], "label": f["label"], "hint": f["hint"], "send": f.get("send")}
                    for f in fields],
-        "author": {"id": str(author.id), "name": author.name or t("market.anonymous"), "avatar_url": author.avatar_url},
+        "author": {"id": str(author.id), "name": display_name(author) or t("market.anonymous"), "avatar_url": avatar_of(author)},
     }
 
 

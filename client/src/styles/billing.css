@@ -12,7 +12,6 @@
 .plan li { display: flex; align-items: flex-start; gap: 8px; }
 .plan li svg { flex: none; margin-top: 2px; padding: 2px; width: 20px; height: 20px; color: var(--ink); background: var(--ok-bg); border: 2px solid var(--ink); border-radius: 50%; }
 
-/* Credits / usage card (sidebar). Flat fill, black edge, hard shadow. No gradient. */
 .credits { display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; color: var(--ink); text-decoration: none; background: #fff; border: var(--edge); border-radius: var(--r-m); box-shadow: 4px 4px 0 var(--ink); }
 .credits:hover { box-shadow: 5px 5px 0 var(--ink); }
 .credits.active { background: var(--tint); }

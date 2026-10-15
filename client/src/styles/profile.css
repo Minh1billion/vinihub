@@ -1,0 +1,34 @@
+.avatar { flex: none; border: var(--edge); border-radius: 50%; background: var(--tint-2); object-fit: cover; }
+.avatar-dot { display: inline-block; }
+
+.pf { display: grid; grid-template-columns: minmax(280px, 380px) minmax(0, 1fr); gap: 20px; align-items: start; align-content: start; width: 100%; padding: 4px 12px 28px 2px; }
+.pf-intro { grid-column: 1 / -1; margin: 0; color: var(--muted); }
+.pf-card { display: flex; flex-direction: column; gap: 4px; padding: 18px 20px; background: #fff; border: var(--edge); border-radius: var(--r-l); box-shadow: 4px 4px 0 var(--ink); }
+.pf-card h2 { margin: 0 0 8px; font-size: 18px; }
+.pf-card .field:last-of-type { margin-bottom: 4px; }
+.pf-photo { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; }
+.pf-photo.is-center { flex-direction: column; text-align: center; }
+.pf-photo-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; min-width: 0; }
+.pf-photo.is-center .pf-photo-actions { align-items: center; }
+.pf-photo-actions small { color: var(--muted); }
+.pf-photo-btns { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.pf-name { display: flex; align-items: center; gap: 8px; }
+.pf-name input { flex: 1; min-width: 0; }
+.pf-at { position: relative; display: block; }
+.pf-at > span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; pointer-events: none; }
+.pf-at input { width: 100%; padding-left: 28px; }
+.pf-foot { display: flex; align-items: center; gap: 14px; margin-top: 4px; }
+.pf-saved { display: inline-flex; align-items: center; gap: 4px; color: var(--ok); font-weight: 600; }
+
+.ob { max-width: 420px; }
+@media (max-width: 900px) {
+  .pf { grid-template-columns: minmax(0, 1fr); }
+}
+.ob-body { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+.ob-body p { margin: 0; color: var(--muted); }
+.ob-name { width: 100%; text-align: left; }
+.ob-name .field { margin-bottom: 0; }
+.ob-actions { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; }
+.usercard-avatar { display: flex; flex: none; border-radius: 50%; }
+.usercard-name { color: inherit; text-decoration: none; }
+.usercard-name:hover strong { text-decoration: underline; }

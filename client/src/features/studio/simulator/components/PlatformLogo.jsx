@@ -1,3 +1,5 @@
+import { useId } from 'react'
+
 const MARKS = {
   tiktok: (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -13,17 +15,17 @@ const MARKS = {
       <path fill="#fff" d="M16.67 15.47 17.2 12h-3.33V9.75c0-.95.47-1.88 1.96-1.88h1.52V4.92s-1.38-.24-2.7-.24c-2.75 0-4.55 1.66-4.55 4.68V12H6.05v3.47h3.05V24a12.1 12.1 0 0 0 3.77 0v-8.53z" />
     </svg>
   ),
-  instagram: (
+  instagram: (gid) => (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <defs>
-        <radialGradient id="ig-grad" cx="0.3" cy="1.05" r="1.1">
+        <radialGradient id={gid} cx="0.3" cy="1.05" r="1.1">
           <stop offset="0" stopColor="#FED576" />
           <stop offset="0.25" stopColor="#F47133" />
           <stop offset="0.55" stopColor="#BC3081" />
           <stop offset="1" stopColor="#4C63D2" />
         </radialGradient>
       </defs>
-      <rect width="24" height="24" rx="6.5" fill="url(#ig-grad)" />
+      <rect width="24" height="24" rx="6.5" fill={`url(#${gid})`} />
       <rect x="5.2" y="5.2" width="13.6" height="13.6" rx="4" fill="none" stroke="#fff" strokeWidth="1.7" />
       <circle cx="12" cy="12" r="3.2" fill="none" stroke="#fff" strokeWidth="1.7" />
       <circle cx="16.1" cy="7.9" r="1" fill="#fff" />
@@ -44,5 +46,7 @@ const MARKS = {
 }
 
 export default function PlatformLogo({ platform, size = 24 }) {
-  return <span className="plat-logo" style={{ width: size, height: size }}>{MARKS[platform]}</span>
+  const gid = 'ig' + useId().replace(/:/g, '')
+  const mark = MARKS[platform]
+  return <span className="plat-logo" style={{ width: size, height: size }}>{typeof mark === 'function' ? mark(gid) : mark}</span>
 }

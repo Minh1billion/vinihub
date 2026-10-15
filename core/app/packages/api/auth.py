@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.i18n import t
 from app.modules.auth.models import User
-from app.modules.auth.schemas import user_out
+from app.modules.auth.schemas import profile_out
 from app.modules.auth.security import COOKIE, SESSION_DAYS, make_token
 from app.packages.api.deps import current_user
 from app.packages.usecases import auth as uc
@@ -55,7 +55,7 @@ async def google_callback(request: Request, db: AsyncSession = Depends(get_db)):
 
 @router.get("/me")
 async def me(user: User = Depends(current_user)):
-    return user_out(user)
+    return profile_out(user)
 
 
 @router.post("/logout", status_code=204)

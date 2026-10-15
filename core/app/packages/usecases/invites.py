@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.i18n import t
 from app.modules.auth import service as auth_svc
 from app.modules.auth.models import User
+from app.modules.auth.profile import display_name
 from app.modules.invites import service as invites_svc
 from app.modules.invites.mail import send_invite_email
 from app.modules.invites.schemas import invite_out
@@ -30,7 +31,7 @@ async def create_invite(db: AsyncSession, ws: Workspace, inviter: User, raw_emai
 
     inv, token = await invites_svc.issue_invite(db, ws.id, inviter.id, email)
     link = invite_link(token)
-    error = await send_invite_email(inv.email, ws.name, inviter.name or inviter.email, link)
+    error = await send_invite_email(inv.email, ws.name, display_name(inviter) or inviter.email, link)
     if error:
         log.warning("Chưa gửi được email mời tới %s (%s). Link mời: %s", inv.email, error, link)
         return {**invite_out(inv), "emailed": False, "error": error, "link": link}
@@ -45,7 +46,7 @@ async def preview_invite(db: AsyncSession, token: str) -> dict:
     inv = await invites_svc.load_valid(db, token)
     ws = await ws_svc.get_workspace(db, inv.workspace_id)
     inviter = await auth_svc.get_user(db, inv.invited_by)
-    return {"workspace": ws.name, "inviter": (inviter.name if inviter and inviter.name else t("invite.someone")),
+    return {"workspace": ws.name, "inviter": (display_name(inviter) if inviter and display_name(inviter) else t("invite.someone")),
             "email_hint": mask_email(inv.email)}
 
 

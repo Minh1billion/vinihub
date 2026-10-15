@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom'
 import { api } from '../api/client.js'
 import { useApp } from '../app/AppContext.jsx'
 import { clearSession } from '../app/sessionDb.js'
+import Avatar from '../components/Avatar.jsx'
 import Brand from '../components/Brand.jsx'
 import Button from '../components/Button.jsx'
 import Icon from '../components/Icon.jsx'
@@ -45,9 +46,9 @@ export default function Sidebar({ collapsed = false, onToggle }) {
         <CreditsCard compact={collapsed} />
         <div className="usercard">
           <div className="usercard-main" data-tip={collapsed ? displayName : undefined}>
-            {user.avatar_url ? <img src={user.avatar_url} alt="" referrerPolicy="no-referrer" /> : <span className="avatar-dot" />}
+            <NavLink to="/profile" className="usercard-avatar" aria-label={t('nav.profile')}><Avatar src={user.avatar_url} /></NavLink>
             <div className="usercard-text">
-              <strong>{displayName}</strong>
+              <NavLink to="/profile" className="usercard-name"><strong>{displayName}</strong></NavLink>
               <Button variant="link" size="sm" onClick={logout}>{t('auth.logout')}</Button>
             </div>
           </div>

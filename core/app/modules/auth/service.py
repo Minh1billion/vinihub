@@ -3,7 +3,9 @@ import uuid
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.i18n import current
 from app.modules.auth.models import User
+from app.modules.auth.names import random_name
 
 
 async def get_user(db: AsyncSession, user_id: uuid.UUID) -> User | None:
@@ -26,7 +28,11 @@ async def upsert_google_user(db: AsyncSession, info: dict) -> tuple[User, bool]:
         user.name, user.avatar_url = info.get("name", user.name), info.get("picture", user.avatar_url)
         return user, False
     user = User(email=info["email"], name=info.get("name", ""), avatar_url=info.get("picture"),
-                google_sub=info["sub"])
+                google_sub=info["sub"], display_name=random_name(current()))
     db.add(user)
     await db.flush()
     return user, True
+
+
+async def handle_taken(db: AsyncSession, handle: str, user_id: uuid.UUID) -> bool:
+    return await db.scalar(select(User.id).where(User.handle == handle, User.id != user_id)) is not None

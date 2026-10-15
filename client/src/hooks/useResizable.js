@@ -10,7 +10,7 @@ function load(id, def) {
   } catch { return def }
 }
 function save(id, value) {
-  try { localStorage.setItem(KEY(id), String(value)) } catch { /* storage unavailable */ }
+  try { localStorage.setItem(KEY(id), String(value)) } catch {}
 }
 const refit = () => window.dispatchEvent(new Event('vh:fit'))
 const RESET = 'vh:layout-reset'
@@ -19,10 +19,6 @@ export const SIDE_PANEL = { def: 340, min: 280, max: 560, minRest: 420 }
 
 export const resetLayouts = () => window.dispatchEvent(new Event(RESET))
 
-/**
- * Width of a resizable leading column inside a grid container.
- * Attach `box` to the container, apply `width` as a CSS variable, and spread `handle` on a separator.
- */
 export default function useResizable({ id, def, min, max, minRest = 400, axis = 'x', reverse = false }) {
   const box = useRef(null)
   const drag = useRef(null)
@@ -35,7 +31,7 @@ export default function useResizable({ id, def, min, max, minRest = 400, axis = 
 
   const limit = useCallback(() => {
     const total = vertical ? box.current?.clientHeight : box.current?.clientWidth
-    if (!total) return max // hidden panel: nothing to measure yet
+    if (!total) return max
     return Math.max(min, Math.min(max, total - minRest))
   }, [min, max, minRest, vertical])
 
@@ -56,7 +52,7 @@ export default function useResizable({ id, def, min, max, minRest = 400, axis = 
 
   useEffect(() => {
     const onReset = () => {
-      try { localStorage.removeItem(KEY(id)) } catch { /* ignore */ }
+      try { localStorage.removeItem(KEY(id)) } catch {}
       latest.current = null
       setWidth(clamp(def, min, limit()))
       refit()
@@ -97,14 +93,14 @@ export default function useResizable({ id, def, min, max, minRest = 400, axis = 
       if (latest.current != null) save(id, latest.current)
     },
     onPointerCancel() { drag.current = null; setActive(false) },
-    onDoubleClick() { set(def, false); try { localStorage.removeItem(KEY(id)) } catch { /* ignore */ } },
+    onDoubleClick() { set(def, false); try { localStorage.removeItem(KEY(id)) } catch {} },
     onKeyDown(e) {
       const step = e.shiftKey ? 48 : 16
       const moves = vertical ? { ArrowUp: -step * sign, ArrowDown: step * sign } : { ArrowLeft: -step * sign, ArrowRight: step * sign }
       if (e.key in moves) { e.preventDefault(); set(width + moves[e.key], true) }
       else if (e.key === 'Home') { e.preventDefault(); set(min, true) }
       else if (e.key === 'End') { e.preventDefault(); set(max, true) }
-      else if (e.key === 'Enter') { e.preventDefault(); set(def, false); try { localStorage.removeItem(KEY(id)) } catch { /* ignore */ } }
+      else if (e.key === 'Enter') { e.preventDefault(); set(def, false); try { localStorage.removeItem(KEY(id)) } catch {} }
     },
   })
 

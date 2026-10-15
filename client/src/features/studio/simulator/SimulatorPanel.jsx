@@ -26,7 +26,7 @@ export default function SimulatorPanel({ active, seed, onSeedUsed }) {
   const [caption, setCaption] = useState('')
   const [media, setMedia] = useState([])
   const [name, setName] = useState(user?.name || '')
-  const [handle, setHandle] = useState(slug((user?.email || user?.name || 'vinihub').split('@')[0]))
+  const [handle, setHandle] = useState(user?.handle || slug((user?.email || user?.name || 'vinihub').split('@')[0]))
   const [avatar, setAvatar] = useState(user?.avatar_url || '')
   const [dark, setDark] = useState(false)
   const [copied, setCopied] = useState(false)

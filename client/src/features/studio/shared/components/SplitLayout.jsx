@@ -3,7 +3,6 @@ import Icon from '../../../../components/Icon.jsx'
 import Resizer from '../../../../components/Resizer.jsx'
 import useResizable, { SIDE_PANEL } from '../../../../hooks/useResizable.js'
 
-// Settings column on the left (sticky header, scrolling form, pinned footer), results on the right.
 export default function SplitLayout({ id, title, icon, aside, footer, children }) {
   const { t } = useTranslation()
   const rz = useResizable({ id: `split.${id}`, ...SIDE_PANEL })

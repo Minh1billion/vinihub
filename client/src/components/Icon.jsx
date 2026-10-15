@@ -16,6 +16,7 @@ const PATHS = {
   chevron: <path d="M7 10l5 5 5-5" />,
   send: <path d="M4 12l16-8-6 16-3-7z" />,
   play: <path d="M8 5l11 7-11 7z" />,
+  user: <><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4.2 3.6-7 8-7s8 2.8 8 7" /></>,
   users: <><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6" /><path d="M16 4.7a3.5 3.5 0 0 1 0 6.6M18 14.4c2 .7 3.5 2.6 3.5 5.6" /></>,
   mail: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6.5L21 7" /></>,
   alert: <><path d="M12 4l9.5 16h-19z" /><path d="M12 10v4M12 17.2v.01" /></>,

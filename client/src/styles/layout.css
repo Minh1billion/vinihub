@@ -6,15 +6,13 @@
 }
 .main { display: flex; flex-direction: column; min-width: 0; min-height: 0; padding: 0; overflow: hidden; }
 
-/* ---------- Left sidebar ---------- */
 .side { display: flex; flex-direction: column; gap: 14px; padding: 0 14px 0; background: #fff; border-right: var(--edge-soft); overflow-y: auto; }
 .brand { display: flex; align-items: center; gap: 10px; padding: 0 6px; font-family: var(--font-display); font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
 .brand-logo { flex: none; width: 1.3em; height: 1.3em; object-fit: contain; }
 .brand b { color: var(--orange); font-weight: 700; }
 .brand.big { gap: 14px; padding: 0; font-size: 30px; margin-bottom: 28px; }
 @media (min-width: 901px) {
-  /* Brand row is exactly one page-bar tall, so its bottom edge continues the line across the top of every page. */
-  .side > .side-head { position: relative; display: flex; align-items: center; flex: none; height: var(--bar-h); margin: 0 -14px; padding: 0 60px 0 20px; border-bottom: var(--edge-soft); }
+    .side > .side-head { position: relative; display: flex; align-items: center; flex: none; height: var(--bar-h); margin: 0 -14px; padding: 0 60px 0 20px; border-bottom: var(--edge-soft); }
   .side-head .brand { flex: 1; min-width: 0; padding: 0; overflow: hidden; white-space: nowrap; }
 }
 
@@ -40,7 +38,6 @@
 .side-nav a:hover { background: var(--surface); color: var(--ink); }
 .side-nav a.active { background: var(--tint-2); color: var(--ink); border-color: var(--ink); box-shadow: 3px 3px 0 var(--ink); }
 
-/* Footer zone: full-bleed, separated by a hard rule, tinted so the usage card lifts off it. */
 .side-foot { margin: auto -14px 0; display: flex; flex-direction: column; gap: 14px; padding: 14px; background: var(--bg); border-top: var(--edge-soft); }
 .usercard { display: flex; align-items: center; gap: 10px; padding: 0 2px; font-size: 14px; }
 .usercard img, .avatar-dot { width: 34px; height: 34px; flex: none; border: var(--edge); border-radius: 50%; background: var(--tint-2); object-fit: cover; }
@@ -48,11 +45,9 @@
 
 .mobile-nav { display: none; }
 
-/* ---------- Right rail ---------- */
 .lib-rail { display: flex; flex-direction: column; align-items: center; padding: 8px 0; background: #fff; border-left: var(--edge-soft); }
 .lib-rail .icon-btn { width: 38px; height: 38px; }
 
-/* ---------- Language switcher ---------- */
 .lang-dd { transition: right 0.26s var(--ease-out); position: absolute; top: 8px; right: 20px; z-index: 40; }
 .lang-trigger {
   --lift: 2px;
