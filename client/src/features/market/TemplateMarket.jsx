@@ -8,7 +8,7 @@ import EmptyState from '../../components/EmptyState.jsx'
 import { FieldError } from '../../components/Field.jsx'
 import Icon from '../../components/Icon.jsx'
 import Segmented from '../../components/Segmented.jsx'
-import { useTemplates } from '../studio/idea/useTemplates.js'
+import { useTemplates } from '../studio/idea/hooks/useTemplates.js'
 import PublishModal from './PublishModal.jsx'
 
 const PREVIEW_FIELDS = 4

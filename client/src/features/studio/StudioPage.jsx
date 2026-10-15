@@ -7,8 +7,8 @@ import PageFrame from '../../layout/PageFrame.jsx'
 import IdeaPanel from './idea/IdeaPanel.jsx'
 import ImagePanel from './image/ImagePanel.jsx'
 import VideoPanel from './video/VideoPanel.jsx'
-import SimulatorPanel from '../simulator/SimulatorPanel.jsx'
-import EditorPanel from '../editor/EditorPanel.jsx'
+import SimulatorPanel from './simulator/SimulatorPanel.jsx'
+import EditorPanel from './editor/EditorPanel.jsx'
 
 const TABS = [
   [

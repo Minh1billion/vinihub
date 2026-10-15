@@ -8,7 +8,7 @@ import StudioPage from '../features/studio/StudioPage.jsx'
 import BillingPage from '../features/billing/BillingPage.jsx'
 import MarketPage from '../features/market/MarketPage.jsx'
 import ProvidersPage from '../features/providers/ProvidersPage.jsx'
-import AcceptInvitePage from '../features/invite/AcceptInvitePage.jsx'
+import AcceptInvitePage from '../features/auth/AcceptInvitePage.jsx'
 
 function Gate() {
   const { user } = useApp()

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import Icon from '../../components/Icon.jsx'
-import { ASSET_MIME } from '../editor/source.js'
+import { ASSET_MIME } from '../studio/editor/utils/source.js'
 
 export default function MediaCard({ asset, onOpen, onDelete }) {
   const { t } = useTranslation()
