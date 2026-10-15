@@ -39,7 +39,7 @@ export function orient(src, rotate, flipH, flipV) {
   return canvas
 }
 
-export function filterString(adjust, filter, outW) {
+function filterString(adjust, filter, outW) {
   const parts = [FILTERS[filter]]
   if (adjust.brightness) parts.push(`brightness(${Math.max(0, 1 + adjust.brightness / 100)})`)
   if (adjust.contrast) parts.push(`contrast(${Math.max(0, 1 + adjust.contrast / 100)})`)
@@ -85,4 +85,28 @@ export function process(src, w, h, adjust, filter, force = false) {
     ctx.drawImage(src, 0, 0, w, h)
   }
   return canvas
+}
+
+const cut = new WeakMap()
+
+export function cropped(src, c) {
+  const x = Math.min(src.width - 1, Math.max(0, Math.round(c.x * src.width)))
+  const y = Math.min(src.height - 1, Math.max(0, Math.round(c.y * src.height)))
+  const w = Math.max(1, Math.min(src.width - x, Math.round(c.w * src.width)))
+  const h = Math.max(1, Math.min(src.height - y, Math.round(c.h * src.height)))
+  let cache = cut.get(src)
+  if (!cache) {
+    cache = new Map()
+    cut.set(src, cache)
+  }
+  const key = `${x}|${y}|${w}|${h}`
+  if (!cache.has(key)) {
+    if (cache.size > 6) cache.delete(cache.keys().next().value)
+    const canvas = document.createElement('canvas')
+    canvas.width = w
+    canvas.height = h
+    canvas.getContext('2d').drawImage(src, x, y, w, h, 0, 0, w, h)
+    cache.set(key, canvas)
+  }
+  return cache.get(key)
 }

@@ -1,6 +1,8 @@
 import i18n from '../../i18n/index.js'
 
-export const MAX_SIDE = 8192
+const MAX_SIDE = 8192
+
+export const ASSET_MIME = 'application/x-vinihub-asset'
 
 export async function loadBitmap(wid, id) {
   const res = await fetch(`/api/workspaces/${wid}/assets/${id}/content`, { credentials: 'include' })

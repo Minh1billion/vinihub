@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Icon from '../../components/Icon.jsx'
 import AddImage from './AddImage.jsx'
-import { LAYER_TYPES, layerName } from './layers.js'
+import { LAYER_TYPES, emptyLabel, layerName } from './layers.js'
+import { ASSET_MIME } from './source.js'
 
 const SIDE = 64
 
@@ -35,21 +36,29 @@ function Tool({ icon, label, onClick, disabled, on, danger }) {
   )
 }
 
-export default function LayersPanel({ edit, actions, selected, onSelect }) {
+export default function LayersPanel({ edit, actions, selected, onSelect, onFiles }) {
   const { t } = useTranslation()
   const list = [...edit.layers].reverse()
   const [dragId, setDragId] = useState(null)
   const [overId, setOverId] = useState(null)
   const finish = () => { setDragId(null); setOverId(null) }
+  const [filing, setFiling] = useState(false)
+  const hasFiles = (e) => [...e.dataTransfer.types].some((x) => x === 'Files' || x === ASSET_MIME)
 
   return (
-    <section className="ed-layers-panel" aria-label={t('editor.layers.title')}>
+    <section className={'ed-layers-panel' + (filing ? ' is-drop' : '')} aria-label={t('editor.layers.title')}
+      onDragOver={(e) => { if (!hasFiles(e)) return; e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; setFiling(true) }}
+      onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setFiling(false) }}
+      onDrop={(e) => { setFiling(false); if (!hasFiles(e)) return; e.preventDefault(); onFiles([...e.dataTransfer.files], null, e.dataTransfer.getData(ASSET_MIME)) }}>
       <header className="ed-lhead">
         <Icon name="layers" size={18} />
         <strong>{t('editor.layers.title')}</strong>
         <span className="ed-lcount num">{edit.layers.length}</span>
         <button type="button" className="ed-ladd" onClick={actions.addText} title={t('editor.text.add')} aria-label={t('editor.text.add')}>
           <Icon name="type" size={16} />
+        </button>
+        <button type="button" className="ed-ladd" onClick={() => actions.addShape('rect')} title={t('editor.shape.add')} aria-label={t('editor.shape.add')}>
+          <Icon name="shape" size={16} />
         </button>
         <AddImage onFile={actions.addImage}>
           {(open) => (
@@ -69,7 +78,7 @@ export default function LayersPanel({ edit, actions, selected, onSelect }) {
             onDragEnd={finish}
             onClick={() => onSelect(x.id)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(x.id) } }}>
             <Kind layer={x} />
-            <span className="ed-lname">{layerName(x, x.type === 'text' ? t('editor.text.empty') : t('editor.layers.image'))}</span>
+            <span className="ed-lname">{layerName(x, emptyLabel(x, t))}</span>
             <span className="ed-lacts">
               <Tool icon="arrowUp" label={t('editor.layers.up')} disabled={n === 0} onClick={() => actions.move(x.id, 1)} />
               <Tool icon="arrowDown" label={t('editor.layers.down')} disabled={n === list.length - 1} onClick={() => actions.move(x.id, -1)} />

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { newImage, newText, uid } from './layers.js'
+import { newImage, newShape, newText, uid } from './layers.js'
 
 export default function useLayerActions({ commit, getView, onSelect, onError }) {
   const { t } = useTranslation()
@@ -11,9 +11,16 @@ export default function useLayerActions({ commit, getView, onSelect, onError }) 
 
   const addText = () => insert(newText(t('editor.text.default'), getView()))
 
-  const addImage = async (file) => {
+  const addShape = (kind = 'rect') => insert(newShape(kind, getView()))
+
+  const addBitmap = (bitmap, name, at) => {
+    const view = getView()
+    insert(newImage(bitmap, name, at ? { ...view, cx: at.x, cy: at.y } : view))
+  }
+
+  const addImage = async (file, at) => {
     try {
-      insert(newImage(await createImageBitmap(file), file.name.replace(/\.[^.]+$/, ''), getView()))
+      addBitmap(await createImageBitmap(file), file.name.replace(/\.[^.]+$/, ''), at)
     } catch {
       onError(t('editor.layers.imageFailed'))
     }
@@ -28,6 +35,13 @@ export default function useLayerActions({ commit, getView, onSelect, onError }) 
     const layers = [...e.layers]
     ;[layers[i], layers[j]] = [layers[j], layers[i]]
     return { ...e, layers }
+  })
+
+  const place = (id, top) => commit((e) => {
+    const item = e.layers.find((x) => x.id === id)
+    if (!item || e.layers[top ? e.layers.length - 1 : 0] === item) return e
+    const rest = e.layers.filter((x) => x.id !== id)
+    return { ...e, layers: top ? [...rest, item] : [item, ...rest] }
   })
 
   const reorder = (id, targetId) => commit((e) => {
@@ -51,10 +65,15 @@ export default function useLayerActions({ commit, getView, onSelect, onError }) 
     onSelect(copy.id)
   }
 
+  const paste = (layer) => {
+    const v = getView()
+    insert({ ...layer, id: uid(), locked: false, x: layer.x + v.vw * 0.03, y: layer.y + v.vw * 0.03 })
+  }
+
   const remove = (id) => {
     commit((e) => ({ ...e, layers: e.layers.filter((x) => x.id !== id) }))
     onSelect(null)
   }
 
-  return { addText, addImage, patch, move, reorder, duplicate, remove }
+  return { addText, addShape, addImage, addBitmap, patch, move, place, reorder, duplicate, paste, remove }
 }

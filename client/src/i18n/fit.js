@@ -37,7 +37,7 @@ export function fitNow(root = document) {
 }
 
 let frame = 0
-export function scheduleFit() {
+function scheduleFit() {
   cancelAnimationFrame(frame)
   frame = requestAnimationFrame(() => fitNow())
 }

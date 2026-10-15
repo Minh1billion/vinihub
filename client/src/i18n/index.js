@@ -4,7 +4,7 @@ import { initReactI18next } from 'react-i18next'
 import en from './locales/en.json'
 import vi from './locales/vi.json'
 
-export const DEFAULT_LANG = 'vi'
+const DEFAULT_LANG = 'vi'
 export const LANGUAGES = [
   { code: 'vi', label: 'VI', name: 'Tiếng Việt', locale: 'vi-VN' },
   { code: 'en', label: 'EN', name: 'English', locale: 'en-US' },

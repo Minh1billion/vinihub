@@ -8,7 +8,7 @@ import zlib
 from pathlib import Path
 from typing import AsyncIterator
 
-from app.adapters.drivers.base import IMAGE_FEATURES, Conn, Driver
+from app.adapters.drivers.base import IMAGE_FEATURES, RENDER_FEATURES, Conn, Driver
 from app.i18n import current
 from app.shared.errors import GatewayError
 
@@ -105,7 +105,7 @@ def _size(ratio: str | None) -> tuple[int, int]:
 class MockDriver(Driver):
     kinds = ("chat", "image", "video")
     needs_key = False
-    image_features = IMAGE_FEATURES
+    image_features = IMAGE_FEATURES | RENDER_FEATURES
 
     def __init__(self, conn: Conn) -> None:
         super().__init__(conn)

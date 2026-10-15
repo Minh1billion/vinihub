@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import Icon from '../../components/Icon.jsx'
+import { ASSET_MIME } from '../editor/source.js'
 
 export default function MediaCard({ asset, onOpen, onDelete }) {
   const { t } = useTranslation()
@@ -10,9 +11,10 @@ export default function MediaCard({ asset, onOpen, onDelete }) {
   const [ready, setReady] = useState(false)
   const show = () => setReady(true)
   return (
-    <figure className="media">
+    <figure className="media" draggable={!isVideo && Boolean(asset.id)}
+      onDragStart={(e) => { e.dataTransfer.effectAllowed = 'copy'; e.dataTransfer.setData(ASSET_MIME, asset.id) }}>
       <button type="button" className="media-hit" onClick={() => onOpen(asset)} aria-label={t('media.view')}>
-        {isVideo ? <video src={asset.url} muted preload="metadata" /> : <img className={ready ? 'is-ready' : ''} src={asset.url} alt={asset.prompt || ''} loading="lazy" onLoad={show} onError={show} />}
+        {isVideo ? <video src={asset.url} muted preload="metadata" /> : <img className={ready ? 'is-ready' : ''} src={asset.url} alt={asset.prompt || ''} draggable={false} loading="lazy" onLoad={show} onError={show} />}
         {isVideo && <span className="badge"><Icon name="play" size={14} /></span>}
       </button>
       <div className="media-actions">

@@ -549,18 +549,13 @@
     "tool": {
       "crop": "Crop",
       "adjust": "Adjust",
-      "filters": "Filters",
-      "insert": "Insert"
+      "filters": "Filters"
     },
     "crop": {
-      "orientation": "Orientation",
-      "rotateLeft": "Rotate left",
       "rotateRight": "Rotate right",
       "flipH": "Flip horizontal",
       "flipV": "Flip vertical",
       "free": "Free",
-      "original": "Original",
-      "platforms": "Pick a ratio for your platform.",
       "size": "Size",
       "hint": "Drag the frame to crop.",
       "clear": "Reset crop",
@@ -603,7 +598,25 @@
       "outline": "Outline",
       "background": "Background",
       "remove": "Delete",
-      "hint": "Drag text to move it."
+      "hint": "Drag text to move it.",
+      "font": "Font",
+      "align": "Align",
+      "left": "Left",
+      "center": "Center",
+      "right": "Right",
+      "spacing": "Letter spacing",
+      "lineHeight": "Line height",
+      "shadow": "Shadow",
+      "outlineColor": "Outline color",
+      "outlineWidth": "Outline width",
+      "fonts": {
+        "sans": "Be Vietnam Pro",
+        "oswald": "Oswald",
+        "serif": "Playfair Display",
+        "mono": "Roboto Mono",
+        "script": "Dancing Script",
+        "display": "Lobster"
+      }
     },
     "needImage": "Select an image layer.",
     "layers": {
@@ -631,17 +644,28 @@
         "darken": "Darken",
         "lighten": "Lighten"
       },
-      "canvas": "Canvas"
-    },
-    "insert": {
-      "hint": "Add text or an image."
+      "canvas": "Canvas",
+      "order": "Order",
+      "toFront": "Bring to front",
+      "toBack": "Send to back"
     },
     "image": {
       "add": "Add image",
-      "fit": "Fit",
       "size": "Size",
-      "opacity": "Opacity",
-      "reset": "Original size"
+      "reset": "Original size",
+      "width": "Width",
+      "height": "Height",
+      "render": "Render",
+      "needCanvas": "needs a canvas",
+      "mode": {
+        "scale": "Scale (keep ratio)",
+        "stretch": "Stretch (free width and height)"
+      },
+      "fit": {
+        "contain": "Fit inside canvas",
+        "cover": "Fill canvas (crop overflow)",
+        "fill": "Stretch to canvas"
+      }
     },
     "export": {
       "open": "Export",
@@ -667,26 +691,25 @@
       "canvas": "Canvas",
       "text": "Text",
       "image": "Image",
-      "crop": "Crop"
+      "shape": "Shape"
     },
     "inspector": {
-      "hint": "Select a layer to edit.",
       "sections": "Settings",
       "transform": "Transform"
     },
     "layer": {
       "rotation": "Rotation",
-      "opacity": "Opacity",
-      "center": "Center"
+      "opacity": "Opacity"
     },
     "canvas": {
       "size": "Size",
       "width": "Width",
       "height": "Height",
-      "hint": "Layers stay centered.",
       "background": "Background",
       "transparent": "Transparent",
-      "color": "Color"
+      "color": "Color",
+      "fit": "Fit to layers",
+      "enable": "Use canvas"
     },
     "nav": {
       "zoom": "Scroll to zoom.",
@@ -702,6 +725,38 @@
     "group": {
       "style": "Style",
       "layer": "Layer"
+    },
+    "shape": {
+      "add": "Add shape",
+      "rect": "Rectangle",
+      "ellipse": "Ellipse",
+      "line": "Line",
+      "kind": "Shape",
+      "fill": "Fill",
+      "stroke": "Stroke color",
+      "strokeWidth": "Stroke width",
+      "radius": "Corner radius",
+      "width": "Width",
+      "height": "Height"
+    },
+    "align": {
+      "left": "Align left",
+      "centerH": "Center horizontally",
+      "right": "Align right",
+      "top": "Align top",
+      "centerV": "Center vertically",
+      "bottom": "Align bottom"
+    },
+    "fullscreen": {
+      "enter": "Full screen",
+      "exit": "Exit full screen"
+    },
+    "dropHint": "Drop images to add as layers",
+    "copy": "Copy image",
+    "copied": "Copied",
+    "snap": {
+      "on": "Snapping on (hold Alt to bypass)",
+      "off": "Snapping off (hold Alt to snap)"
     }
   }
 }

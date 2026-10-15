@@ -1,8 +1,25 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import Icon from '../../components/Icon.jsx'
 import { drawLayers } from './layers.js'
-import { boundsOf, zoomAt } from './edit.js'
+import { ASSET_MIME } from './source.js'
+import { aabb, boundsOf, ratioOf, resizeFrame, zoomAt } from './edit.js'
 
 const CORNERS = ['nw', 'ne', 'se', 'sw']
+const EDGES = ['n', 'e', 's', 'w']
+const SNAP = 6
+
+function snapAxis(mine, targets, thr) {
+  let best = null
+  for (const m of mine) {
+    for (const t of targets) {
+      const diff = t - m
+      if (Math.abs(diff) <= thr && (!best || Math.abs(diff) < Math.abs(best.diff))) best = { diff, line: t }
+    }
+  }
+  return best
+}
+
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v))
 const turn = (deg) => ((((deg + 180) % 360) + 360) % 360) - 180
 
@@ -17,7 +34,8 @@ function useBox(ref) {
   return box
 }
 
-export default function Stage({ edit, originalEdit, original, active, selected, onSelect, onPatch, cam, setCam, onBox, children }) {
+export default function Stage({ edit, originalEdit, original, active, selected, onSelect, onPatch, onCanvas, crop, onCrop, fontTick, cam, setCam, onBox, onFiles, snap = true, children }) {
+  const { t } = useTranslation()
   const stage = useRef(null)
   const canvas = useRef(null)
   const drag = useRef(null)
@@ -26,6 +44,8 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
   const frame = useRef(0)
   const [mode, setMode] = useState('')
   const [space, setSpace] = useState(false)
+  const [guides, setGuides] = useState(null)
+  const [dropping, setDropping] = useState(false)
   const box = useBox(stage)
   const view = original ? originalEdit : edit
   const bounds = useMemo(() => boundsOf(view.layers), [view.layers])
@@ -71,8 +91,20 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
     ctx.setTransform(1, 0, 0, 1, 0, 0)
     ctx.clearRect(0, 0, W, H)
     ctx.setTransform(dpr * z, 0, 0, dpr * z, dpr * (box.w / 2 - cam.cx * z), dpr * (box.h / 2 - cam.cy * z))
+    const cv = view.canvas
+    if (cv?.bg) {
+      ctx.fillStyle = cv.bg
+      ctx.fillRect(cv.x, cv.y, cv.w, cv.h)
+    }
     drawLayers(ctx, view.layers, false, true)
-  }, [active, view, cam, box.w, box.h])
+    if (cv) {
+      ctx.fillStyle = 'rgba(0,0,0,0.45)'
+      ctx.beginPath()
+      ctx.rect(cam.cx - box.w / 2 / z - 1, cam.cy - box.h / 2 / z - 1, box.w / z + 2, box.h / z + 2)
+      ctx.rect(cv.x, cv.y, cv.w, cv.h)
+      ctx.fill('evenodd')
+    }
+  }, [active, view, cam, box.w, box.h, fontTick])
 
   const flush = () => {
     frame.current = 0
@@ -105,6 +137,7 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
     if (e.button === 1 || space) { e.preventDefault(); stage.current.setPointerCapture(e.pointerId); startPan(p); return }
     if (e.button !== 0) return
     stage.current.setPointerCapture(e.pointerId)
+    if (crop) { startPan(p); return }
     const w = toWorld(p)
     const hit = [...bounds].reverse().find((b) => {
       if (layerOf(b.id)?.locked) return false
@@ -118,7 +151,20 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
     if (!hit) { onSelect(null); startPan(p); return }
     onSelect(hit.id)
     const layer = layerOf(hit.id)
-    drag.current = { kind: 'move', id: hit.id, p, x: layer.x, y: layer.y }
+    const targets = { x: [], y: [] }
+    if (edit.canvas) {
+      const c = edit.canvas
+      targets.x.push(c.x, c.x + c.w / 2, c.x + c.w)
+      targets.y.push(c.y, c.y + c.h / 2, c.y + c.h)
+    }
+    for (const b of bounds) {
+      if (b.id === hit.id) continue
+      const a = aabb(b)
+      targets.x.push(a.x, a.x + a.w / 2, a.x + a.w)
+      targets.y.push(a.y, a.y + a.h / 2, a.y + a.h)
+    }
+    const self = aabb(hit)
+    drag.current = { kind: 'move', id: hit.id, p, x: layer.x, y: layer.y, aw: self.w, ah: self.h, targets }
   }
 
   const grab = (kind) => (e) => {
@@ -129,7 +175,31 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
     const v = { x: w.x - selBox.cx, y: w.y - selBox.cy }
     drag.current = {
       kind, id: layer.id, start: Math.max(1e-6, Math.hypot(v.x, v.y)), angle: Math.atan2(v.y, v.x),
-      rotation: layer.rotation, w: layer.type === 'image' ? layer.w : undefined, size: layer.size,
+      rotation: layer.rotation, shape: layer.type === 'shape' && layer.kind !== 'line' ? layer.h : null, w: layer.type === 'text' ? undefined : layer.w, size: layer.size,
+    }
+  }
+
+  const grabFrame = (kind, dir) => (e) => {
+    e.stopPropagation()
+    stage.current.setPointerCapture(e.pointerId)
+    drag.current = { kind, dir, p: toWorld(point(e)), r0: { x: edit.canvas.x, y: edit.canvas.y, w: edit.canvas.w, h: edit.canvas.h }, ratio: edit.canvas.ratio ? ratioOf(edit.canvas.ratio) : null }
+  }
+
+  const localOf = (w, b) => {
+    const r = (-b.rot * Math.PI) / 180
+    const dx = w.x - b.cx
+    const dy = w.y - b.cy
+    return { x: dx * Math.cos(r) - dy * Math.sin(r), y: dx * Math.sin(r) + dy * Math.cos(r) }
+  }
+
+  const grabCrop = (kind, dir) => (e) => {
+    e.stopPropagation()
+    stage.current.setPointerCapture(e.pointerId)
+    const { w: W, h: H, cx, cy, rot } = cropBox
+    const r = crop.rect
+    drag.current = {
+      kind, dir, W, H, b: { cx, cy, rot }, p: localOf(toWorld(point(e)), cropBox),
+      r0: { x: r.x * W, y: r.y * H, w: r.w * W, h: r.h * H }, ratio: crop.ratio ? ratioOf(crop.ratio) : null,
     }
   }
 
@@ -141,16 +211,56 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
       queue(() => setCam({ cx: d.cx - (p.x - d.p.x) / d.z, cy: d.cy - (p.y - d.p.y) / d.z, z: d.z }))
       return
     }
+    if (d.kind === 'cmove' || d.kind === 'csize') {
+      const lp = localOf(toWorld(p), d.b)
+      const delta = { x: lp.x - d.p.x, y: lp.y - d.p.y }
+      let r = d.r0
+      if (d.kind === 'cmove') {
+        r = { ...r, x: clamp(r.x + delta.x, 0, d.W - r.w), y: clamp(r.y + delta.y, 0, d.H - r.h) }
+      } else {
+        r = resizeFrame(d.r0, d.dir, delta, d.ratio)
+        if (d.ratio) {
+          if (r.x < 0 || r.y < 0 || r.x + r.w > d.W + 0.5 || r.y + r.h > d.H + 0.5) return
+        } else {
+          const right = Math.min(d.W, r.x + r.w)
+          const bottom = Math.min(d.H, r.y + r.h)
+          const x = Math.max(0, r.x)
+          const y = Math.max(0, r.y)
+          r = { x, y, w: right - x, h: bottom - y }
+        }
+      }
+      const rect = { x: r.x / d.W, y: r.y / d.H, w: r.w / d.W, h: r.h / d.H }
+      queue(() => onCrop(rect))
+      return
+    }
+    if (d.kind === 'fmove' || d.kind === 'fsize') {
+      const w = toWorld(p)
+      const delta = { x: w.x - d.p.x, y: w.y - d.p.y }
+      const change = d.kind === 'fmove'
+        ? { x: Math.round(d.r0.x + delta.x), y: Math.round(d.r0.y + delta.y) }
+        : resizeFrame(d.r0, d.dir, delta, d.ratio)
+      queue(() => onCanvas(change))
+      return
+    }
     if (d.kind === 'move') {
-      const change = { x: d.x + (p.x - d.p.x) / z, y: d.y + (p.y - d.p.y) / z }
-      queue(() => onPatch(d.id, change))
+      let x = d.x + (p.x - d.p.x) / z
+      let y = d.y + (p.y - d.p.y) / z
+      let g = null
+      if (snap !== e.altKey) {
+        const sx = snapAxis([x - d.aw / 2, x, x + d.aw / 2], d.targets.x, SNAP / z)
+        const sy = snapAxis([y - d.ah / 2, y, y + d.ah / 2], d.targets.y, SNAP / z)
+        if (sx) x += sx.diff
+        if (sy) y += sy.diff
+        if (sx || sy) g = { x: sx ? sx.line : null, y: sy ? sy.line : null }
+      }
+      queue(() => { onPatch(d.id, { x, y }); setGuides(g) })
       return
     }
     const w = toWorld(p)
     const v = { x: w.x - selBox.cx, y: w.y - selBox.cy }
     if (d.kind === 'scale') {
       const k = Math.hypot(v.x, v.y) / d.start
-      const change = d.w !== undefined ? { w: clamp(d.w * k, 4, 200000) } : { size: clamp(d.size * k, 4, 20000) }
+      const change = d.w === undefined ? { size: clamp(d.size * k, 4, 20000) } : d.shape ? { w: clamp(d.w * k, 4, 200000), h: clamp(d.shape * k, 4, 200000) } : { w: clamp(d.w * k, 4, 200000) }
       queue(() => onPatch(d.id, change))
       return
     }
@@ -160,12 +270,36 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
     queue(() => onPatch(d.id, change))
   }
 
+  const hasFiles = (e) => [...e.dataTransfer.types].some((x) => x === 'Files' || x === ASSET_MIME)
+  const droppable = (e) => !original && !crop && !e.defaultPrevented && hasFiles(e)
+  const dragOver = (e) => {
+    if (!droppable(e)) return
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'copy'
+    setDropping(true)
+  }
+  const dragLeave = (e) => {
+    if (!e.currentTarget.contains(e.relatedTarget)) setDropping(false)
+  }
+  const drop = (e) => {
+    setDropping(false)
+    if (!droppable(e)) return
+    e.preventDefault()
+    onFiles([...e.dataTransfer.files], toWorld(point(e)), e.dataTransfer.getData(ASSET_MIME))
+  }
+
   const up = () => {
     if (frame.current) { cancelAnimationFrame(frame.current); flush() }
     drag.current = null
+    setGuides(null)
     setMode('')
   }
 
+  const cv = !original ? edit.canvas : null
+  const cvPos = cv && toScreen(cv.x, cv.y)
+  const cvEdit = Boolean(cv) && !selected && !crop
+  const cropBox = crop ? bounds.find((b) => b.id === crop.id) : null
+  const cropPos = cropBox && toScreen(cropBox.cx, cropBox.cy)
   const sel = selBox && layerOf(selBox.id)
   const centre = selBox && toScreen(selBox.cx, selBox.cy)
 
@@ -179,9 +313,10 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
 
   return (
     <section className={'ed-stage' + (space || mode === 'pan' ? ' is-pan' : '') + (mode === 'pan' ? ' is-panning' : '')} ref={stage} style={grid}
-      onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}>
+      onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}
+      onDragOver={dragOver} onDragLeave={dragLeave} onDrop={drop}>
       <canvas ref={canvas} className="ed-world" style={{ width: box.w, height: box.h }} />
-      {!original && sel && (
+      {!original && sel && !crop && (
         <div className={'ed-sel' + (sel.locked ? ' is-locked' : '')}
           style={{
             left: centre.x - (selBox.w * z) / 2, top: centre.y - (selBox.h * z) / 2,
@@ -194,6 +329,35 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
               <i className="ed-sh ed-rot" onPointerDown={grab('rotate')} />
             </>
           )}
+        </div>
+      )}
+      {cv && (
+        <div className={'ed-frame' + (cvEdit ? ' is-edit' : '')}
+          style={{ left: cvPos.x, top: cvPos.y, width: cv.w * z, height: cv.h * z }}>
+          {cvEdit && (
+            <>
+              {CORNERS.map((c) => <i key={c} className={`ed-sh ed-sh--${c}`} onPointerDown={grabFrame('fsize', c)} />)}
+              {EDGES.map((c) => <i key={c} className={`ed-fe ed-fe--${c}`} onPointerDown={grabFrame('fsize', c)} />)}
+              <i className="ed-fgrip" onPointerDown={grabFrame('fmove')} />
+            </>
+          )}
+        </div>
+      )}
+      {cropBox && (
+        <div className="ed-crop" style={{ left: cropPos.x - (cropBox.w * z) / 2, top: cropPos.y - (cropBox.h * z) / 2, width: cropBox.w * z, height: cropBox.h * z, transform: `rotate(${cropBox.rot}deg)` }}>
+          <div className="ed-crop-rect" onPointerDown={grabCrop('cmove')}
+            style={{ left: `${crop.rect.x * 100}%`, top: `${crop.rect.y * 100}%`, width: `${crop.rect.w * 100}%`, height: `${crop.rect.h * 100}%` }}>
+            {CORNERS.map((c) => <i key={c} className={`ed-sh ed-sh--${c}`} onPointerDown={grabCrop('csize', c)} />)}
+            {EDGES.map((c) => <i key={c} className={`ed-fe ed-fe--${c}`} onPointerDown={grabCrop('csize', c)} />)}
+          </div>
+        </div>
+      )}
+      {guides?.x != null && <i className="ed-guide ed-guide--v" style={{ left: toScreen(guides.x, 0).x }} />}
+      {guides?.y != null && <i className="ed-guide ed-guide--h" style={{ top: toScreen(0, guides.y).y }} />}
+      {dropping && (
+        <div className="ed-drop">
+          <Icon name="upload" size={28} />
+          <strong>{t('editor.dropHint')}</strong>
         </div>
       )}
       {children}

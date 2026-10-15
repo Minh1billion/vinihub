@@ -1,4 +1,4 @@
-from app.adapters.drivers import DRIVERS, IMAGE_FEATURES
+from app.adapters.drivers import DRIVERS, IMAGE_FEATURES, RENDER_FEATURES
 from app.config import settings
 from app.modules.providers.models import Provider
 from app.modules.providers.schema import ProviderIn
@@ -20,7 +20,7 @@ def supported_kinds(driver: str) -> tuple[str, ...]:
 
 def image_features(driver: str) -> frozenset[str]:
     if settings.mock_models:
-        return IMAGE_FEATURES
+        return IMAGE_FEATURES | RENDER_FEATURES
     cls = DRIVERS.get(driver)
     return cls.image_features if cls else frozenset()
 

@@ -543,18 +543,13 @@
     "tool": {
       "crop": "Cắt",
       "adjust": "Chỉnh màu",
-      "filters": "Bộ lọc",
-      "insert": "Chèn"
+      "filters": "Bộ lọc"
     },
     "crop": {
-      "orientation": "Hướng ảnh",
-      "rotateLeft": "Xoay trái",
       "rotateRight": "Xoay phải",
       "flipH": "Lật ngang",
       "flipV": "Lật dọc",
       "free": "Tự do",
-      "original": "Gốc",
-      "platforms": "Chọn tỉ lệ theo nền tảng.",
       "size": "Kích thước",
       "hint": "Kéo khung để cắt.",
       "clear": "Đặt lại vùng cắt",
@@ -597,7 +592,25 @@
       "outline": "Viền chữ",
       "background": "Nền chữ",
       "remove": "Xóa",
-      "hint": "Kéo chữ để di chuyển."
+      "hint": "Kéo chữ để di chuyển.",
+      "font": "Phông chữ",
+      "align": "Căn lề",
+      "left": "Trái",
+      "center": "Giữa",
+      "right": "Phải",
+      "spacing": "Giãn chữ",
+      "lineHeight": "Giãn dòng",
+      "shadow": "Đổ bóng",
+      "outlineColor": "Màu viền",
+      "outlineWidth": "Độ dày viền",
+      "fonts": {
+        "sans": "Be Vietnam Pro",
+        "oswald": "Oswald",
+        "serif": "Playfair Display",
+        "mono": "Roboto Mono",
+        "script": "Dancing Script",
+        "display": "Lobster"
+      }
     },
     "needImage": "Chọn một lớp ảnh.",
     "layers": {
@@ -625,17 +638,28 @@
         "darken": "Tối hơn",
         "lighten": "Sáng hơn"
       },
-      "canvas": "Canvas"
-    },
-    "insert": {
-      "hint": "Thêm chữ hoặc ảnh."
+      "canvas": "Canvas",
+      "order": "Thứ tự",
+      "toFront": "Đưa lên trên cùng",
+      "toBack": "Đưa xuống dưới cùng"
     },
     "image": {
       "add": "Thêm ảnh",
-      "fit": "Vừa khung",
       "size": "Kích thước",
-      "opacity": "Độ mờ",
-      "reset": "Kích thước gốc"
+      "reset": "Kích thước gốc",
+      "width": "Rộng",
+      "height": "Cao",
+      "render": "Hiển thị",
+      "needCanvas": "cần bật canvas",
+      "mode": {
+        "scale": "Co giãn (giữ tỉ lệ)",
+        "stretch": "Kéo giãn (tự do rộng và cao)"
+      },
+      "fit": {
+        "contain": "Vừa trong canvas",
+        "cover": "Phủ kín canvas (cắt phần thừa)",
+        "fill": "Kéo giãn vừa canvas"
+      }
     },
     "export": {
       "open": "Xuất ảnh",
@@ -661,26 +685,25 @@
       "canvas": "Khung",
       "text": "Chữ",
       "image": "Ảnh",
-      "crop": "Cắt"
+      "shape": "Hình"
     },
     "inspector": {
-      "hint": "Chọn một lớp để chỉnh sửa.",
       "sections": "Thiết lập",
       "transform": "Biến đổi"
     },
     "layer": {
       "rotation": "Góc xoay",
-      "opacity": "Độ mờ",
-      "center": "Căn giữa"
+      "opacity": "Độ mờ"
     },
     "canvas": {
       "size": "Kích thước",
       "width": "Rộng",
       "height": "Cao",
-      "hint": "Các lớp luôn nằm giữa.",
       "background": "Nền",
       "transparent": "Trong suốt",
-      "color": "Màu"
+      "color": "Màu",
+      "fit": "Vừa các layer",
+      "enable": "Dùng canvas"
     },
     "nav": {
       "zoom": "Cuộn để phóng to.",
@@ -696,6 +719,38 @@
     "group": {
       "style": "Kiểu",
       "layer": "Lớp"
+    },
+    "shape": {
+      "add": "Thêm hình",
+      "rect": "Chữ nhật",
+      "ellipse": "Elip",
+      "line": "Đường thẳng",
+      "kind": "Hình",
+      "fill": "Tô màu",
+      "stroke": "Màu viền",
+      "strokeWidth": "Độ dày viền",
+      "radius": "Bo góc",
+      "width": "Rộng",
+      "height": "Cao"
+    },
+    "align": {
+      "left": "Căn trái",
+      "centerH": "Căn giữa ngang",
+      "right": "Căn phải",
+      "top": "Căn trên",
+      "centerV": "Căn giữa dọc",
+      "bottom": "Căn dưới"
+    },
+    "fullscreen": {
+      "enter": "Toàn màn hình",
+      "exit": "Thoát toàn màn hình"
+    },
+    "dropHint": "Thả ảnh vào đây để thêm layer",
+    "copy": "Sao chép ảnh",
+    "copied": "Đã sao chép",
+    "snap": {
+      "on": "Đang bám dính (giữ Alt để tạm tắt)",
+      "off": "Đã tắt bám dính (giữ Alt để tạm bật)"
     }
   }
 }

@@ -1,10 +1,71 @@
 import { drawLayers } from './layers.js'
 
-export const initialEdit = { layers: [] }
+export const initialEdit = { layers: [], canvas: null }
+
+export const RATIOS = ['1:1', '4:5', '3:4', '9:16', '16:9', '4:3']
+
+export const PLATFORM_PRESETS = [
+  { key: 'instagram:post', platform: 'instagram', format: 'post', ratio: '4:5', w: 1080, h: 1350 },
+  { key: 'instagram:reel', platform: 'instagram', format: 'reel', ratio: '9:16', w: 1080, h: 1920 },
+  { key: 'instagram:story', platform: 'instagram', format: 'story', ratio: '9:16', w: 1080, h: 1920 },
+  { key: 'facebook:post', platform: 'facebook', format: 'post', ratio: '1:1', w: 1080, h: 1080 },
+  { key: 'facebook:reel', platform: 'facebook', format: 'reel', ratio: '9:16', w: 1080, h: 1920 },
+  { key: 'facebook:story', platform: 'facebook', format: 'story', ratio: '9:16', w: 1080, h: 1920 },
+  { key: 'tiktok:video', platform: 'tiktok', format: 'video', ratio: '9:16', w: 1080, h: 1920 },
+  { key: 'threads:post', platform: 'threads', format: 'post', ratio: '4:5', w: 1080, h: 1350 },
+  { key: 'youtube:video', platform: 'youtube', format: 'video', ratio: '16:9', w: 1280, h: 720 },
+  { key: 'youtube:shorts', platform: 'youtube', format: 'shorts', ratio: '9:16', w: 1080, h: 1920 },
+]
+
+export const DEFAULT_AREA = { x: -540, y: -540, w: 1080, h: 1080 }
+export const MIN_FRAME = 16
+
+export const ratioOf = (key) => {
+  const [a, b] = key.split(':').map(Number)
+  return a / b
+}
+
+export function fitRect(ratio, area) {
+  let w = area.w
+  let h = w / ratio
+  if (h > area.h) {
+    h = area.h
+    w = h * ratio
+  }
+  return { x: Math.round(area.x + (area.w - w) / 2), y: Math.round(area.y + (area.h - h) / 2), w: Math.round(w), h: Math.round(h) }
+}
+
+export function resizeFrame(r0, dir, d, ratio) {
+  let l = r0.x
+  let t = r0.y
+  let r = r0.x + r0.w
+  let b = r0.y + r0.h
+  if (dir.includes('e')) r += d.x
+  if (dir.includes('w')) l += d.x
+  if (dir.includes('s')) b += d.y
+  if (dir.includes('n')) t += d.y
+  let w = Math.max(MIN_FRAME, r - l)
+  let h = Math.max(MIN_FRAME, b - t)
+  if (ratio) {
+    if (dir.length === 2) {
+      w = Math.max(w, h * ratio)
+      h = w / ratio
+    } else if (dir === 'e' || dir === 'w') {
+      h = w / ratio
+    } else {
+      w = h * ratio
+    }
+  }
+  const x = dir.includes('w') ? r0.x + r0.w - w : dir.length === 1 && (dir === 'n' || dir === 's') ? r0.x + (r0.w - w) / 2 : r0.x
+  const y = dir.includes('n') ? r0.y + r0.h - h : dir.length === 1 && (dir === 'e' || dir === 'w') ? r0.y + (r0.h - h) / 2 : r0.y
+  return { x: Math.round(x), y: Math.round(y), w: Math.round(w), h: Math.round(h) }
+}
+
+export const frameOf = (edit) => (edit.canvas ? { x: edit.canvas.x, y: edit.canvas.y, w: edit.canvas.w, h: edit.canvas.h } : contentBox(edit.layers))
 
 export const MIN_ZOOM = 0.02
 export const MAX_ZOOM = 16
-export const MAX_EXPORT = 8192
+const MAX_EXPORT = 8192
 
 export const clampZoom = (z) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, z))
 
@@ -29,7 +90,7 @@ const measureCtx = () => {
   return scratch
 }
 
-function aabb(b) {
+export function aabb(b) {
   const r = (b.rot * Math.PI) / 180
   const c = Math.abs(Math.cos(r))
   const s = Math.abs(Math.sin(r))
@@ -70,13 +131,13 @@ export function makeThumb(src, side = 128) {
   return canvas
 }
 
-export function drawExport(canvas, layers, box, outW, opaque = false) {
+export function drawExport(canvas, layers, box, outW, opaque = false, bg = null) {
   const outH = Math.max(1, Math.round((outW * box.h) / box.w))
   canvas.width = outW
   canvas.height = outH
   const ctx = canvas.getContext('2d')
-  if (opaque) {
-    ctx.fillStyle = '#fff'
+  if (bg || opaque) {
+    ctx.fillStyle = bg || '#fff'
     ctx.fillRect(0, 0, outW, outH)
   }
   const k = outW / box.w

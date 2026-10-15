@@ -53,7 +53,7 @@ const MONO = {
 
 const FULL = new Set(['groq', 'alibaba', 'z-ai'])
 
-export const vendorOf = (id = '') => id.split('/')[0].toLowerCase()
+const vendorOf = (id = '') => id.split('/')[0].toLowerCase()
 
 export default function ProviderLogo({ id, vendor, size = 22 }) {
   const key = vendorOf(id)

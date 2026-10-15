@@ -6,7 +6,7 @@ import ProviderLogo from '../models/ProviderLogo.jsx'
 
 const TONE = { ok: 'ok', invalid: 'bad', error: 'bad', no_key: 'warn', unknown: 'idle', keyless: 'idle' }
 
-export function StatusBadge({ state }) {
+function StatusBadge({ state }) {
   const { t } = useTranslation()
   return <span className={`prov-status prov-status--${TONE[state] || 'idle'}`}><i />{t(`providers.state.${state}`)}</span>
 }
