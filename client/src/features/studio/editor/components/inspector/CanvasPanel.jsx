@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import Button from '../../../../../components/Button.jsx'
 import { Field } from '../../../../../components/Field.jsx'
 import Toggle from '../../../../../components/Toggle.jsx'
+import Icon from '../../../../../components/Icon.jsx'
 import Segmented from '../../../../../components/Segmented.jsx'
 import PlatformLogo from '../../../simulator/components/PlatformLogo.jsx'
 import RatioPicker from '../../../shared/components/RatioPicker.jsx'
@@ -78,11 +79,11 @@ export default function CanvasPanel({ canvas, content, setCanvas, actions }) {
             <div className="ed-grid2">
               <Segmented label={t('editor.canvas.background')} value={canvas.bg ? 'color' : 'none'}
                 onChange={(v) => setCanvas({ bg: v === 'none' ? null : '#ffffff' })}
-                options={[{ value: 'none', label: t('editor.canvas.transparent') }, { value: 'color', label: t('editor.canvas.color') }]} />
+                options={[{ value: 'none', label: <Icon name="transparent" size={20} />, tip: t('editor.canvas.transparent') }, { value: 'color', label: <Icon name="solid" size={20} />, tip: t('editor.canvas.color') }]} />
               <input type="color" className="ed-color" disabled={!canvas.bg} value={canvas.bg || '#ffffff'} onChange={(e) => setCanvas({ bg: e.target.value })} />
             </div>
           </Field>
-          <Button variant="soft" size="sm" block icon="expand" disabled={!content} onClick={() => setCanvas({ x: Math.round(content.x), y: Math.round(content.y), w: Math.round(content.w), h: Math.round(content.h), ratio: null, preset: null })}>
+          <Button variant="soft" size="sm" block icon="expand" disabled={!content} onClick={actions.fit}>
             {t('editor.canvas.fit')}
           </Button>
         </section>

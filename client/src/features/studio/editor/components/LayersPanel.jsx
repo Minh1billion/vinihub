@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Icon from '../../../../components/Icon.jsx'
 import AddImage from './AddImage.jsx'
-import { LAYER_TYPES, emptyLabel, layerName } from '../utils/layers.js'
+import { LAYER_TYPES, SHAPE_ICONS, emptyLabel, layerName } from '../utils/layers.js'
 import { ASSET_MIME } from '../utils/source.js'
 
 const SIDE = 64
@@ -24,7 +24,7 @@ function Thumb({ source }) {
 function Kind({ layer }) {
   if (layer.type === 'image') return <Thumb source={layer.bitmap} />
   const kind = LAYER_TYPES[layer.type]
-  return <span className="ed-lkind"><Icon name={kind.icon} size={16} /></span>
+  return <span className="ed-lkind"><Icon name={layer.type === 'shape' ? SHAPE_ICONS[layer.kind] || kind.icon : kind.icon} size={16} /></span>
 }
 
 function Tool({ icon, label, onClick, disabled, on, danger }) {

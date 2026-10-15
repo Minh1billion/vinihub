@@ -86,6 +86,15 @@ const PATHS = {
   fitCover: <><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3" /><rect x="1.5" y="7" width="21" height="10" rx="1" /></>,
   vignette: <><rect x="3" y="4" width="18" height="16" rx="3" /><circle cx="12" cy="12" r="4" /></>,
   panelLeft: <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M9 4v16" /></>,
+  transparent: <><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M12 3v18M3 12h18" /><rect x="3.5" y="3.5" width="8" height="8" fill="currentColor" stroke="none" /><rect x="12.5" y="12.5" width="8" height="8" fill="currentColor" stroke="none" /></>,
+  solid: <rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" />,
+  triangle: <path d="M12 4l9 16H3z" />,
+  diamond: <path d="M12 3l9 9-9 9-9-9z" />,
+  pentagon: <path d="M12 3l9 6.8-3.4 10.7H6.4L3 9.8z" />,
+  hexagon: <path d="M7.5 4h9l4.5 8-4.5 8h-9L3 12z" />,
+  star: <path d="M12 3l2.7 5.8 6.3.8-4.6 4.4 1.2 6.3L12 17.2l-5.6 3.1 1.2-6.3L3 9.6l6.3-.8z" />,
+  blockArrow: <path d="M3 9.5h10V5l8 7-8 7v-4.5H3z" />,
+  gradient: <><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M8 6.5v11" strokeWidth="3" /><path d="M12 6.5v11" strokeWidth="3" strokeOpacity=".6" /><path d="M16 6.5v11" strokeWidth="3" strokeOpacity=".3" /></>,
   logout: <><path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4" /><path d="M15 8l4 4-4 4" /><path d="M19 12H9" /></>,
 }
 

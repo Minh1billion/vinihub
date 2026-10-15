@@ -23,7 +23,7 @@
 .ed { flex: 1; min-height: 0; display: flex; flex-direction: column; background: var(--bg); }
 .ed-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; background: #fff; border-bottom: var(--edge-soft); }
 .ed-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.ed-logo { flex: none; width: 30px; height: 30px; object-fit: contain; }
+.ed-brand-ic { flex: none; display: grid; place-items: center; width: 30px; height: 30px; color: var(--ink); }
 .ed-group { display: flex; align-items: center; gap: 8px; flex: none; }
 .ed-imgtools { display: grid; grid-template-columns: 0fr; flex: 0 1 auto; min-width: 0; margin-inline: -6px; opacity: 0; pointer-events: none; transition: grid-template-columns 0.34s var(--ease-out), margin 0.34s var(--ease-out), opacity 0.2s; }
 .ed-imgtools.is-open { grid-template-columns: 1fr; margin-inline: 0; opacity: 1; pointer-events: auto; }
@@ -47,6 +47,10 @@
 .ed-tool-ic { display: grid; place-items: center; width: 24px; height: 24px; color: inherit; }
 .ed-tool:hover:not(:disabled), .ed-tool.on { background: var(--orange); }
 .ed-tool:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.ed-flyout { position: fixed; z-index: 900; display: grid; grid-template-columns: repeat(5, 36px); gap: 6px; padding: 8px; background: #fff; border: var(--edge); border-radius: var(--r-m); box-shadow: var(--shadow-2); animation: fly-in 0.16s var(--ease-out); }
+.ed-flyout .ed-tool { width: 36px; height: 36px; box-shadow: 2px 2px 0 var(--ink); }
+.ed-flyout .ed-tool:active:not(:disabled) { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }
+@keyframes fly-in { from { opacity: 0; transform: scale(0.94); } }
 .ed-stage { position: relative; min-width: 0; min-height: 0; overflow: hidden; touch-action: none; cursor: default; user-select: none; background: repeating-conic-gradient(#e4e4e4 0 25%, #fff 0 50%) 0 0 / 20px 20px; }
 .ed-props { min-height: 0; display: flex; flex-direction: column; background: #fff; border-left: var(--edge-soft); }
 .ed-tool-panel { flex: 1 1 0; min-height: 160px; display: flex; flex-direction: column; overflow: hidden; }
@@ -237,5 +241,10 @@
 .ed-lcanvas .ed-lbtn.on { color: var(--ink); background: var(--orange); }
 
 .ed-cropbar { position: absolute; left: 0; right: 0; bottom: 14px; width: max-content; max-width: calc(100% - 24px); margin: 0 auto; display: flex; align-items: center; gap: 6px; padding: 5px; background: #fff; border: var(--edge); border-radius: var(--r-m); box-shadow: var(--shadow-2); z-index: 3; }
+.ed-props .segmented.ed-shapes { grid-auto-flow: row; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.ed-props .segmented.ed-shapes button { min-height: 36px; }
+.ed-fitbar { position: absolute; left: 0; right: 0; top: 14px; width: max-content; max-width: calc(100% - 24px); margin: 0 auto; display: flex; align-items: center; gap: 8px; padding: 5px 5px 5px 12px; background: #fff; border: var(--edge); border-radius: var(--r-m); box-shadow: var(--shadow-2); z-index: 3; }
+.ed-fitbar span { font-size: 13px; font-weight: 600; color: var(--muted); }
+.ed-fitbar .icon-btn { width: 28px; height: 28px; }
 .ed-cropbar kbd { margin-left: 8px; padding: 1px 6px; font: inherit; font-size: 11px; font-weight: 700; color: var(--muted); background: var(--surface); border: var(--edge-soft); border-radius: 5px; }
 .ed-sticky { position: sticky; bottom: -18px; z-index: 2; margin: 0 -12px -12px; padding: 10px 12px; background: var(--bg); border-top: var(--edge-soft); border-radius: 0 0 var(--r-m) var(--r-m); }

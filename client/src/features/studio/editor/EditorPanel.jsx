@@ -19,6 +19,7 @@ import AddImage from './components/AddImage.jsx'
 import ContextMenu from './components/ContextMenu.jsx'
 import ImageToolbar from './components/ImageToolbar.jsx'
 import LayersPanel from './components/LayersPanel.jsx'
+import ShapeMenu from './components/ShapeMenu.jsx'
 import Stage from './components/Stage.jsx'
 import Inspector from './components/inspector/Inspector.jsx'
 import { DEFAULT_AREA, HOME, MAX_ZOOM, MIN_ZOOM, clampZoom, contentBox, drawExport, exportWidth, fitCam, frameOf, initialEdit, makeThumb } from './utils/edit.js'
@@ -53,7 +54,9 @@ export default function EditorPanel({ active, onSend, onPreview }) {
   const [snap, setSnap] = useSessionState('editor.snap', true)
   const [copied, setCopied] = useState(false)
   const [menu, setMenu] = useState(null)
+  const [fitDismissed, setFitDismissed] = useState(false)
   const select = (id) => {
+    setFitDismissed(false)
     setSelected(id)
     setCropState((c) => (c && c.id !== id ? null : c))
   }
@@ -123,7 +126,13 @@ export default function EditorPanel({ active, onSend, onPreview }) {
   const revealCanvas = () => {
     if (edit.canvas) setCanvas({ hidden: !edit.canvas.hidden })
   }
-  const canvasActions = { toggle: toggleCanvas, reveal: revealCanvas }
+  const fitCanvas = () => {
+    if (!content) return
+    setCanvas({ x: Math.round(content.x), y: Math.round(content.y), w: Math.round(content.w), h: Math.round(content.h), ratio: null, preset: null })
+  }
+  const canvasActions = { toggle: toggleCanvas, reveal: revealCanvas, fit: fitCanvas }
+  const canvasFits = !content || !edit.canvas || ['x', 'y', 'w', 'h'].every((k) => Math.round(edit.canvas[k]) === Math.round(content[k]))
+  const showFitHint = Boolean(edit.canvas) && !edit.canvas.hidden && !selected && !crop && !original && !canvasFits && !fitDismissed
 
   const addFiles = async (files, at, assetId) => {
     if (assetId) {
@@ -409,7 +418,7 @@ export default function EditorPanel({ active, onSend, onPreview }) {
       <Tip />
       <header className="ed-bar">
         <div className="ed-brand">
-          <img className="ed-logo" src="/logo.png" alt="" />
+          <span className="ed-brand-ic"><Icon name="edit" size={24} /></span>
           <strong className="ed-name">{t('editor.title')}</strong>
           <span className="num ed-dims">{frame ? `${Math.round(frame.w)} × ${Math.round(frame.h)}` : '– × –'}</span>
         </div>
@@ -462,9 +471,7 @@ export default function EditorPanel({ active, onSend, onPreview }) {
           <button type="button" className="ed-tool" data-tip={t('editor.rail.text')} aria-label={t('editor.rail.text')} onClick={() => actions.addText()}>
             <span className="ed-tool-ic"><Icon name="type" size={18} /></span>
           </button>
-          <button type="button" className="ed-tool" data-tip={t('editor.rail.shape')} aria-label={t('editor.rail.shape')} onClick={() => actions.addShape('rect')}>
-            <span className="ed-tool-ic"><Icon name="shape" size={18} /></span>
-          </button>
+          <ShapeMenu onPick={actions.addShape} />
           <AddImage onFile={(file) => actions.addImage(file)}>
             {(open) => (
               <button type="button" className="ed-tool" data-tip={t('editor.rail.image')} aria-label={t('editor.rail.image')} onClick={open}>
@@ -486,6 +493,13 @@ export default function EditorPanel({ active, onSend, onPreview }) {
                     onChange={(a) => a && navigate(`/studio/editor?asset=${a.id}`)} />
                 </>
               )}
+            </div>
+          )}
+          {showFitHint && (
+            <div className="ed-fitbar" role="group" aria-label={t('editor.canvas.fitHint')} onPointerDown={(e) => e.stopPropagation()} onMouseDown={(e) => e.preventDefault()}>
+              <span>{t('editor.canvas.fitHint')}</span>
+              <Button size="sm" icon="expand" onClick={fitCanvas}>{t('editor.canvas.fit')}</Button>
+              <button type="button" className="icon-btn" onClick={() => setFitDismissed(true)} aria-label={t('common.close')} data-tip={t('common.close')}><Icon name="close" size={14} /></button>
             </div>
           )}
           {crop && (

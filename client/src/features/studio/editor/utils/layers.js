@@ -48,14 +48,82 @@ export const newImage = (bitmap, name, view, fit = true) => ({
   spin: 0, crop: null, flipH: false, flipV: false, adjust: { ...initialAdjust }, filter: 'none', sy: 1, stretch: false,
 })
 
-export const SHAPE_KINDS = ['rect', 'ellipse', 'line']
+export const SHAPE_KINDS = ['rect', 'ellipse', 'triangle', 'diamond', 'pentagon', 'hexagon', 'star', 'heart', 'arrow', 'line']
+
+export const SHAPE_ICONS = {
+  rect: 'rect', ellipse: 'ellipse', triangle: 'triangle', diamond: 'diamond', pentagon: 'pentagon',
+  hexagon: 'hexagon', star: 'star', heart: 'heart', arrow: 'blockArrow', line: 'line',
+}
+
+export const SHAPE_COLORS = { fill: '#f3b08a', fill2: '#e68a8a', stroke: '#4a4543' }
+
+export const SHAPE_RATIO = { rect: 0.6, arrow: 0.6 }
 
 export const newShape = (kind, view) => {
   const w = Math.max(24, Math.round(view.vw * (kind === 'line' ? 0.4 : 0.3)))
   return {
-    ...base('shape'), kind, x: view.cx, y: view.cy, w, h: Math.round(w * (kind === 'rect' ? 0.6 : 1)),
-    fill: kind === 'line' ? null : '#ff6a13', stroke: kind === 'line' ? '#ff6a13' : '#000000', strokeWidth: kind === 'line' ? Math.max(4, Math.round(w * 0.03)) : 0, radius: 0,
+    ...base('shape'), kind, x: view.cx, y: view.cy, w, h: Math.round(w * (SHAPE_RATIO[kind] || 1)),
+    fill: kind === 'line' ? null : SHAPE_COLORS.fill, gradient: false, fill2: SHAPE_COLORS.fill2, angle: 90,
+    stroke: kind === 'line' ? SHAPE_COLORS.fill : SHAPE_COLORS.stroke, strokeWidth: kind === 'line' ? Math.max(4, Math.round(w * 0.03)) : 0, radius: 0,
   }
+}
+
+const normalise = (pts) => {
+  const xs = pts.map((p) => p[0])
+  const ys = pts.map((p) => p[1])
+  const x0 = Math.min(...xs)
+  const y0 = Math.min(...ys)
+  const sx = Math.max(...xs) - x0
+  const sy = Math.max(...ys) - y0
+  return pts.map(([x, y]) => [(x - x0) / sx - 0.5, (y - y0) / sy - 0.5])
+}
+
+const regular = (n, start) => normalise(Array.from({ length: n }, (_, i) => {
+  const a = ((start + (360 * i) / n) * Math.PI) / 180
+  return [Math.cos(a), Math.sin(a)]
+}))
+
+const starPoints = normalise(Array.from({ length: 10 }, (_, i) => {
+  const a = ((-90 + 36 * i) * Math.PI) / 180
+  const r = i % 2 ? 0.42 : 1
+  return [Math.cos(a) * r, Math.sin(a) * r]
+}))
+
+const poly = (pts) => (ctx, cx, cy, w, h) => {
+  pts.forEach(([x, y], i) => ctx[i ? 'lineTo' : 'moveTo'](cx + x * w, cy + y * h))
+  ctx.closePath()
+}
+
+const heartPath = (ctx, cx, cy, w, h) => {
+  const p = (x, y) => [cx + x * w, cy + y * h]
+  ctx.moveTo(...p(0, -0.25))
+  ctx.bezierCurveTo(...p(0, -0.62), ...p(-0.5, -0.62), ...p(-0.5, -0.1))
+  ctx.bezierCurveTo(...p(-0.5, 0.2), ...p(-0.1, 0.35), ...p(0, 0.5))
+  ctx.bezierCurveTo(...p(0.1, 0.35), ...p(0.5, 0.2), ...p(0.5, -0.1))
+  ctx.bezierCurveTo(...p(0.5, -0.62), ...p(0, -0.62), ...p(0, -0.25))
+  ctx.closePath()
+}
+
+const SHAPE_PATHS = {
+  triangle: poly([[0, -0.5], [0.5, 0.5], [-0.5, 0.5]]),
+  diamond: poly([[0, -0.5], [0.5, 0], [0, 0.5], [-0.5, 0]]),
+  pentagon: poly(regular(5, -90)),
+  hexagon: poly(regular(6, 0)),
+  star: poly(starPoints),
+  arrow: poly([[-0.5, -0.18], [0.05, -0.18], [0.05, -0.5], [0.5, 0], [0.05, 0.5], [0.05, 0.18], [-0.5, 0.18]]),
+  heart: heartPath,
+}
+
+const fillOf = (ctx, l, cx, cy, w, h) => {
+  if (!l.gradient) return l.fill
+  const a = ((l.angle ?? 90) * Math.PI) / 180
+  const c = Math.cos(a)
+  const s = Math.sin(a)
+  const half = (Math.abs(c) * w + Math.abs(s) * h) / 2
+  const g = ctx.createLinearGradient(cx - c * half, cy - s * half, cx + c * half, cy + s * half)
+  g.addColorStop(0, l.fill)
+  g.addColorStop(1, l.fill2 || l.fill)
+  return g
 }
 
 export const emptyLabel = (l, t) => (l.type === 'text' ? t('editor.text.empty') : l.type === 'shape' ? t(`editor.shape.${l.kind}`) : t('editor.layers.image'))
@@ -212,13 +280,15 @@ const DRAWERS = {
       ctx.lineTo(cx + w / 2 - sw / 2, cy)
     } else if (l.kind === 'ellipse') {
       ctx.ellipse(cx, cy, iw / 2, ih / 2, 0, 0, Math.PI * 2)
+    } else if (SHAPE_PATHS[l.kind]) {
+      SHAPE_PATHS[l.kind](ctx, cx, cy, iw, ih)
     } else {
       const r = (Math.min(iw, ih) / 2) * ((l.radius || 0) / 100)
       if (ctx.roundRect) ctx.roundRect(cx - iw / 2, cy - ih / 2, iw, ih, r)
       else ctx.rect(cx - iw / 2, cy - ih / 2, iw, ih)
     }
     if (l.fill && !line) {
-      ctx.fillStyle = l.fill
+      ctx.fillStyle = fillOf(ctx, l, cx, cy, iw, ih)
       ctx.fill()
     }
     if (sw > 0 && l.stroke) {

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import Icon from '../../../../../components/Icon.jsx'
 import Segmented from '../../../../../components/Segmented.jsx'
-import { LAYER_TYPES, emptyLabel, layerName } from '../../utils/layers.js'
+import { LAYER_TYPES, SHAPE_ICONS, emptyLabel, layerName } from '../../utils/layers.js'
 import AdjustPanel from './AdjustPanel.jsx'
 import AlignBar from './AlignBar.jsx'
 import CanvasPanel from './CanvasPanel.jsx'
@@ -26,7 +26,7 @@ export default function Inspector({ layer, actions, thumb, section, setSection, 
   return (
     <>
       <header className="ed-ihead">
-        <span className="ed-ihead-ic"><Icon name={kind.icon} size={16} /></span>
+        <span className="ed-ihead-ic"><Icon name={layer.type === 'shape' ? SHAPE_ICONS[layer.kind] || kind.icon : kind.icon} size={16} /></span>
         <input className="ed-iname" type="text" value={layer.name || ''} maxLength={60} disabled={layer.locked}
           placeholder={name} aria-label={t('editor.layers.name')}
           onChange={(e) => actions.patch(layer.id, { name: e.target.value }, `name:${layer.id}`)} />
