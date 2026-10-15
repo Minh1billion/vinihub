@@ -22,7 +22,9 @@
     "studio": "Studio",
     "billing": "Plans",
     "providers": "Providers",
-    "market": "Market"
+    "market": "Market",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar"
   },
   "auth": {
     "logout": "Sign out"

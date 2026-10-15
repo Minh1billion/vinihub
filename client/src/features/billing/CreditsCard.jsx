@@ -5,7 +5,7 @@ import Icon from '../../components/Icon.jsx'
 import Meter from '../../components/Meter.jsx'
 import { intlLocale } from '../../i18n/index.js'
 
-export default function CreditsCard() {
+export default function CreditsCard({ compact = false }) {
   const { t } = useTranslation()
   const { subscription: sub } = useApp()
   if (!sub) return null
@@ -18,9 +18,10 @@ export default function CreditsCard() {
   const fmt = (n) => n.toLocaleString(intlLocale())
 
   return (
-    <NavLink to="/billing" className={'credits' + (low ? ' low' : '') + (upsell ? ' upsell' : '')}>
+    <NavLink to="/billing" className={'credits' + (low ? ' low' : '') + (upsell ? ' upsell' : '')}
+      data-tip={compact ? `${fmt(left)} ${t('billing.creditsLeft')}` : undefined}>
       <span className="credits-top">
-        <span className="credits-plan"><Icon name="studio" size={14} />{plan.name}</span>
+        <span className="credits-plan"><Icon name="studio" size={14} /><span className="credits-name">{plan.name}</span></span>
         <span className="credits-cta">
           {upsell ? t('billing.upgrade') : t('billing.manage')}
           <Icon name="chevron" size={14} />

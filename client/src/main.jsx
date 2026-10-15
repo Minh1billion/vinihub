@@ -19,6 +19,7 @@ import './styles/providers.css'
 import './styles/auth.css'
 import './styles/workspace.css'
 import './styles/motion.css'
+import './styles/sidebar.css'
 import './styles/fit.css'
 
 createRoot(document.getElementById('root')).render(<App />)

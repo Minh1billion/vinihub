@@ -83,6 +83,8 @@ const PATHS = {
   fitContain: <><rect x="3" y="3" width="18" height="18" rx="2" /><rect x="7" y="8" width="10" height="8" rx="1" /></>,
   fitCover: <><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3" /><rect x="1.5" y="7" width="21" height="10" rx="1" /></>,
   vignette: <><rect x="3" y="4" width="18" height="16" rx="3" /><circle cx="12" cy="12" r="4" /></>,
+  panelLeft: <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M9 4v16" /></>,
+  logout: <><path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4" /><path d="M15 8l4 4-4 4" /><path d="M19 12H9" /></>,
 }
 
 export default function Icon({ name, size = 18 }) {

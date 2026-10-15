@@ -8,7 +8,7 @@ const SELECTOR = [
   '.btn',
   '.segmented button',
   '.page-tabs a',
-  '.side-nav a',
+  '.side:not(.side--collapsed) .side-nav a',
   '.mobile-nav a',
 ].join(',')
 

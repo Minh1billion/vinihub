@@ -1,0 +1,87 @@
+.side-toggle, .side-expand { display: none; }
+
+@media (min-width: 901px) {
+  .shell--collapsed { --side-w: var(--side-w-min); }
+  .side { overflow-x: hidden; }
+
+  .side > .side-head { transition: padding 0.26s var(--ease-out); }
+  .side--collapsed > .side-head { padding: 0 0 0 23px; }
+  .side-head .brand-logo { transition: opacity 0.15s ease-out; }
+  .side-head .brand span { transition: opacity 0.18s ease-out 0.08s; }
+  .side--collapsed .side-head .brand span { opacity: 0; transition-delay: 0s; }
+
+  .side .side-toggle {
+    position: absolute; top: 50%; right: 14px; display: inline-grid; margin-top: -17px;
+    transition: right 0.26s var(--ease-out), opacity 0.15s ease-out, background-color 0.15s, box-shadow 0.12s var(--ease-out), transform 0.12s var(--ease-out);
+  }
+  .side--collapsed .side-toggle { right: 20px; opacity: 0; visibility: hidden; pointer-events: none; }
+
+  .side .side-expand {
+    flex: none; display: inline-grid; width: 100%; height: 34px; margin-top: -48px; opacity: 0; visibility: hidden; background: var(--orange);
+    transition: margin-top 0.26s var(--ease-out), opacity 0.1s ease-out, visibility 0s linear 0.26s, background-color 0.15s, box-shadow 0.12s var(--ease-out), transform 0.12s var(--ease-out);
+  }
+  .side .side-expand:hover:not(:disabled) { background: #ff7d2e; }
+  .side--collapsed .side-expand { margin-top: 0; opacity: 1; visibility: visible; transition-delay: 0s, 0.12s, 0s, 0s, 0s, 0s; }
+
+  .side .ws-trigger {
+    overflow: hidden;
+    transition: padding 0.26s var(--ease-out), background-color 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.12s var(--ease-out), transform 0.12s var(--ease-out);
+  }
+  .side--collapsed .ws-trigger { padding-left: 7px; padding-right: 7px; }
+  .ws-name { transition: opacity 0.15s ease-out 0.08s; }
+  .side--collapsed .ws-name { opacity: 0; transition-delay: 0s; }
+  .ws-list--fly { position: fixed; right: auto; z-index: 50; width: 268px; overflow-y: auto; transform-origin: top left; }
+
+  .side-nav a { overflow: hidden; white-space: nowrap; }
+  .side-nav a > svg, .credits-plan > svg { flex: none; }
+  .side-label { transition: opacity 0.18s ease-out 0.08s; }
+  .side--collapsed .side-label { opacity: 0; transition-delay: 0s; }
+
+  .side .credits {
+    transition: padding 0.26s var(--ease-out), background-color 0.15s, transform 0.12s var(--ease-out), box-shadow 0.12s var(--ease-out);
+  }
+  .credits-top { position: relative; }
+  .credits-plan { transition: padding 0.26s var(--ease-out), color 0.15s, border-color 0.15s; }
+  .credits-name {
+    display: block; max-width: 140px; overflow: hidden; white-space: nowrap;
+    transition: max-width 0.26s var(--ease-out), margin 0.26s var(--ease-out), opacity 0.15s ease-out;
+  }
+  .credits-cta { transition: opacity 0.15s ease-out; }
+  .credits-left, .credits-foot, .credits .meter {
+    overflow: hidden;
+    transition: max-height 0.26s var(--ease-out), margin-top 0.26s var(--ease-out), opacity 0.15s ease-out;
+  }
+  .credits-left { max-height: 40px; }
+  .credits-foot { max-height: 40px; }
+  .credits .meter { max-height: 12px; }
+
+  .side--collapsed .credits { padding: 10px 7px; }
+  .side--collapsed .credits-plan { padding: 0 6px; }
+  .side--collapsed .credits-name { max-width: 0; margin-left: -6px; opacity: 0; }
+  .side--collapsed .credits-cta { position: absolute; top: 50%; right: 0; opacity: 0; pointer-events: none; transform: translateY(-50%); }
+  .side--collapsed .credits-left,
+  .side--collapsed .credits-foot,
+  .side--collapsed .credits .meter { max-height: 0; margin-top: -10px; opacity: 0; }
+  .side--collapsed .credits.low .credits-plan { color: var(--danger); border-color: var(--danger); }
+
+  .side .usercard { flex-direction: column; align-items: flex-start; gap: 0; transition: padding 0.26s var(--ease-out); }
+  .usercard-main { display: flex; align-items: center; gap: 10px; max-width: 100%; }
+  .usercard-text {
+    min-width: 0; max-width: 180px; overflow: hidden; white-space: nowrap;
+    transition: max-width 0.26s var(--ease-out), margin 0.26s var(--ease-out), opacity 0.15s ease-out 0.08s;
+  }
+  .side .usercard-out {
+    align-self: center; margin-top: -28px; opacity: 0; visibility: hidden;
+    transition: margin-top 0.26s var(--ease-out), opacity 0.1s ease-out, visibility 0s linear 0.26s, background-color 0.15s, box-shadow 0.12s var(--ease-out), transform 0.12s var(--ease-out);
+  }
+  .side--collapsed .usercard { padding: 0 6px; }
+  .side--collapsed .usercard-text { max-width: 0; margin-left: -10px; opacity: 0; transition-delay: 0s; }
+  .side--collapsed .usercard-out {
+    margin-top: 8px; opacity: 1; visibility: visible;
+    transition-delay: 0s, 0.12s, 0s, 0s, 0s, 0s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell, .side, .side * { transition-duration: 0s !important; transition-delay: 0s !important; }
+}
