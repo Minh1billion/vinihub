@@ -23,18 +23,21 @@ export const resetLayouts = () => window.dispatchEvent(new Event(RESET))
  * Width of a resizable leading column inside a grid container.
  * Attach `box` to the container, apply `width` as a CSS variable, and spread `handle` on a separator.
  */
-export default function useResizable({ id, def, min, max, minRest = 400 }) {
+export default function useResizable({ id, def, min, max, minRest = 400, axis = 'x', reverse = false }) {
   const box = useRef(null)
   const drag = useRef(null)
   const latest = useRef(null)
   const [width, setWidth] = useState(() => load(id, def))
   const [active, setActive] = useState(false)
 
+  const vertical = axis === 'y'
+  const sign = reverse ? -1 : 1
+
   const limit = useCallback(() => {
-    const total = box.current?.clientWidth
+    const total = vertical ? box.current?.clientHeight : box.current?.clientWidth
     if (!total) return max // hidden panel: nothing to measure yet
     return Math.max(min, Math.min(max, total - minRest))
-  }, [min, max, minRest])
+  }, [min, max, minRest, vertical])
 
   const set = useCallback((value, persist) => {
     const next = clamp(Math.round(value), min, limit())
@@ -64,12 +67,13 @@ export default function useResizable({ id, def, min, max, minRest = 400 }) {
 
   useEffect(() => {
     document.documentElement.classList.toggle('is-resizing', active)
-    return () => document.documentElement.classList.remove('is-resizing')
-  }, [active])
+    document.documentElement.classList.toggle('is-resizing-y', active && vertical)
+    return () => document.documentElement.classList.remove('is-resizing', 'is-resizing-y')
+  }, [active, vertical])
 
   const handle = (label) => ({
     role: 'separator',
-    'aria-orientation': 'vertical',
+    'aria-orientation': vertical ? 'horizontal' : 'vertical',
     'aria-label': label,
     'aria-valuemin': min,
     'aria-valuemax': max,
@@ -79,11 +83,11 @@ export default function useResizable({ id, def, min, max, minRest = 400 }) {
     onPointerDown(e) {
       if (e.button !== 0) return
       e.currentTarget.setPointerCapture(e.pointerId)
-      drag.current = { x: e.clientX, w: width }
+      drag.current = { x: vertical ? e.clientY : e.clientX, w: width }
       setActive(true)
     },
     onPointerMove(e) {
-      if (drag.current) set(drag.current.w + e.clientX - drag.current.x, false)
+      if (drag.current) set(drag.current.w + sign * ((vertical ? e.clientY : e.clientX) - drag.current.x), false)
     },
     onPointerUp(e) {
       if (!drag.current) return
@@ -96,7 +100,7 @@ export default function useResizable({ id, def, min, max, minRest = 400 }) {
     onDoubleClick() { set(def, false); try { localStorage.removeItem(KEY(id)) } catch { /* ignore */ } },
     onKeyDown(e) {
       const step = e.shiftKey ? 48 : 16
-      const moves = { ArrowLeft: -step, ArrowRight: step }
+      const moves = vertical ? { ArrowUp: -step * sign, ArrowDown: step * sign } : { ArrowLeft: -step * sign, ArrowRight: step * sign }
       if (e.key in moves) { e.preventDefault(); set(width + moves[e.key], true) }
       else if (e.key === 'Home') { e.preventDefault(); set(min, true) }
       else if (e.key === 'End') { e.preventDefault(); set(max, true) }

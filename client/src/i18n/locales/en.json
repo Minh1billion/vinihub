@@ -532,25 +532,25 @@
     "storyTextPlaceholder": "Short text shown over the story…"
   },
   "editor": {
-    "title": "Image editor",
+    "title": "Editor",
     "tools": "Editing tools",
     "loading": "Loading image…",
-    "loadFailed": "Could not load this image.",
-    "imageOnly": "Only images can be edited for now.",
-    "emptyTitle": "Pick an image to edit",
-    "emptyText": "Hover an image in the Library and press Edit, or upload one here. Edits are saved as a new image; the original stays untouched.",
+    "loadFailed": "Could not load image.",
+    "imageOnly": "Images only.",
+    "emptyTitle": "Canvas",
+    "emptyText": "Upload an image or add text to start.",
     "upload": "Upload an image",
     "undo": "Undo",
     "redo": "Redo",
-    "compare": "Hold to compare with the original",
-    "reset": "Reset all",
-    "confirmDiscard": "You have unsaved edits. Discard them and open another image?",
+    "compare": "Hold to compare",
+    "reset": "Reset",
+    "confirmDiscard": "Discard unsaved edits?",
     "discard": "Discard",
     "tool": {
       "crop": "Crop",
       "adjust": "Adjust",
       "filters": "Filters",
-      "text": "Text"
+      "insert": "Insert"
     },
     "crop": {
       "orientation": "Orientation",
@@ -560,13 +560,15 @@
       "flipV": "Flip vertical",
       "free": "Free",
       "original": "Original",
-      "platforms": "4:5 suits Instagram feed, 9:16 TikTok, Reels and Shorts, 16:9 YouTube.",
-      "size": "Result size",
-      "hint": "Drag the frame to move it and the handles to resize it.",
+      "platforms": "Pick a ratio for your platform.",
+      "size": "Size",
+      "hint": "Drag the frame to crop.",
       "clear": "Reset crop",
-      "presets": "Platform presets",
-      "presetSize": "Recommended size: {{w}} × {{h}} px.",
-      "presetSmall": "Your crop is smaller than recommended and may look soft."
+      "presets": "Presets",
+      "presetSize": "Recommended: {{w}} × {{h}} px.",
+      "presetSmall": "Smaller than recommended.",
+      "apply": "Apply crop",
+      "cancel": "Cancel"
     },
     "adjust": {
       "brightness": "Brightness",
@@ -575,7 +577,7 @@
       "temperature": "Temperature",
       "blur": "Blur",
       "vignette": "Vignette",
-      "reset": "Reset adjustments"
+      "reset": "Reset"
     },
     "filter": {
       "none": "Original",
@@ -591,7 +593,7 @@
       "add": "Add text",
       "default": "Your text",
       "empty": "(empty)",
-      "placeholder": "Type your text",
+      "placeholder": "Type text",
       "content": "Text",
       "color": "Color",
       "size": "Size",
@@ -599,25 +601,107 @@
       "regular": "Regular",
       "bold": "Bold",
       "outline": "Outline",
-      "background": "Background box",
-      "remove": "Remove text",
-      "hint": "Drag text on the image to move it."
+      "background": "Background",
+      "remove": "Delete",
+      "hint": "Drag text to move it."
+    },
+    "needImage": "Select an image layer.",
+    "layers": {
+      "image": "Image",
+      "title": "Layers",
+      "base": "Image",
+      "show": "Show",
+      "hide": "Hide",
+      "lock": "Lock",
+      "unlock": "Unlock",
+      "up": "Move up",
+      "down": "Move down",
+      "duplicate": "Duplicate",
+      "remove": "Delete",
+      "imageFailed": "Could not read this image.",
+      "lockedHint": "Layer is locked.",
+      "name": "Name",
+      "blend": "Blend",
+      "copySuffix": "copy",
+      "blends": {
+        "normal": "Normal",
+        "multiply": "Multiply",
+        "screen": "Screen",
+        "overlay": "Overlay",
+        "darken": "Darken",
+        "lighten": "Lighten"
+      },
+      "canvas": "Canvas"
+    },
+    "insert": {
+      "hint": "Add text or an image."
+    },
+    "image": {
+      "add": "Add image",
+      "fit": "Fit",
+      "size": "Size",
+      "opacity": "Opacity",
+      "reset": "Original size"
     },
     "export": {
       "open": "Export",
-      "title": "Export image",
+      "title": "Export",
       "format": "Format",
       "quality": "Quality",
       "scale": "Size",
       "save": "Save to Library",
-      "failed": "Could not export the image."
+      "failed": "Export failed.",
+      "target": "Area",
+      "all": "All layers",
+      "selection": "Selected layer",
+      "empty": "Nothing to export."
     },
     "saved": {
-      "title": "Saved to the Library as a new image.",
-      "continue": "Keep editing the copy",
-      "asReference": "Use as reference in Image",
-      "asFrame": "Use as first frame in Video"
+      "title": "Saved to Library.",
+      "continue": "Keep editing",
+      "asReference": "Use as reference",
+      "asFrame": "Use as video frame"
     },
-    "preview": "Preview in Simulator"
+    "preview": "Preview",
+    "rail": {
+      "canvas": "Canvas",
+      "text": "Text",
+      "image": "Image",
+      "crop": "Crop"
+    },
+    "inspector": {
+      "hint": "Select a layer to edit.",
+      "sections": "Settings",
+      "transform": "Transform"
+    },
+    "layer": {
+      "rotation": "Rotation",
+      "opacity": "Opacity",
+      "center": "Center"
+    },
+    "canvas": {
+      "size": "Size",
+      "width": "Width",
+      "height": "Height",
+      "hint": "Layers stay centered.",
+      "background": "Background",
+      "transparent": "Transparent",
+      "color": "Color"
+    },
+    "nav": {
+      "zoom": "Scroll to zoom.",
+      "pan": "Drag to pan."
+    },
+    "zoom": {
+      "label": "Zoom",
+      "in": "Zoom in",
+      "out": "Zoom out",
+      "fit": "Fit",
+      "reset": "100%"
+    },
+    "group": {
+      "style": "Style",
+      "layer": "Layer"
+    }
   }
 }

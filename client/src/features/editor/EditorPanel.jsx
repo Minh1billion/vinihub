@@ -9,38 +9,20 @@ import Dropzone from '../../components/Dropzone.jsx'
 import EmptyState from '../../components/EmptyState.jsx'
 import { FieldError } from '../../components/Field.jsx'
 import Icon from '../../components/Icon.jsx'
+import Resizer from '../../components/Resizer.jsx'
+import useResizable from '../../hooks/useResizable.js'
 import { useLibrary } from '../library/LibraryContext.jsx'
 import ExportModal from './ExportModal.jsx'
+import AddImage from './AddImage.jsx'
+import LayersPanel from './LayersPanel.jsx'
 import Stage from './Stage.jsx'
-import AdjustPanel from './panels/AdjustPanel.jsx'
-import CropPanel from './panels/CropPanel.jsx'
-import FilterPanel from './panels/FilterPanel.jsx'
-import TextPanel from './panels/TextPanel.jsx'
-import { PLATFORM_PRESETS, drawResult, initialEdit, makeThumb, orient, ratioValue, rectOf } from './edit.js'
+import Inspector from './panels/Inspector.jsx'
+import { HOME, MAX_ZOOM, MIN_ZOOM, clampZoom, contentBox, drawExport, exportWidth, fitCam, initialEdit, makeThumb } from './edit.js'
+import { newImage } from './layers.js'
+import { orient } from './pixels.js'
 import { loadBitmap } from './source.js'
 import useEditor from './useEditor.js'
-
-const TOOLS = [
-  { key: 'crop', icon: 'crop' },
-  { key: 'adjust', icon: 'sliders' },
-  { key: 'filters', icon: 'drop' },
-  { key: 'text', icon: 'type' },
-]
-
-const BLANK = { width: 1080, height: 1080 }
-
-function blankThumb() {
-  const c = document.createElement('canvas')
-  c.width = 128
-  c.height = 128
-  const g = c.getContext('2d')
-  const grad = g.createLinearGradient(0, 0, 128, 128)
-  grad.addColorStop(0, '#ffdcc2')
-  grad.addColorStop(1, '#f1ebe3')
-  g.fillStyle = grad
-  g.fillRect(0, 0, 128, 128)
-  return c
-}
+import useLayerActions from './useLayerActions.js'
 
 export default function EditorPanel({ active, onSend, onPreview }) {
   const { t } = useTranslation()
@@ -54,25 +36,35 @@ export default function EditorPanel({ active, onSend, onPreview }) {
   const [doc, setDoc] = useState(null)
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState('')
-  const [tool, setTool] = useState('crop')
-  const [ratioKey, setRatioKey] = useState('free')
-  const [presetKey, setPresetKey] = useState(null)
+  const [cam, setCam] = useState(HOME)
+  const [box, setBox] = useState({ w: 0, h: 0 })
+  const [section, setSection] = useState('transform')
   const [previewing, setPreviewing] = useState(false)
   const [selected, setSelected] = useState(null)
   const [original, setOriginal] = useState(false)
   const [exporting, setExporting] = useState(false)
   const [saved, setSaved] = useState(null)
+  const select = (id) => setSelected(id)
+  const rzSide = useResizable({ id: 'editor.side', def: 320, min: 260, max: 560, minRest: 500, reverse: true })
+  const rzLayers = useResizable({ id: 'editor.layers', def: 280, min: 150, max: 640, minRest: 200, axis: 'y', reverse: true })
   const latest = useRef({})
-  latest.current = { doc, dirty: canUndo, saved }
+  const getView = () => {
+    const { cam: c, box: b } = latest.current
+    return { cx: c.cx, cy: c.cy, vw: (b.w || 800) / c.z, vh: (b.h || 600) / c.z }
+  }
+  const actions = useLayerActions({ commit, getView, onSelect: select, onError: setErr })
 
-  const oriented = useMemo(
-    () => (doc ? orient(doc.bitmap, edit.rotate, edit.flipH, edit.flipV) : null),
-    [doc, edit.rotate, edit.flipH, edit.flipV]
+  const originalEdit = useMemo(() => (doc ? { layers: [doc.base] } : initialEdit), [doc])
+  const layer = edit.layers.find((x) => x.id === selected) || null
+  latest.current = { doc, dirty: canUndo, saved, layer, actions, cam, box }
+  const content = useMemo(() => contentBox(edit.layers), [edit.layers])
+  const target = layer?.type === 'image' ? layer : null
+  const thumb = useMemo(
+    () => (target ? makeThumb(orient(target.bitmap, 0, target.flipH, target.flipV)) : null),
+    [target?.bitmap, target?.flipH, target?.flipV]
   )
-  const thumb = useMemo(() => (oriented ? makeThumb(oriented) : null), [oriented])
-  const lock = oriented ? ratioValue(ratioKey, oriented.width, oriented.height) : null
-  const crop = oriented ? rectOf(oriented, edit.crop) : null
-  const placeholderThumb = useMemo(blankThumb, [])
+  const zoomBy = (f) => setCam((c) => ({ ...c, z: clampZoom(c.z * f) }))
+  const fit = () => setCam(fitCam(content, box))
 
   useEffect(() => () => doc?.bitmap.close(), [doc])
   useEffect(() => { setSaved(null) }, [edit])
@@ -92,13 +84,12 @@ export default function EditorPanel({ active, onSend, onPreview }) {
         if (asset.kind !== 'image') throw new Error(t('editor.imageOnly'))
         const bitmap = await loadBitmap(wid, wanted)
         if (!alive) { bitmap.close(); return }
-        setDoc({ asset, bitmap })
-        clear()
+        const base = newImage(bitmap, asset.name || asset.original_name || asset.filename || '', { cx: 0, cy: 0 }, false)
+        setDoc({ asset, bitmap, base })
+        clear({ layers: [base] })
+        setCam(fitCam(contentBox([base]), latest.current.box))
         setSaved(null)
-        setSelected(null)
-        setRatioKey('free')
-        setPresetKey(null)
-        setTool('crop')
+        setSelected(base.id)
       } catch (e) {
         if (alive) setErr(e.message || t('editor.loadFailed'))
       } finally {
@@ -112,11 +103,27 @@ export default function EditorPanel({ active, onSend, onPreview }) {
   useEffect(() => {
     if (!active) return
     const onKey = (e) => {
-      if (!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'z') return
       if (/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName)) return
+      const mod = e.ctrlKey || e.metaKey
+      const key = e.key.toLowerCase()
+      const { layer: current, actions: act } = latest.current
+      if (mod && key === 'z') {
+        e.preventDefault()
+        if (e.shiftKey) redo()
+        else undo()
+        return
+      }
+      if (!current) return
+      if (key === 'escape') { setSelected(null); return }
+      if (mod && key === 'd') { e.preventDefault(); act.duplicate(current); return }
+      if (current.locked) return
+      if (key === 'delete' || key === 'backspace') { e.preventDefault(); act.remove(current.id); return }
+      const step = e.shiftKey ? 10 : 1
+      const dx = key === 'arrowleft' ? -step : key === 'arrowright' ? step : 0
+      const dy = key === 'arrowup' ? -step : key === 'arrowdown' ? step : 0
+      if (!dx && !dy) return
       e.preventDefault()
-      if (e.shiftKey) redo()
-      else undo()
+      act.patch(current.id, { x: current.x + dx, y: current.y + dy }, `nudge:${current.id}`)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -129,18 +136,23 @@ export default function EditorPanel({ active, onSend, onPreview }) {
     return () => window.removeEventListener('beforeunload', warn)
   }, [canUndo, saved])
 
-  const render = async ({ format, quality, scale }) => {
-    const canvas = document.createElement('canvas')
-    drawResult(canvas, oriented, edit, Math.max(1, Math.round(crop.w * scale)), format === 'jpeg')
-    const blob = await new Promise((resolve) => canvas.toBlob(resolve, `image/${format}`, quality))
+  const tag = doc ? doc.asset.id.slice(0, 8) : 'new'
+
+  const render = async ({ format, quality, scale, target: what }) => {
+    const layers = what === 'selection' && layer ? [layer] : edit.layers
+    const area = contentBox(layers)
+    if (!area) throw new Error(t('editor.export.empty'))
+    const el = document.createElement('canvas')
+    drawExport(el, layers, area, exportWidth(area, scale), format === 'jpeg')
+    const blob = await new Promise((resolve) => el.toBlob(resolve, `image/${format}`, quality))
     if (!blob) throw new Error(t('editor.export.failed'))
-    return { blob, width: canvas.width, height: canvas.height, ext: blob.type.split('/')[1].replace('jpeg', 'jpg') }
+    return { blob, width: el.width, height: el.height, ext: blob.type.split('/')[1].replace('jpeg', 'jpg') }
   }
 
   const save = async (opts) => {
     const { blob, width, height, ext } = await render(opts)
-    const file = new File([blob], `edit-${doc.asset.id.slice(0, 8)}.${ext}`, { type: blob.type })
-    const asset = await uploadFile(wid, file, { parent_id: doc.asset.id, meta: JSON.stringify({ width, height }) })
+    const file = new File([blob], `edit-${tag}.${ext}`, { type: blob.type })
+    const asset = await uploadFile(wid, file, { ...(doc ? { parent_id: doc.asset.id } : {}), meta: JSON.stringify({ width, height }) })
     notifyCreated()
     setSaved(asset)
   }
@@ -150,7 +162,7 @@ export default function EditorPanel({ active, onSend, onPreview }) {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `edit-${doc.asset.id.slice(0, 8)}.${ext}`
+    a.download = `edit-${tag}.${ext}`
     a.click()
     setTimeout(() => URL.revokeObjectURL(url), 2000)
   }
@@ -159,11 +171,8 @@ export default function EditorPanel({ active, onSend, onPreview }) {
     setPreviewing(true)
     setErr('')
     try {
-      const { blob, width, height, ext } = await render({ format: 'jpeg', quality: 0.92, scale: Math.min(1, 1600 / crop.w) })
-      const target = PLATFORM_PRESETS.find((p) => p.key === presetKey)
+      const { blob, width, height, ext } = await render({ format: 'jpeg', quality: 0.92, scale: Math.min(1, 1600 / content.w), target: 'all' })
       onPreview({
-        platform: target?.platform,
-        format: target?.format,
         media: { id: `edit-${Date.now()}`, url: URL.createObjectURL(blob), kind: 'image', name: `edit.${ext}`, w: width, h: height },
       })
     } catch (e) {
@@ -173,22 +182,29 @@ export default function EditorPanel({ active, onSend, onPreview }) {
     }
   }
 
-  const onMoveText = (id, x, y) => commit((e) => ({ ...e, texts: e.texts.map((v) => (v.id === id ? { ...v, x, y } : v)) }), `move:${id}`)
-  const onCrop = (rect) => commit((e) => ({ ...e, crop: rect }), 'crop')
+  const onPatch = (id, change) => actions.patch(id, change, `transform:${id}`)
 
   return (
-    <div className="ed">
+    <div className="ed ed-theme">
       <header className="ed-bar">
-        <strong className="ed-name">{t('editor.title')}</strong>
-        <span className="num ed-dims">{crop ? `${crop.w} × ${crop.h}` : '– × –'}</span>
-        <button type="button" className="icon-btn" disabled={!canUndo} onClick={undo} aria-label={t('editor.undo')} title={t('editor.undo')}><Icon name="undo" /></button>
-        <button type="button" className="icon-btn" disabled={!canRedo} onClick={redo} aria-label={t('editor.redo')} title={t('editor.redo')}><Icon name="redo" /></button>
-        <button type="button" className="icon-btn" disabled={!doc} aria-label={t('editor.compare')} title={t('editor.compare')}
-          onPointerDown={() => setOriginal(true)} onPointerUp={() => setOriginal(false)}
-          onPointerLeave={() => setOriginal(false)} onPointerCancel={() => setOriginal(false)}><Icon name="eye" /></button>
-        <Button variant="ghost" size="sm" icon="refresh" disabled={!canUndo} onClick={() => { setRatioKey('free'); setPresetKey(null); commit(() => initialEdit) }}>{t('editor.reset')}</Button>
-        <Button variant="ghost" size="sm" icon="simulator" disabled={!doc || previewing} onClick={preview}>{t('editor.preview')}</Button>
-        <Button size="sm" icon="download" disabled={!doc} onClick={() => setExporting(true)}>{t('editor.export.open')}</Button>
+        <div className="ed-brand">
+          <img className="ed-logo" src="/logo.png" alt="" />
+          <strong className="ed-name">{t('editor.title')}</strong>
+          <span className="num ed-dims">{content ? `${Math.round(content.w)} × ${Math.round(content.h)}` : '– × –'}</span>
+        </div>
+        <div className="ed-group" role="group">
+          <button type="button" className="icon-btn" disabled={!canUndo} onClick={undo} aria-label={t('editor.undo')} title={t('editor.undo')}><Icon name="undo" /></button>
+          <button type="button" className="icon-btn" disabled={!canRedo} onClick={redo} aria-label={t('editor.redo')} title={t('editor.redo')}><Icon name="redo" /></button>
+          <button type="button" className="icon-btn" disabled={!doc} aria-label={t('editor.compare')} title={t('editor.compare')}
+            onPointerDown={() => setOriginal(true)} onPointerUp={() => setOriginal(false)}
+            onPointerLeave={() => setOriginal(false)} onPointerCancel={() => setOriginal(false)}><Icon name="eye" /></button>
+          <button type="button" className="icon-btn" disabled={!canUndo} aria-label={t('editor.reset')} title={t('editor.reset')}
+            onClick={() => commit(() => originalEdit)}><Icon name="refresh" /></button>
+        </div>
+        <div className="ed-group">
+          <Button variant="ghost" size="sm" icon="simulator" disabled={previewing || !content} onClick={preview}>{t('editor.preview')}</Button>
+          <Button size="sm" icon="download" disabled={!content} onClick={() => setExporting(true)}>{t('editor.export.open')}</Button>
+        </div>
       </header>
       {err && (
         <div className="ed-saved is-err" role="alert">
@@ -207,39 +223,53 @@ export default function EditorPanel({ active, onSend, onPreview }) {
           <button type="button" className="icon-btn" onClick={() => setSaved(null)} aria-label={t('common.close')}><Icon name="close" size={14} /></button>
         </div>
       )}
-      <div className="ed-body">
+      <div className="ed-body" ref={rzSide.box} style={{ '--props-w': `${rzSide.width}px` }}>
         <nav className="ed-rail" aria-label={t('editor.tools')}>
-          {TOOLS.map((x) => (
-            <button key={x.key} type="button" className={'ed-tool' + (tool === x.key ? ' on' : '')} aria-pressed={tool === x.key} onClick={() => setTool(x.key)}>
-              <Icon name={x.icon} size={22} />
-              <span>{t(`editor.tool.${x.key}`)}</span>
-            </button>
-          ))}
-        </nav>
-        {doc ? (
-          <Stage source={doc.bitmap} oriented={oriented} edit={edit} tool={tool} lock={lock} original={original} active={active}
-            onSelect={setSelected} onMoveText={onMoveText} onCrop={onCrop} />
-        ) : (
-          <section className="ed-stage">
-            {loading ? <p className="page-loading">{t('editor.loading')}</p> : (
-              <EmptyState title={t('editor.emptyTitle')} text={t('editor.emptyText')}>
-                <FieldError>{err}</FieldError>
-                <Dropzone accept="image/*" cta={t('editor.upload')} value={null}
-                  onChange={(a) => a && navigate(`/studio/editor?asset=${a.id}`)} />
-              </EmptyState>
+          <button type="button" className="ed-tool" onClick={() => actions.addText()}>
+            <span className="ed-tool-ic"><Icon name="type" size={20} /></span>
+            <span>{t('editor.rail.text')}</span>
+          </button>
+          <AddImage onFile={(file) => actions.addImage(file)}>
+            {(open) => (
+              <button type="button" className="ed-tool" onClick={open}>
+                <span className="ed-tool-ic"><Icon name="image" size={20} /></span>
+                <span>{t('editor.rail.image')}</span>
+              </button>
             )}
-          </section>
-        )}
-        <aside className="ed-props">
-          <fieldset className="ed-lock" disabled={!doc}>
-            {tool === 'crop' && <CropPanel edit={edit} commit={commit} oriented={oriented || BLANK} ratioKey={ratioKey} setRatioKey={setRatioKey} presetKey={presetKey} setPresetKey={setPresetKey} />}
-            {tool === 'adjust' && <AdjustPanel edit={edit} commit={commit} />}
-            {tool === 'filters' && <FilterPanel edit={edit} commit={commit} thumb={thumb || placeholderThumb} />}
-            {tool === 'text' && <TextPanel edit={edit} commit={commit} selected={selected} onSelect={setSelected} />}
-          </fieldset>
+          </AddImage>
+        </nav>
+        <Stage edit={edit} originalEdit={originalEdit} original={original} active={active}
+          selected={selected} onSelect={select} onPatch={onPatch} cam={cam} setCam={setCam} onBox={setBox}>
+          {!edit.layers.length && (
+            <div className="ed-stage-hint" onPointerDown={(e) => e.stopPropagation()}>
+              {loading ? <p className="page-loading">{t('editor.loading')}</p> : (
+                <>
+                  <strong>{t('editor.emptyTitle')}</strong>
+                  <small>{t('editor.emptyText')}</small>
+                  <FieldError>{err}</FieldError>
+                  <Dropzone accept="image/*" cta={t('editor.upload')} value={null} compact
+                    onChange={(a) => a && navigate(`/studio/editor?asset=${a.id}`)} />
+                </>
+              )}
+            </div>
+          )}
+          <div className="ed-zoom" role="group" aria-label={t('editor.zoom.label')} onPointerDown={(e) => e.stopPropagation()}>
+            <button type="button" className="icon-btn" disabled={cam.z <= MIN_ZOOM} onClick={() => zoomBy(1 / 1.25)} aria-label={t('editor.zoom.out')} title={t('editor.zoom.out')}><Icon name="minus" size={16} /></button>
+            <button type="button" className="ed-zoom-val num" onClick={() => setCam((c) => ({ ...c, z: 1 }))} title={t('editor.zoom.reset')}>{Math.round(cam.z * 100)}%</button>
+            <button type="button" className="icon-btn" disabled={cam.z >= MAX_ZOOM} onClick={() => zoomBy(1.25)} aria-label={t('editor.zoom.in')} title={t('editor.zoom.in')}><Icon name="plus" size={16} /></button>
+            <button type="button" className="icon-btn" disabled={!content} onClick={fit} aria-label={t('editor.zoom.fit')} title={t('editor.zoom.fit')}><Icon name="expand" size={16} /></button>
+          </div>
+        </Stage>
+        <Resizer rz={rzSide} label={t('common.resize')} />
+        <aside className="ed-props" ref={rzLayers.box} style={{ '--layers-h': `${rzLayers.width}px` }}>
+          <div className="ed-tool-panel">
+            <Inspector layer={layer} actions={actions} thumb={thumb} section={section} setSection={setSection} />
+          </div>
+          <Resizer rz={rzLayers} axis="y" label={t('common.resize')} />
+          <LayersPanel edit={edit} actions={actions} selected={selected} onSelect={select} />
         </aside>
       </div>
-      {exporting && doc && <ExportModal size={crop} onSave={save} onDownload={download} onClose={() => setExporting(false)} />}
+      {exporting && <ExportModal hasSelection={Boolean(layer)} measure={(what) => contentBox(what === 'selection' && layer ? [layer] : edit.layers)} onSave={save} onDownload={download} onClose={() => setExporting(false)} />}
     </div>
   )
 }

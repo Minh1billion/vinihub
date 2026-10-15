@@ -187,5 +187,10 @@
 .resizer:hover::after, .resizer:focus-visible::after, .resizer.active::after { opacity: 1; }
 .resizer:hover i, .resizer:focus-visible i, .resizer.active i { background: var(--orange); }
 .resizer.active::after { background: var(--orange); }
+.resizer-y { width: auto; height: 0; cursor: row-resize; }
+.resizer-y::before { top: -6px; bottom: auto; left: 0; right: 0; width: auto; height: 12px; }
+.resizer-y i { top: -2px; bottom: auto; left: 0; right: 0; width: auto; height: 4px; }
+.resizer-y::after { top: -5px; left: 50%; width: 40px; height: 10px; transform: translateX(-50%); }
 .is-resizing, .is-resizing * { cursor: col-resize !important; user-select: none !important; }
+.is-resizing-y, .is-resizing-y * { cursor: row-resize !important; }
 .is-resizing iframe, .is-resizing video { pointer-events: none; }

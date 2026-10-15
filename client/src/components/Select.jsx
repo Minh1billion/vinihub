@@ -15,7 +15,7 @@ const reduced = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').ma
 
 export default function Select({
   options, value, onChange, label, triggerLabel, icon, searchable, loading = false,
-  placeholder, emptyText, className = '', disabled = false,
+  placeholder, emptyText, className = '', popClassName = '', disabled = false,
 }) {
   const { t } = useTranslation()
   const uid = useId()
@@ -182,7 +182,7 @@ export default function Select({
 
       {state !== 'closed' && createPortal(
         <div
-          ref={pop} className="select-pop" data-state={state} data-up={pos?.up ? 'true' : 'false'} onKeyDown={onPopKey}
+          ref={pop} className={'select-pop' + (popClassName ? ' ' + popClassName : '')} data-state={state} data-up={pos?.up ? 'true' : 'false'} onKeyDown={onPopKey}
           style={pos ? { ...pos, visibility: 'visible' } : { visibility: 'hidden' }}
         >
           {showSearch && (

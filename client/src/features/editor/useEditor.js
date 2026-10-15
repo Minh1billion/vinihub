@@ -39,7 +39,7 @@ function reducer(state, action) {
         at: 0,
       }
     case 'clear':
-      return blank()
+      return { ...blank(), present: action.next || initialEdit }
     default:
       return state
   }
@@ -50,6 +50,6 @@ export default function useEditor() {
   const commit = useCallback((change, key) => dispatch({ type: 'commit', change, key, at: Date.now() }), [])
   const undo = useCallback(() => dispatch({ type: 'undo' }), [])
   const redo = useCallback(() => dispatch({ type: 'redo' }), [])
-  const clear = useCallback(() => dispatch({ type: 'clear' }), [])
+  const clear = useCallback((next) => dispatch({ type: 'clear', next }), [])
   return { edit: state.present, commit, undo, redo, clear, canUndo: state.past.length > 0, canRedo: state.future.length > 0 }
 }

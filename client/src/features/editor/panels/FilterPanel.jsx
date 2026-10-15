@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FILTERS, FILTER_KEYS } from '../edit.js'
+import { FILTERS, FILTER_KEYS } from '../pixels.js'
 
 function Thumb({ thumb, name }) {
   const ref = useRef(null)
@@ -15,14 +15,15 @@ function Thumb({ thumb, name }) {
   return <canvas ref={ref} />
 }
 
-export default function FilterPanel({ edit, commit, thumb }) {
+export default function FilterPanel({ layer, patch, thumb }) {
   const { t } = useTranslation()
+  if (!layer) return <small>{t('editor.needImage')}</small>
   return (
     <div className="ed-filters" role="radiogroup" aria-label={t('editor.tool.filters')}>
       {FILTER_KEYS.map((name) => (
-        <button key={name} type="button" role="radio" aria-checked={edit.filter === name}
-          className={'ed-filter' + (edit.filter === name ? ' on' : '')}
-          onClick={() => commit((e) => ({ ...e, filter: name }))}>
+        <button key={name} type="button" role="radio" aria-checked={layer.filter === name}
+          className={'ed-filter' + (layer.filter === name ? ' on' : '')}
+          onClick={() => patch(layer.id, { filter: name })}>
           <Thumb thumb={thumb} name={name} />
           <span>{t(`editor.filter.${name}`)}</span>
         </button>

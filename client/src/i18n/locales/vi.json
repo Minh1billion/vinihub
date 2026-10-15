@@ -526,25 +526,25 @@
     "storyTextPlaceholder": "Dòng chữ ngắn hiện trên story…"
   },
   "editor": {
-    "title": "Chỉnh sửa ảnh",
+    "title": "Chỉnh sửa",
     "tools": "Công cụ chỉnh sửa",
     "loading": "Đang tải ảnh…",
-    "loadFailed": "Không tải được ảnh này.",
-    "imageOnly": "Hiện chỉ chỉnh sửa được ảnh.",
-    "emptyTitle": "Chọn một ảnh để chỉnh sửa",
-    "emptyText": "Rê chuột lên ảnh trong Thư viện rồi bấm Chỉnh sửa, hoặc tải ảnh lên tại đây. Bản sửa được lưu thành ảnh mới, ảnh gốc giữ nguyên.",
+    "loadFailed": "Không tải được ảnh.",
+    "imageOnly": "Chỉ hỗ trợ ảnh.",
+    "emptyTitle": "Canvas",
+    "emptyText": "Tải ảnh lên hoặc thêm chữ để bắt đầu.",
     "upload": "Tải ảnh lên",
     "undo": "Hoàn tác",
     "redo": "Làm lại",
-    "compare": "Giữ để so sánh với ảnh gốc",
-    "reset": "Đặt lại tất cả",
-    "confirmDiscard": "Bạn có thay đổi chưa lưu. Bỏ các thay đổi và mở ảnh khác?",
+    "compare": "Giữ để so sánh",
+    "reset": "Đặt lại",
+    "confirmDiscard": "Bỏ thay đổi chưa lưu?",
     "discard": "Bỏ thay đổi",
     "tool": {
       "crop": "Cắt",
       "adjust": "Chỉnh màu",
       "filters": "Bộ lọc",
-      "text": "Chữ"
+      "insert": "Chèn"
     },
     "crop": {
       "orientation": "Hướng ảnh",
@@ -554,13 +554,15 @@
       "flipV": "Lật dọc",
       "free": "Tự do",
       "original": "Gốc",
-      "platforms": "4:5 hợp feed Instagram, 9:16 hợp TikTok, Reels và Shorts, 16:9 hợp YouTube.",
-      "size": "Kích thước kết quả",
-      "hint": "Kéo khung để di chuyển, kéo các điểm góc để đổi kích thước.",
+      "platforms": "Chọn tỉ lệ theo nền tảng.",
+      "size": "Kích thước",
+      "hint": "Kéo khung để cắt.",
       "clear": "Đặt lại vùng cắt",
-      "presets": "Cỡ theo nền tảng",
-      "presetSize": "Kích thước khuyến nghị: {{w}} × {{h}} px.",
-      "presetSmall": "Vùng cắt nhỏ hơn khuyến nghị nên ảnh có thể bị mờ."
+      "presets": "Cỡ có sẵn",
+      "presetSize": "Khuyến nghị: {{w}} × {{h}} px.",
+      "presetSmall": "Nhỏ hơn khuyến nghị.",
+      "apply": "Áp dụng",
+      "cancel": "Hủy"
     },
     "adjust": {
       "brightness": "Độ sáng",
@@ -569,7 +571,7 @@
       "temperature": "Nhiệt độ màu",
       "blur": "Làm mờ",
       "vignette": "Tối viền",
-      "reset": "Đặt lại chỉnh màu"
+      "reset": "Đặt lại"
     },
     "filter": {
       "none": "Gốc",
@@ -585,7 +587,7 @@
       "add": "Thêm chữ",
       "default": "Nhập chữ",
       "empty": "(trống)",
-      "placeholder": "Nhập nội dung chữ",
+      "placeholder": "Nhập chữ",
       "content": "Nội dung",
       "color": "Màu chữ",
       "size": "Cỡ chữ",
@@ -593,9 +595,47 @@
       "regular": "Thường",
       "bold": "Đậm",
       "outline": "Viền chữ",
-      "background": "Nền sau chữ",
-      "remove": "Xóa chữ",
-      "hint": "Kéo chữ trên ảnh để di chuyển."
+      "background": "Nền chữ",
+      "remove": "Xóa",
+      "hint": "Kéo chữ để di chuyển."
+    },
+    "needImage": "Chọn một lớp ảnh.",
+    "layers": {
+      "image": "Ảnh",
+      "title": "Lớp",
+      "base": "Ảnh nền",
+      "show": "Hiện",
+      "hide": "Ẩn",
+      "lock": "Khóa",
+      "unlock": "Mở khóa",
+      "up": "Lên trên",
+      "down": "Xuống dưới",
+      "duplicate": "Nhân đôi",
+      "remove": "Xóa",
+      "imageFailed": "Không đọc được ảnh.",
+      "lockedHint": "Lớp đang khóa.",
+      "name": "Tên",
+      "blend": "Hòa trộn",
+      "copySuffix": "bản sao",
+      "blends": {
+        "normal": "Bình thường",
+        "multiply": "Multiply",
+        "screen": "Screen",
+        "overlay": "Overlay",
+        "darken": "Tối hơn",
+        "lighten": "Sáng hơn"
+      },
+      "canvas": "Canvas"
+    },
+    "insert": {
+      "hint": "Thêm chữ hoặc ảnh."
+    },
+    "image": {
+      "add": "Thêm ảnh",
+      "fit": "Vừa khung",
+      "size": "Kích thước",
+      "opacity": "Độ mờ",
+      "reset": "Kích thước gốc"
     },
     "export": {
       "open": "Xuất ảnh",
@@ -604,14 +644,58 @@
       "quality": "Chất lượng",
       "scale": "Kích thước",
       "save": "Lưu vào Thư viện",
-      "failed": "Không xuất được ảnh."
+      "failed": "Không xuất được ảnh.",
+      "target": "Vùng xuất",
+      "all": "Tất cả lớp",
+      "selection": "Lớp đang chọn",
+      "empty": "Không có gì để xuất."
     },
     "saved": {
-      "title": "Đã lưu vào Thư viện dưới dạng ảnh mới.",
-      "continue": "Tiếp tục sửa bản mới",
-      "asReference": "Dùng làm ảnh tham chiếu ở Ảnh",
-      "asFrame": "Dùng làm khung đầu ở Video"
+      "title": "Đã lưu vào Thư viện.",
+      "continue": "Tiếp tục sửa",
+      "asReference": "Dùng làm ảnh tham chiếu",
+      "asFrame": "Dùng làm khung đầu video"
     },
-    "preview": "Xem thử trong Trình mô phỏng"
+    "preview": "Xem thử",
+    "rail": {
+      "canvas": "Khung",
+      "text": "Chữ",
+      "image": "Ảnh",
+      "crop": "Cắt"
+    },
+    "inspector": {
+      "hint": "Chọn một lớp để chỉnh sửa.",
+      "sections": "Thiết lập",
+      "transform": "Biến đổi"
+    },
+    "layer": {
+      "rotation": "Góc xoay",
+      "opacity": "Độ mờ",
+      "center": "Căn giữa"
+    },
+    "canvas": {
+      "size": "Kích thước",
+      "width": "Rộng",
+      "height": "Cao",
+      "hint": "Các lớp luôn nằm giữa.",
+      "background": "Nền",
+      "transparent": "Trong suốt",
+      "color": "Màu"
+    },
+    "nav": {
+      "zoom": "Cuộn để phóng to.",
+      "pan": "Kéo để di chuyển."
+    },
+    "zoom": {
+      "label": "Thu phóng",
+      "in": "Phóng to",
+      "out": "Thu nhỏ",
+      "fit": "Vừa tất cả",
+      "reset": "100%"
+    },
+    "group": {
+      "style": "Kiểu",
+      "layer": "Lớp"
+    }
   }
 }
