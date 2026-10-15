@@ -716,7 +716,18 @@
       "transparent": "Transparent",
       "color": "Color",
       "fit": "Fit to layers",
-      "enable": "Use canvas"
+      "enable": "Use canvas",
+      "on": "On",
+      "off": "Off",
+      "hiddenState": "Hidden",
+      "hide": "Hide",
+      "reveal": "Reveal",
+      "turnOn": "Turn canvas on",
+      "turnOff": "Turn canvas off",
+      "shape": "Aspect & presets",
+      "onHint": "Canvas is on. Export is cropped to the canvas frame.",
+      "offHint": "Canvas is off. Export covers all layers.",
+      "hiddenHint": "Frame is hidden on the stage but still applies when exporting."
     },
     "nav": {
       "zoom": "Scroll to zoom.",

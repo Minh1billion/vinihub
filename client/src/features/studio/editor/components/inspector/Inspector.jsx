@@ -12,11 +12,11 @@ import PositionBar from './PositionBar.jsx'
 import ShapeProps from './ShapeProps.jsx'
 import TextProps from './TextProps.jsx'
 
-export default function Inspector({ layer, actions, thumb, section, setSection, canvas, content, setCanvas, crop, cropActions, frame }) {
+export default function Inspector({ layer, actions, thumb, section, setSection, canvas, content, setCanvas, canvasActions, crop, cropActions, frame }) {
   const { t } = useTranslation()
 
   if (!layer) {
-    return <CanvasPanel canvas={canvas} content={content} setCanvas={setCanvas} />
+    return <CanvasPanel canvas={canvas} content={content} setCanvas={setCanvas} actions={canvasActions} />
   }
 
   const cropping = crop?.id === layer.id

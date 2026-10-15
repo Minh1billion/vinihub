@@ -96,7 +96,7 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
       ctx.fillRect(cv.x, cv.y, cv.w, cv.h)
     }
     drawLayers(ctx, view.layers, false, true)
-    if (cv) {
+    if (cv && !cv.hidden) {
       ctx.fillStyle = 'rgba(0,0,0,0.45)'
       ctx.beginPath()
       ctx.rect(cam.cx - box.w / 2 / z - 1, cam.cy - box.h / 2 / z - 1, box.w / z + 2, box.h / z + 2)
@@ -150,7 +150,7 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
     onSelect(hit.id)
     const layer = layerOf(hit.id)
     const targets = { x: [], y: [] }
-    if (edit.canvas) {
+    if (edit.canvas && !edit.canvas.hidden) {
       const c = edit.canvas
       targets.x.push(c.x, c.x + c.w / 2, c.x + c.w)
       targets.y.push(c.y, c.y + c.h / 2, c.y + c.h)
@@ -310,7 +310,7 @@ export default function Stage({ edit, originalEdit, original, active, selected, 
     onMenu({ x: e.clientX, y: e.clientY, id: hit ? hit.id : null })
   }
 
-  const cv = !original ? edit.canvas : null
+  const cv = !original && edit.canvas && !edit.canvas.hidden ? edit.canvas : null
   const cvPos = cv && toScreen(cv.x, cv.y)
   const cvEdit = Boolean(cv) && !selected && !crop
   const cropBox = crop ? bounds.find((b) => b.id === crop.id) : null

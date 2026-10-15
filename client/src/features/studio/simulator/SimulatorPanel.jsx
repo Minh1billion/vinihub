@@ -31,8 +31,10 @@ export default function SimulatorPanel({ active, seed, onSeedUsed }) {
   const [dark, setDark] = useState(false)
   const [copied, setCopied] = useState(false)
   const avatarRef = useRef(avatar)
+  const mediaRef = useRef(media)
 
   avatarRef.current = avatar
+  mediaRef.current = media
   useEffect(() => () => {
     clearTimeout(timer.current)
     if (avatarRef.current.startsWith('blob:')) URL.revokeObjectURL(avatarRef.current)
@@ -44,7 +46,8 @@ export default function SimulatorPanel({ active, seed, onSeedUsed }) {
       setPlatform(seed.platform)
       setFormats((cur) => ({ ...cur, [seed.platform]: seed.format }))
     }
-    setMedia((cur) => [...cur, seed.media])
+    mediaRef.current.forEach((m) => { if (m.url !== seed.media.url) URL.revokeObjectURL(m.url) })
+    setMedia([seed.media])
     onSeedUsed()
   }, [seed])
 

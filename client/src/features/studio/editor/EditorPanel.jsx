@@ -60,7 +60,9 @@ export default function EditorPanel({ active, onSend, onPreview }) {
   const rzSide = useResizable({ id: 'editor.side', def: 320, min: 260, max: 560, minRest: 500, reverse: true })
   const rzLayers = useResizable({ id: 'editor.layers', def: 280, min: 150, max: 640, minRest: 200, axis: 'y', reverse: true })
   const latest = useRef({})
+  const root = useRef(null)
   const clip = useSessionRef('editor.clip')
+  const canvasMemo = useSessionRef('editor.canvasMemo')
   const getView = () => {
     const { cam: c, box: b } = latest.current
     return { cx: c.cx, cy: c.cy, vw: (b.w || 800) / c.z, vh: (b.h || 600) / c.z }
@@ -102,17 +104,26 @@ export default function EditorPanel({ active, onSend, onPreview }) {
   latest.current.cropActions = cropActions
   const setCanvas = (change, key) => commit((e) => ({ ...e, canvas: change === null ? null : { ...e.canvas, ...change } }), key && `canvas:${key}`)
   const enableCanvas = () => {
+    if (canvasMemo.current) {
+      setCanvas({ ...canvasMemo.current, hidden: false })
+      return
+    }
     const a = content || DEFAULT_AREA
-    setCanvas({ x: Math.round(a.x), y: Math.round(a.y), w: Math.round(a.w), h: Math.round(a.h), bg: null, ratio: null, preset: null })
+    setCanvas({ x: Math.round(a.x), y: Math.round(a.y), w: Math.round(a.w), h: Math.round(a.h), bg: null, ratio: null, preset: null, hidden: false })
   }
   const toggleCanvas = () => {
     if (edit.canvas) {
+      canvasMemo.current = edit.canvas
       setCanvas(null)
       return
     }
     enableCanvas()
     select(null)
   }
+  const revealCanvas = () => {
+    if (edit.canvas) setCanvas({ hidden: !edit.canvas.hidden })
+  }
+  const canvasActions = { toggle: toggleCanvas, reveal: revealCanvas }
 
   const addFiles = async (files, at, assetId) => {
     if (assetId) {
@@ -317,13 +328,29 @@ export default function EditorPanel({ active, onSend, onPreview }) {
     }
   }
 
+  const sourceRect = () => {
+    const el = root.current?.querySelector('.ed-stage')
+    if (!el || !frame || !box.w) return null
+    const s = el.getBoundingClientRect()
+    const l = s.left + box.w / 2 + (frame.x - cam.cx) * cam.z
+    const t = s.top + box.h / 2 + (frame.y - cam.cy) * cam.z
+    const left = Math.max(s.left, l)
+    const top = Math.max(s.top, t)
+    const right = Math.min(s.right, l + frame.w * cam.z)
+    const bottom = Math.min(s.bottom, t + frame.h * cam.z)
+    if (right - left < 24 || bottom - top < 24) return null
+    return { left, top, width: right - left, height: bottom - top }
+  }
+
   const preview = async () => {
     setPreviewing(true)
     setErr('')
     try {
       const { blob, width, height, ext } = await render({ format: 'jpeg', quality: 0.92, scale: Math.min(1, 1600 / frame.w), target: 'all' })
+      const from = sourceRect()
       onPreview({
         media: { id: `edit-${Date.now()}`, url: URL.createObjectURL(blob), kind: 'image', name: `edit.${ext}`, w: width, h: height },
+        from,
       })
     } catch (e) {
       setErr(e.message || t('editor.export.failed'))
@@ -378,7 +405,7 @@ export default function EditorPanel({ active, onSend, onPreview }) {
   const items = menu ? menuItems(menu.id) : []
 
   return (
-    <div className={'ed ed-theme' + (full ? ' is-full' : '')}>
+    <div className={'ed ed-theme' + (full ? ' is-full' : '')} ref={root}>
       <Tip />
       <header className="ed-bar">
         <div className="ed-brand">
@@ -429,7 +456,7 @@ export default function EditorPanel({ active, onSend, onPreview }) {
       )}
       <div className="ed-body" ref={rzSide.box} style={{ '--props-w': `${rzSide.width}px` }}>
         <nav className="ed-rail" aria-label={t('editor.tools')}>
-          <button type="button" className={'ed-tool' + (edit.canvas ? ' on' : '')} aria-pressed={Boolean(edit.canvas)} data-tip={t('editor.rail.canvas')} aria-label={t('editor.rail.canvas')} onClick={toggleCanvas}>
+          <button type="button" className={'ed-tool' + (edit.canvas ? ' on' : '')} aria-pressed={Boolean(edit.canvas)} data-tip={`${t('editor.rail.canvas')}: ${edit.canvas ? t('editor.canvas.on') : t('editor.canvas.off')}`} aria-label={t('editor.rail.canvas')} onClick={toggleCanvas}>
             <span className="ed-tool-ic"><Icon name="crop" size={18} /></span>
           </button>
           <button type="button" className="ed-tool" data-tip={t('editor.rail.text')} aria-label={t('editor.rail.text')} onClick={() => actions.addText()}>
@@ -473,10 +500,10 @@ export default function EditorPanel({ active, onSend, onPreview }) {
         <Resizer rz={rzSide} label={t('common.resize')} />
         <aside className="ed-props" ref={rzLayers.box} style={{ '--layers-h': `${rzLayers.width}px` }}>
           <div className="ed-tool-panel">
-            <Inspector layer={layer} actions={actions} thumb={thumb} section={section} setSection={setSection} canvas={edit.canvas} content={content} setCanvas={setCanvas} crop={crop} cropActions={cropActions} frame={frame} />
+            <Inspector layer={layer} actions={actions} thumb={thumb} section={section} setSection={setSection} canvas={edit.canvas} content={content} setCanvas={setCanvas} canvasActions={canvasActions} crop={crop} cropActions={cropActions} frame={frame} />
           </div>
           <Resizer rz={rzLayers} axis="y" label={t('common.resize')} />
-          <LayersPanel edit={edit} actions={actions} selected={selected} onSelect={select} onFiles={addFiles} onMenu={openMenu} />
+          <LayersPanel edit={edit} actions={actions} selected={selected} onSelect={select} onFiles={addFiles} onMenu={openMenu} canvasActions={canvasActions} />
         </aside>
       </div>
       {menu && items.length > 0 && <ContextMenu x={menu.x} y={menu.y} items={items} onClose={closeMenu} />}

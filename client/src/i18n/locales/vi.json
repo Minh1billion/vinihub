@@ -710,7 +710,18 @@
       "transparent": "Trong suốt",
       "color": "Màu",
       "fit": "Vừa các layer",
-      "enable": "Dùng canvas"
+      "enable": "Dùng canvas",
+      "on": "Bật",
+      "off": "Tắt",
+      "hiddenState": "Đang ẩn",
+      "hide": "Ẩn",
+      "reveal": "Hiện",
+      "turnOn": "Bật canvas",
+      "turnOff": "Tắt canvas",
+      "shape": "Tỉ lệ & mẫu",
+      "onHint": "Canvas đang bật. Ảnh xuất được cắt theo khung canvas.",
+      "offHint": "Canvas đang tắt. Ảnh xuất bao gồm toàn bộ các lớp.",
+      "hiddenHint": "Khung chỉ bị ẩn trên vùng làm việc, khi xuất vẫn áp dụng canvas."
     },
     "nav": {
       "zoom": "Cuộn để phóng to.",

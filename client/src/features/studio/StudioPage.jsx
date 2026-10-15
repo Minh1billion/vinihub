@@ -9,6 +9,7 @@ import ImagePanel from './image/ImagePanel.jsx'
 import VideoPanel from './video/VideoPanel.jsx'
 import SimulatorPanel from './simulator/SimulatorPanel.jsx'
 import EditorPanel from './editor/EditorPanel.jsx'
+import FlyTransition from './shared/components/FlyTransition.jsx'
 
 const TABS = [
   [
@@ -31,6 +32,7 @@ export default function StudioPage() {
   const [drafts, setDrafts] = useState({ image: '', video: '' })
   const [seeds, setSeeds] = useState({ imageRef: null, videoFrame: null })
   const [simSeed, setSimSeed] = useState(null)
+  const [fly, setFly] = useState(null)
 
   useEffect(() => { body.current?.scrollTo(0, 0) }, [section])
 
@@ -44,8 +46,14 @@ export default function StudioPage() {
     setSeeds((s) => ({ ...s, [kind]: asset }))
     navigate(kind === 'imageRef' ? '/studio/image' : '/studio/video')
   }
-  const sendToSimulator = (seed) => {
+  const sendToSimulator = ({ from, ...seed }) => {
+    if (fly) return
     setSimSeed(seed)
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (from && !calm) {
+      setFly({ url: seed.media.url, from })
+      return
+    }
     navigate('/studio/simulator')
   }
   const clearSeed = (kind) => () => setSeeds((s) => ({ ...s, [kind]: null }))
@@ -67,6 +75,7 @@ export default function StudioPage() {
       <div className="panel panel--fill" hidden={section !== 'simulator'}>
         <SimulatorPanel active={section === 'simulator'} seed={simSeed} onSeedUsed={() => setSimSeed(null)} />
       </div>
+      {fly && <FlyTransition fly={fly} onSwitch={() => navigate('/studio/simulator')} onDone={() => setFly(null)} />}
     </PageFrame>
   )
 }

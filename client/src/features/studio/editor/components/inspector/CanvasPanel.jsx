@@ -1,12 +1,13 @@
 import { useTranslation } from 'react-i18next'
 import Button from '../../../../../components/Button.jsx'
 import { Field } from '../../../../../components/Field.jsx'
+import Toggle from '../../../../../components/Toggle.jsx'
 import Segmented from '../../../../../components/Segmented.jsx'
 import PlatformLogo from '../../../simulator/components/PlatformLogo.jsx'
 import RatioPicker from '../../../shared/components/RatioPicker.jsx'
 import { DEFAULT_AREA, MIN_FRAME, PLATFORM_PRESETS, RATIOS, fitRect, ratioOf } from '../../utils/edit.js'
 
-export default function CanvasPanel({ canvas, content, setCanvas }) {
+export default function CanvasPanel({ canvas, content, setCanvas, actions }) {
   const { t } = useTranslation()
   const base = content || DEFAULT_AREA
   const preset = PLATFORM_PRESETS.find((p) => p.key === canvas?.preset)
@@ -23,8 +24,21 @@ export default function CanvasPanel({ canvas, content, setCanvas }) {
 
   return (
     <div className="ed-ibody">
+      <section className="ed-sec ed-cv-head">
+        <div className="ed-cv-row">
+          <h4 className="ed-sec-title">{t('editor.layers.canvas')}</h4>
+          <span className={'ed-cv-state' + (canvas ? ' on' : '')}>{canvas ? (canvas.hidden ? t('editor.canvas.hiddenState') : t('editor.canvas.on')) : t('editor.canvas.off')}</span>
+        </div>
+        <div className="ed-cv-row">
+          <Toggle checked={Boolean(canvas)} onChange={actions.toggle} label={t('editor.canvas.enable')} />
+          <Button variant="soft" size="sm" icon={canvas?.hidden ? 'eyeOff' : 'eye'} disabled={!canvas} onClick={actions.reveal}>
+            {canvas?.hidden ? t('editor.canvas.reveal') : t('editor.canvas.hide')}
+          </Button>
+        </div>
+        <small>{!canvas ? t('editor.canvas.offHint') : canvas.hidden ? t('editor.canvas.hiddenHint') : t('editor.canvas.onHint')}</small>
+      </section>
       <section className="ed-sec">
-        <h4 className="ed-sec-title">{t('editor.layers.canvas')}</h4>
+        <h4 className="ed-sec-title">{t('editor.canvas.shape')}</h4>
         <Field label={t('common.aspectRatio')} group>
           <Segmented label={t('common.aspectRatio')} value={canvas && !canvas.ratio ? 'free' : ''}
             onChange={() => setCanvas({ ratio: null, preset: null, ...(canvas ? {} : { ...base, x: Math.round(base.x), y: Math.round(base.y), w: Math.round(base.w), h: Math.round(base.h) }) })}

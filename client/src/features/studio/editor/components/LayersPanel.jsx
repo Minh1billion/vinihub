@@ -29,14 +29,14 @@ function Kind({ layer }) {
 
 function Tool({ icon, label, onClick, disabled, on, danger }) {
   return (
-    <button type="button" className={'ed-lbtn' + (on ? ' on' : '') + (danger ? ' danger' : '')} title={label} aria-label={label}
+    <button type="button" className={'ed-lbtn' + (on ? ' on' : '') + (danger ? ' danger' : '')} title={label} aria-label={label} aria-pressed={on === undefined ? undefined : Boolean(on)} disabled={disabled}
       onClick={(e) => { e.stopPropagation(); onClick() }}>
       <Icon name={icon} size={16} />
     </button>
   )
 }
 
-export default function LayersPanel({ edit, actions, selected, onSelect, onFiles, onMenu }) {
+export default function LayersPanel({ edit, actions, selected, onSelect, onFiles, onMenu, canvasActions }) {
   const { t } = useTranslation()
   const list = [...edit.layers].reverse()
   const [dragId, setDragId] = useState(null)
@@ -69,6 +69,14 @@ export default function LayersPanel({ edit, actions, selected, onSelect, onFiles
         </AddImage>
       </header>
       <div className="ed-llist">
+        <div className={'ed-lrow ed-lcanvas' + (selected === null ? ' on' : '') + (edit.canvas ? '' : ' is-off') + (edit.canvas?.hidden ? ' is-hidden' : '')} role="button" tabIndex={0}
+          onClick={() => onSelect(null)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(null) } }}>
+          <span className="ed-lkind"><Icon name="crop" size={16} /></span>
+          <span className="ed-lname">{t('editor.layers.canvas')}</span>
+          <small className="ed-lstate">{edit.canvas ? (edit.canvas.hidden ? t('editor.canvas.hiddenState') : t('editor.canvas.on')) : t('editor.canvas.off')}</small>
+          <Tool icon={edit.canvas?.hidden ? 'eyeOff' : 'eye'} on={edit.canvas?.hidden} disabled={!edit.canvas} label={edit.canvas?.hidden ? t('editor.canvas.reveal') : t('editor.canvas.hide')} onClick={canvasActions.reveal} />
+          <Tool icon="power" on={Boolean(edit.canvas)} label={edit.canvas ? t('editor.canvas.turnOff') : t('editor.canvas.turnOn')} onClick={canvasActions.toggle} />
+        </div>
         {list.map((x, n) => (
           <div key={x.id} className={'ed-lrow' + (x.id === selected ? ' on' : '') + (x.hidden ? ' is-hidden' : '') + (x.id === dragId ? ' is-drag' : '') + (dragId && x.id === overId && overId !== dragId ? ' is-over' : '')} role="button" tabIndex={0}
             draggable

@@ -194,3 +194,15 @@
 .is-resizing, .is-resizing * { cursor: col-resize !important; user-select: none !important; }
 .is-resizing-y, .is-resizing-y * { cursor: row-resize !important; }
 .is-resizing iframe, .is-resizing video { pointer-events: none; }
+
+.fly-scrim { position: fixed; inset: 0; z-index: 1990; opacity: 0; pointer-events: none; background: rgba(24, 14, 6, 0.4); backdrop-filter: blur(3px); }
+.fly-ghost { position: fixed; z-index: 2000; margin: 0; max-width: none; object-fit: cover; pointer-events: none; user-select: none; will-change: left, top, width, height, transform; background: #fff; }
+.fly-ghost.is-trail { opacity: 0; box-shadow: none; }
+.fly-flash { position: fixed; z-index: 2003; opacity: 0; pointer-events: none; background: #fff; }
+.fly-brackets { position: fixed; z-index: 2002; opacity: 0; pointer-events: none; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5)); }
+.fly-brackets i { position: absolute; width: 22px; height: 22px; border: 0 solid #fff; }
+.fly-brackets i:nth-child(1) { left: 0; top: 0; border-width: 3px 0 0 3px; }
+.fly-brackets i:nth-child(2) { right: 0; top: 0; border-width: 3px 3px 0 0; }
+.fly-brackets i:nth-child(3) { right: 0; bottom: 0; border-width: 0 3px 3px 0; }
+.fly-brackets i:nth-child(4) { left: 0; bottom: 0; border-width: 0 0 3px 3px; }
+.fly-ring { position: fixed; z-index: 2002; box-sizing: border-box; opacity: 0; pointer-events: none; border: 3px solid var(--orange); }
