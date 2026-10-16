@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next'
-import Dropzone from '../../../../components/Dropzone.jsx'
-import Segmented from '../../../../components/Segmented.jsx'
-import Toggle from '../../../../components/Toggle.jsx'
-import { Field } from '../../../../components/Field.jsx'
+import { Dropzone } from '@/features/library'
+import Segmented from '@/shared/ui/Segmented.jsx'
+import Toggle from '@/shared/ui/Toggle.jsx'
+import { Field } from '@/shared/ui/Field.jsx'
 
 export default function MotionControl({ enabled, onToggle, motion, setMotion, mode, setMode, hasFrame }) {
   const { t } = useTranslation()

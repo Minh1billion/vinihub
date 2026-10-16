@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import Button from '../../../../components/Button.jsx'
-import Icon from '../../../../components/Icon.jsx'
+import Button from '@/shared/ui/Button.jsx'
+import Icon from '@/shared/ui/Icon.jsx'
 
 const DAY = 86400000
 
