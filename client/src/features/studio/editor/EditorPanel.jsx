@@ -23,7 +23,8 @@ import LayersPanel from './components/LayersPanel.jsx'
 import ShapeMenu from './components/ShapeMenu.jsx'
 import Stage from './components/Stage.jsx'
 import Inspector from './components/inspector/Inspector.jsx'
-import { DEFAULT_AREA, HOME, MAX_ZOOM, MIN_ZOOM, clampZoom, contentBox, drawExport, exportWidth, fitCam, frameOf, initialEdit, makeThumb } from './utils/edit.js'
+import { DEFAULT_AREA, HOME, MAX_ZOOM, MIN_ZOOM, PLATFORM_PRESETS, clampZoom, contentBox, drawExport, exportWidth, fitCam, frameOf, initialEdit, makeThumb } from './utils/edit.js'
+import { zipBlobs } from './utils/zip.js'
 import { FULL, cropChange, flipImage, loadFonts, newImage, sourceOf, turnImage, uncrop } from './utils/layers.js'
 import { loadBitmap } from './utils/source.js'
 import useEditor from './hooks/useEditor.js'
@@ -382,6 +383,62 @@ export default function EditorPanel({ active, onSend, onPreview }) {
     setTimeout(() => URL.revokeObjectURL(url), 2000)
   }
 
+  const drawPreset = (p, { layers, area, whole, format, fit, s = 1 }) => {
+    const w = Math.max(1, Math.round(p.w * s))
+    const h = Math.max(1, Math.round(p.h * s))
+    const k = (fit === 'contain' ? Math.min : Math.max)(w / area.w, h / area.h)
+    const base = document.createElement('canvas')
+    drawExport(base, layers, area, Math.max(1, Math.round(area.w * k)), false, whole ? edit.canvas?.bg : null)
+    const out = document.createElement('canvas')
+    out.width = w
+    out.height = h
+    const ctx = out.getContext('2d')
+    const fill = format === 'jpeg' ? (whole && edit.canvas?.bg) || '#fff' : fit === 'contain' && whole ? edit.canvas?.bg : null
+    if (fill) {
+      ctx.fillStyle = fill
+      ctx.fillRect(0, 0, w, h)
+    }
+    ctx.drawImage(base, Math.round((w - base.width) / 2), Math.round((h - base.height) / 2))
+    return out
+  }
+
+  const scopeOf = async (what) => {
+    const layers = what === 'selection' && layer ? [layer] : edit.layers
+    await loadFonts(layers)
+    const whole = what !== 'selection' || !layer
+    const area = whole ? frame : contentBox(layers)
+    if (!area) throw new Error(t('editor.export.empty'))
+    return { layers, whole, area }
+  }
+
+  const renderPreset = async (key, { target: what, format, fit, side = 220 }) => {
+    const p = PLATFORM_PRESETS.find((x) => x.key === key)
+    if (!p) return null
+    const scope = await scopeOf(what)
+    const out = drawPreset(p, { ...scope, format, fit, s: side / Math.max(p.w, p.h) })
+    return out.toDataURL('image/png')
+  }
+
+  const downloadSet = async ({ format, quality, target: what, fit, presets }) => {
+    const scope = await scopeOf(what)
+    const files = []
+    for (const key of presets) {
+      const p = PLATFORM_PRESETS.find((x) => x.key === key)
+      if (!p) continue
+      const out = drawPreset(p, { ...scope, format, fit })
+      const blob = await new Promise((resolve) => out.toBlob(resolve, `image/${format}`, quality))
+      if (!blob) throw new Error(t('editor.export.failed'))
+      files.push({ name: `${tag}-${p.platform}-${p.format}-${p.w}x${p.h}.${blob.type.split('/')[1].replace('jpeg', 'jpg')}`, blob })
+    }
+    const zip = await zipBlobs(files)
+    const url = URL.createObjectURL(zip)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `edit-${tag}-platforms.zip`
+    a.click()
+    setTimeout(() => URL.revokeObjectURL(url), 2000)
+  }
+
   const canCopy = typeof ClipboardItem !== 'undefined' && Boolean(navigator.clipboard?.write)
   const copy = async () => {
     setErr('')
@@ -587,7 +644,7 @@ export default function EditorPanel({ active, onSend, onPreview }) {
         </aside>
       </div>
       {menu && items.length > 0 && <ContextMenu x={menu.x} y={menu.y} items={items} onClose={closeMenu} />}
-      {exporting && <ExportModal hasSelection={Boolean(layer)} measure={(what) => (what === 'selection' && layer ? contentBox([layer]) : frame)} onSave={save} onDownload={download} onClose={() => setExporting(false)} />}
+      {exporting && <ExportModal hasSelection={Boolean(layer)} measure={(what) => (what === 'selection' && layer ? contentBox([layer]) : frame)} onSave={save} onDownload={download} onDownloadSet={downloadSet} renderPreset={renderPreset} onClose={() => setExporting(false)} />}
     </div>
     {(full || leaving) && <div ref={hollow} className="ed-hollow" aria-hidden="true" />}
     </>

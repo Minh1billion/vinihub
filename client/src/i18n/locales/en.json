@@ -711,7 +711,19 @@
       "target": "Area",
       "all": "All layers",
       "selection": "Selected layer",
-      "empty": "Nothing to export."
+      "empty": "Nothing to export.",
+      "mode": "Export as",
+      "modeSingle": "Custom size",
+      "modePlatforms": "Platform sizes",
+      "platforms": "Platforms",
+      "selectAll": "Select all",
+      "clear": "Clear",
+      "fit": "When ratios differ",
+      "fitCover": "Crop to fill",
+      "fitContain": "Fit whole image",
+      "zip": "Download ZIP",
+      "count_one": "{{count}} file in the ZIP",
+      "count_other": "{{count}} files in the ZIP"
     },
     "saved": {
       "title": "Saved to Library.",

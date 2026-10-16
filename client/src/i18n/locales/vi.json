@@ -705,7 +705,19 @@
       "target": "Vùng xuất",
       "all": "Tất cả lớp",
       "selection": "Lớp đang chọn",
-      "empty": "Không có gì để xuất."
+      "empty": "Không có gì để xuất.",
+      "mode": "Cách xuất",
+      "modeSingle": "Kích thước tùy chọn",
+      "modePlatforms": "Theo platform",
+      "platforms": "Platform",
+      "selectAll": "Chọn tất cả",
+      "clear": "Bỏ chọn",
+      "fit": "Khi khác tỉ lệ",
+      "fitCover": "Cắt cho vừa khung",
+      "fitContain": "Giữ nguyên toàn bộ ảnh",
+      "zip": "Tải file ZIP",
+      "count_one": "{{count}} ảnh trong file ZIP",
+      "count_other": "{{count}} ảnh trong file ZIP"
     },
     "saved": {
       "title": "Đã lưu vào Thư viện.",
