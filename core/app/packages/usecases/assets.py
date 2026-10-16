@@ -1,3 +1,4 @@
+import os
 import json
 import uuid
 
@@ -37,8 +38,9 @@ async def upload_asset(db: AsyncSession, ws: Workspace, user: User, file: Upload
     assets_svc.check_size(len(data))
     if parent_id:
         await assets_svc.get_in_workspace(db, ws.id, parent_id)
+    name = None if parent_id else (os.path.splitext(os.path.basename(file.filename or ""))[0].strip()[:200] or None)
     asset = await assets_svc.save_asset(db, ws.id, user.id, data, mime, source="edit" if parent_id else "upload",
-                                        parent_id=parent_id, meta=_meta(meta))
+                                        prompt=name, parent_id=parent_id, meta=_meta(meta))
     await db.commit()
     return asset_out(asset)
 

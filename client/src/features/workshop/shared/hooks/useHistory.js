@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useReducer } from 'react'
 import { useSessionStore } from '@/app/providers/SessionContext.jsx'
-import { initialEdit } from '../utils/edit.js'
 
 const LIMIT = 100
 const WINDOW = 700
 
-const blank = () => ({ past: [], present: initialEdit, future: [], key: null, at: 0 })
+const blank = (initial) => ({ past: [], present: initial, future: [], key: null, at: 0 })
 
 function reducer(state, action) {
   switch (action.type) {
@@ -40,19 +39,19 @@ function reducer(state, action) {
         at: 0,
       }
     case 'clear':
-      return { ...blank(), present: action.next || initialEdit }
+      return blank(action.next ?? action.initial)
     default:
       return state
   }
 }
 
-export default function useEditor() {
+export default function useHistory({ storeKey, initial }) {
   const store = useSessionStore()
-  const [state, dispatch] = useReducer(reducer, undefined, () => store.current.get('editor.history') || blank())
-  useEffect(() => { store.current.set('editor.history', state) }, [store, state])
+  const [state, dispatch] = useReducer(reducer, undefined, () => store.current.get(storeKey) || blank(initial))
+  useEffect(() => { store.current.set(storeKey, state) }, [store, storeKey, state])
   const commit = useCallback((change, key) => dispatch({ type: 'commit', change, key, at: Date.now() }), [])
   const undo = useCallback(() => dispatch({ type: 'undo' }), [])
   const redo = useCallback(() => dispatch({ type: 'redo' }), [])
-  const clear = useCallback((next) => dispatch({ type: 'clear', next }), [])
-  return { edit: state.present, commit, undo, redo, clear, canUndo: state.past.length > 0, canRedo: state.future.length > 0 }
+  const clear = useCallback((next) => dispatch({ type: 'clear', next, initial }), [initial])
+  return { present: state.present, commit, undo, redo, clear, canUndo: state.past.length > 0, canRedo: state.future.length > 0 }
 }

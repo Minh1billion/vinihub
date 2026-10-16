@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import Button from '@/shared/ui/Button.jsx'
-import Slider from '../controls/Slider.jsx'
+import Slider from '../../../shared/controls/Slider.jsx'
 import { initialAdjust } from '../../utils/pixels.js'
 
 const ROWS = [

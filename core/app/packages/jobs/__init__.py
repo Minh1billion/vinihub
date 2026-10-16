@@ -1,3 +1,3 @@
-from app.packages.jobs import image, video
+from app.packages.jobs import export, image, video
 
-__all__ = ["image", "video"]
+__all__ = ["export", "image", "video"]

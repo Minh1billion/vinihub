@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import Icon from '@/shared/ui/Icon.jsx'
 import Segmented from '@/shared/ui/Segmented.jsx'
-import Slider from '../controls/Slider.jsx'
+import Slider from '../../../shared/controls/Slider.jsx'
 import { skewOf, sourceOf } from '../../utils/layers.js'
 import CommonProps from './CommonProps.jsx'
 

@@ -47,6 +47,7 @@ const PATHS = {
   crop: <><path d="M6 2v14a2 2 0 0 0 2 2h14" /><path d="M2 6h14a2 2 0 0 1 2 2v14" /></>,
   rotate: <><path d="M4 12a8 8 0 1 0 2.4-5.7" /><path d="M4 4v5h5" /></>,
   flip: <><path d="M12 3v18" /><path d="M8 7L3 17h5z" /><path d="M16 7l5 10h-5z" /></>,
+  split: <><path d="M12 3v18" /><path d="M7 8l-4 4 4 4" /><path d="M17 8l4 4-4 4" /></>,
   sliders: <><path d="M4 7h10M18 7h2M4 17h2M10 17h10" /><circle cx="16" cy="7" r="2" /><circle cx="8" cy="17" r="2" /></>,
   drop: <path d="M12 3s6 6.2 6 10.5A6 6 0 0 1 6 13.5C6 9.2 12 3 12 3z" />,
   type: <><path d="M5 6V4h14v2" /><path d="M12 4v16M9 20h6" /></>,

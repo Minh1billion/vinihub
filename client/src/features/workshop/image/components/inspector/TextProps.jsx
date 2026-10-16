@@ -3,7 +3,7 @@ import { Field } from '@/shared/ui/Field.jsx'
 import Segmented from '@/shared/ui/Segmented.jsx'
 import Select from '@/shared/ui/Select.jsx'
 import Toggle from '@/shared/ui/Toggle.jsx'
-import Slider from '../controls/Slider.jsx'
+import Slider from '../../../shared/controls/Slider.jsx'
 import { FONT_KEYS } from '../../utils/layers.js'
 import CommonProps from './CommonProps.jsx'
 

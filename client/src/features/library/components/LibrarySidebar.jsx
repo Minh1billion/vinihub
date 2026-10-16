@@ -1,13 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { api } from '@/shared/api/client.js'
 import { useApp } from '@/app/providers/AppContext.jsx'
 import { useDialog } from '@/app/providers/DialogContext.jsx'
 import { useLibrary } from '../context/LibraryContext.jsx'
+import useLibraryUpload from '../hooks/useLibraryUpload.js'
+import Button from '@/shared/ui/Button.jsx'
 import EmptyState from '@/shared/ui/EmptyState.jsx'
 import { FieldError } from '@/shared/ui/Field.jsx'
 import Icon from '@/shared/ui/Icon.jsx'
-import MediaCard from './MediaCard.jsx'
+import JustifiedGrid from './JustifiedGrid.jsx'
 import MediaViewer from './MediaViewer.jsx'
 
 const FILTERS = [
@@ -26,6 +28,9 @@ export default function LibrarySidebar() {
   const [assets, setAssets] = useState(null)
   const [viewing, setViewing] = useState(null)
   const [err, setErr] = useState('')
+  const [over, setOver] = useState(false)
+  const picker = useRef(null)
+  const up = useLibraryUpload()
   const current = workspaces.find((w) => w.id === wid)
 
   useEffect(() => { setAssets(null) }, [wid])
@@ -37,6 +42,12 @@ export default function LibrarySidebar() {
       .catch((e) => { if (alive) setErr(e.message) })
     return () => { alive = false }
   }, [wid, created])
+
+  const send = async (files) => {
+    const done = await up.upload(files)
+    if (done.length && filter !== 'all' && !done.some((a) => a.kind === filter)) setFilter('all')
+  }
+  const hasFiles = (e) => [...e.dataTransfer.types].includes('Files')
 
   const canDelete = (a) => a.user_id === user.id || current?.role === 'owner'
 
@@ -80,17 +91,23 @@ export default function LibrarySidebar() {
               {t('library.mine')}
             </button>
           )}
+          <Button size="sm" variant="ghost" icon="upload" className="lib-upload" loading={up.busy} onClick={() => picker.current?.click()}>
+            {up.busy ? t('library.upload.busy', { count: up.pending }) : t('library.upload.button')}
+          </Button>
+          <input ref={picker} type="file" accept="image/*,video/*" multiple hidden
+            onChange={(e) => { send([...e.target.files]); e.target.value = '' }} />
         </div>
-        <div className="lib-body">
-          <FieldError>{err}</FieldError>
+        <div className={'lib-body' + (over ? ' is-over' : '')}
+          onDragOver={(e) => { if (!hasFiles(e)) return; e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; setOver(true) }}
+          onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setOver(false) }}
+          onDrop={(e) => { setOver(false); if (!hasFiles(e)) return; e.preventDefault(); send([...e.dataTransfer.files]) }}>
+          <FieldError>{err || up.err}</FieldError>
           {assets && !shown.length && (
             <EmptyState
               title={mine && assets.length ? t('library.emptyMineTitle') : t('library.emptyTitle')}
               text={mine && assets.length ? t('library.emptyMineText') : t('library.emptyText')} />
           )}
-          <div className="grid">
-            {shown.map((a) => <MediaCard key={a.id} asset={a} onOpen={setViewing} onDelete={canDelete(a) ? remove : undefined} />)}
-          </div>
+          <JustifiedGrid items={shown} onOpen={setViewing} canDelete={canDelete} onDelete={remove} />
         </div>
       </div>
       {viewing && <MediaViewer asset={viewing} onClose={() => setViewing(null)} onDelete={canDelete(viewing) ? remove : undefined} />}

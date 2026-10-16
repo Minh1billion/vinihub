@@ -4,21 +4,21 @@ import { useNavigate } from 'react-router-dom'
 import Icon from '@/shared/ui/Icon.jsx'
 import { ASSET_MIME } from '@/shared/constants/assetMime.js'
 
-export default function MediaCard({ asset, onOpen, onDelete }) {
+export default function MediaCard({ asset, onOpen, onDelete, fixed, onRatio }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const isVideo = asset.kind === 'video'
   const [ready, setReady] = useState(false)
   const show = () => setReady(true)
   return (
-    <figure className="media" draggable={!isVideo && Boolean(asset.id)}
+    <figure className={'media' + (fixed ? ' media--fixed' : '')} style={fixed ? { width: fixed.w, height: fixed.h } : undefined} draggable={!isVideo && Boolean(asset.id)}
       onDragStart={(e) => { e.dataTransfer.effectAllowed = 'copy'; e.dataTransfer.setData(ASSET_MIME, asset.id) }}>
       <button type="button" className="media-hit" onClick={() => onOpen(asset)} aria-label={t('media.view')}>
-        {isVideo ? <video src={asset.url} muted preload="metadata" /> : <img className={ready ? 'is-ready' : ''} src={asset.url} alt={asset.prompt || ''} draggable={false} loading="lazy" onLoad={show} onError={show} />}
+        {isVideo ? <video src={asset.url} muted preload="metadata" onLoadedMetadata={(e) => onRatio?.(asset.id, e.currentTarget.videoWidth / e.currentTarget.videoHeight)} /> : <img className={ready ? 'is-ready' : ''} src={asset.url} alt={asset.prompt || ''} draggable={false} loading="lazy" onLoad={(e) => { show(); onRatio?.(asset.id, e.currentTarget.naturalWidth / e.currentTarget.naturalHeight) }} onError={show} />}
         {isVideo && <span className="badge"><Icon name="play" size={14} /></span>}
       </button>
       <div className="media-actions">
-        {!isVideo && asset.id && <button type="button" className="icon-btn" onClick={() => navigate(`/workshop/editor?asset=${asset.id}`)} aria-label={t('media.edit')} title={t('media.edit')}><Icon name="edit" /></button>}
+        {!isVideo && asset.id && <button type="button" className="icon-btn" onClick={() => navigate(`/workshop/image?asset=${asset.id}`)} aria-label={t('media.edit')} title={t('media.edit')}><Icon name="edit" /></button>}
         <a className="icon-btn" href={asset.url} download target="_blank" rel="noreferrer" aria-label={t('common.download')}><Icon name="download" /></a>
         {onDelete && <button className="icon-btn danger" onClick={() => onDelete(asset)} aria-label={t('common.delete')}><Icon name="trash" /></button>}
       </div>

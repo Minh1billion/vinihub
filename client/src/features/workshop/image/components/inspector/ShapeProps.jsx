@@ -3,7 +3,7 @@ import Icon from '@/shared/ui/Icon.jsx'
 import { Field } from '@/shared/ui/Field.jsx'
 import Segmented from '@/shared/ui/Segmented.jsx'
 import Toggle from '@/shared/ui/Toggle.jsx'
-import Slider from '../controls/Slider.jsx'
+import Slider from '../../../shared/controls/Slider.jsx'
 import { SHAPE_COLORS, SHAPE_ICONS, SHAPE_KINDS, SHAPE_RATIO } from '../../utils/layers.js'
 import CommonProps from './CommonProps.jsx'
 

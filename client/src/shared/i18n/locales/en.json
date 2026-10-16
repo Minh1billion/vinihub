@@ -153,7 +153,8 @@
   },
   "workshop": {
     "navAria": "Workshop sections",
-    "editor": "Editor",
+    "image": "Image",
+    "video": "Video",
     "simulator": "Simulator",
     "resetLayout": "Reset layout",
     "resetLayoutHint": "Restore all Workshop panels to their default width"
@@ -260,7 +261,13 @@
     "emptyMineTitle": "You don't have any assets yet",
     "emptyTitle": "Nothing here yet",
     "emptyMineText": "Turn off the “Mine” filter to see the whole workspace's assets.",
-    "emptyText": "Create your first image or video in Studio to save it to this workspace."
+    "emptyText": "Create an image or video in Studio, or upload files, to save them here.",
+    "upload": {
+      "button": "Upload",
+      "label": "Upload files to the library",
+      "busy": "Uploading {{count}} file(s)…",
+      "unsupported": "Only image or video files are supported."
+    }
   },
   "media": {
     "view": "View larger",
@@ -570,7 +577,7 @@
     "storyTextPlaceholder": "Short text shown over the story…"
   },
   "editor": {
-    "title": "Editor",
+    "title": "Image",
     "tools": "Editing tools",
     "loading": "Loading image…",
     "loadFailed": "Could not load image.",
@@ -841,5 +848,127 @@
       "on": "Snapping on (hold Alt to bypass)",
       "off": "Snapping off (hold Alt to snap)"
     }
+  },
+  "videoEditor": {
+    "title": "Video",
+    "undo": "Undo",
+    "redo": "Redo",
+    "play": "Play",
+    "stop": "Stop to start",
+    "export": "Export",
+    "exportDone": "Video exported and saved to the library",
+    "exportFailed": "Couldn't export the video",
+    "exportEmpty": "No visible layers to export",
+    "exportWaiting": "Videos are still uploading, try again in a moment",
+    "snap": {
+      "on": "Snapping on",
+      "off": "Snapping off"
+    },
+    "zoom": {
+      "label": "Timeline zoom",
+      "fit": "Fit timeline",
+      "in": "Zoom in",
+      "out": "Zoom out"
+    },
+    "preview": {
+      "label": "Preview",
+      "emptyTitle": "Drop a video here",
+      "emptyText": "Or click to choose files. Videos are saved to the workspace library."
+    },
+    "timeline": {
+      "label": "Timeline",
+      "video": "Video",
+      "audio": "Audio",
+      "empty": "Drop clips here",
+      "hide": "Hide layer",
+      "show": "Show layer",
+      "lock": "Lock layer",
+      "unlock": "Unlock layer",
+      "rename": "Rename layer (double-click)",
+      "allLocked": "All video layers are locked",
+      "drag": "Drag to reorder layers",
+      "maxLayers": "Up to {{max}} layers"
+    },
+    "inspector": {
+      "title": "Properties",
+      "emptyTitle": "No clip selected",
+      "emptyText": "Select a clip on the timeline to edit its properties.",
+      "start": "Start",
+      "duration": "Duration",
+      "transform": "Transform",
+      "x": "Position X",
+      "y": "Position Y",
+      "scale": "Scale",
+      "rotation": "Rotation",
+      "opacity": "Opacity",
+      "reset": "Reset",
+      "locked": "This layer is locked",
+      "keyframes": "Keyframes",
+      "addKey": "Add keyframe at playhead",
+      "removeKey": "Remove keyframe at playhead",
+      "noKeys": "No keyframes yet. Add one to animate properties over time."
+    },
+    "keys": "Space to play or pause · S to split · Del to remove · Ctrl+C/V/D copy, paste, duplicate · ↑↓ jump between cuts",
+    "duplicate": "Duplicate clip (Ctrl+D)",
+    "split": "Split at playhead (S)",
+    "delete": "Delete clip (Del)",
+    "loadFailed": "Couldn't load this video",
+    "notVideo": "That file is not a video",
+    "import": "Import",
+    "menu": {
+      "copy": "Copy",
+      "paste": "Paste",
+      "duplicate": "Duplicate",
+      "split": "Split at playhead",
+      "trimStart": "Trim start to playhead",
+      "trimEnd": "Trim end to playhead",
+      "ripple": "Ripple delete",
+      "delete": "Delete",
+      "addAbove": "Add layer above",
+      "addBelow": "Add layer below",
+      "duplicateTrack": "Duplicate layer",
+      "up": "Move layer up",
+      "down": "Move layer down",
+      "hide": "Hide layer",
+      "show": "Show layer",
+      "lock": "Lock layer",
+      "unlock": "Unlock layer",
+      "rename": "Rename layer",
+      "removeTrack": "Delete layer",
+      "layerUp": "Move to layer above",
+      "layerDown": "Move to layer below"
+    },
+    "bin": {
+      "title": "Workspace videos",
+      "subtitle": "Videos saved in the “{{name}}” workspace.",
+      "search": "Search by prompt",
+      "sortLabel": "Sort",
+      "sort": {
+        "newest": "Newest",
+        "oldest": "Oldest",
+        "largest": "Largest first"
+      },
+      "source": {
+        "all": "All",
+        "generated": "Generated",
+        "upload": "Uploaded",
+        "edit": "Edited"
+      },
+      "add": "Add “{{name}}” to the timeline",
+      "untitled": "Untitled video",
+      "loading": "Loading…",
+      "retry": "Retry",
+      "emptyTitle": "No videos in this workspace",
+      "emptyText": "Create a video in Studio or upload one to use it here.",
+      "noMatchTitle": "No matching videos",
+      "noMatchText": "Try a different search or clear some filters.",
+      "clear": "Clear filters",
+      "count": "Showing {{shown}} of {{total}} videos"
+    },
+    "fullscreen": {
+      "enter": "Full screen",
+      "exit": "Exit full screen"
+    },
+    "addLayer": "Add layer"
   }
 }

@@ -14,7 +14,7 @@ export default function MediaViewer({ asset, onClose, onDelete }) {
       {asset.prompt && <p className="viewer-prompt">{asset.prompt}</p>}
       {asset.negative_prompt && <p className="viewer-prompt viewer-neg"><b>{t('model.negativePrompt')}:</b> {asset.negative_prompt}</p>}
       <div className="viewer-actions">
-        {asset.kind !== 'video' && asset.id && <Button icon="edit" onClick={() => { navigate(`/workshop/editor?asset=${asset.id}`); onClose() }}>{t('media.edit')}</Button>}
+        {asset.kind !== 'video' && asset.id && <Button icon="edit" onClick={() => { navigate(`/workshop/image?asset=${asset.id}`); onClose() }}>{t('media.edit')}</Button>}
         <Button variant="ghost" href={asset.url} download target="_blank" rel="noreferrer" icon="download">{t('common.download')}</Button>
         {onDelete && <Button variant="danger" icon="trash" onClick={() => onDelete(asset)}>{t('common.delete')}</Button>}
       </div>

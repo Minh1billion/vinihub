@@ -153,7 +153,8 @@
   },
   "workshop": {
     "navAria": "Mục trong Workshop",
-    "editor": "Chỉnh sửa",
+    "image": "Ảnh",
+    "video": "Video",
     "simulator": "Giả lập",
     "resetLayout": "Đặt lại bố cục",
     "resetLayoutHint": "Khôi phục độ rộng mặc định của các khung trong Workshop"
@@ -257,7 +258,13 @@
     "emptyMineTitle": "Bạn chưa có mục nào",
     "emptyTitle": "Chưa có gì",
     "emptyMineText": "Tắt bộ lọc “Của tôi” để xem cả workspace.",
-    "emptyText": "Tạo ảnh hoặc video đầu tiên trong Studio để lưu vào đây."
+    "emptyText": "Tạo ảnh hoặc video trong Studio, hoặc tải tệp lên, để lưu vào đây.",
+    "upload": {
+      "button": "Tải lên",
+      "label": "Tải tệp lên thư viện",
+      "busy": "Đang tải lên {{count}} tệp…",
+      "unsupported": "Chỉ hỗ trợ tệp ảnh hoặc video."
+    }
   },
   "media": {
     "view": "Xem lớn",
@@ -564,7 +571,7 @@
     "storyTextPlaceholder": "Dòng chữ ngắn hiện trên story…"
   },
   "editor": {
-    "title": "Chỉnh sửa",
+    "title": "Ảnh",
     "tools": "Công cụ chỉnh sửa",
     "loading": "Đang tải ảnh…",
     "loadFailed": "Không tải được ảnh.",
@@ -835,5 +842,127 @@
       "on": "Đang bám dính (giữ Alt để tạm tắt)",
       "off": "Đã tắt bám dính (giữ Alt để tạm bật)"
     }
+  },
+  "videoEditor": {
+    "title": "Video",
+    "undo": "Hoàn tác",
+    "redo": "Làm lại",
+    "play": "Phát",
+    "stop": "Dừng và về đầu",
+    "export": "Xuất",
+    "exportDone": "Đã xuất video và lưu vào Thư viện",
+    "exportFailed": "Không thể xuất video",
+    "exportEmpty": "Không có layer nào đang hiển thị để xuất",
+    "exportWaiting": "Video vẫn đang được tải lên, thử lại sau giây lát",
+    "snap": {
+      "on": "Đang bật bắt dính",
+      "off": "Đang tắt bắt dính"
+    },
+    "zoom": {
+      "label": "Thu phóng timeline",
+      "fit": "Vừa khít timeline",
+      "in": "Phóng to",
+      "out": "Thu nhỏ"
+    },
+    "preview": {
+      "label": "Xem trước",
+      "emptyTitle": "Thả video vào đây",
+      "emptyText": "Hoặc bấm để chọn tệp. Video sẽ được lưu vào thư viện workspace."
+    },
+    "timeline": {
+      "label": "Timeline",
+      "video": "Video",
+      "audio": "Âm thanh",
+      "empty": "Thả clip vào đây",
+      "hide": "Ẩn layer",
+      "show": "Hiện layer",
+      "lock": "Khóa layer",
+      "unlock": "Mở khóa layer",
+      "rename": "Đổi tên layer (nhấp đúp)",
+      "allLocked": "Tất cả layer video đang bị khóa",
+      "drag": "Kéo để đổi thứ tự layer",
+      "maxLayers": "Tối đa {{max}} layer"
+    },
+    "inspector": {
+      "title": "Thuộc tính",
+      "emptyTitle": "Chưa chọn clip",
+      "emptyText": "Chọn một clip trên timeline để chỉnh thuộc tính.",
+      "start": "Bắt đầu",
+      "duration": "Thời lượng",
+      "transform": "Biến đổi",
+      "x": "Vị trí X",
+      "y": "Vị trí Y",
+      "scale": "Tỉ lệ",
+      "rotation": "Xoay",
+      "opacity": "Độ mờ",
+      "reset": "Đặt lại",
+      "locked": "Layer này đang bị khóa",
+      "keyframes": "Keyframe",
+      "addKey": "Thêm keyframe tại đầu phát",
+      "removeKey": "Xóa keyframe tại đầu phát",
+      "noKeys": "Chưa có keyframe. Thêm một keyframe để tạo chuyển động theo thời gian."
+    },
+    "keys": "Space phát/tạm dừng · S cắt · Del xóa · Ctrl+C/V/D sao chép, dán, nhân đôi · ↑↓ nhảy giữa các điểm cắt",
+    "duplicate": "Nhân đôi clip (Ctrl+D)",
+    "split": "Cắt tại playhead (S)",
+    "delete": "Xóa clip (Del)",
+    "loadFailed": "Không tải được video này",
+    "notVideo": "Tệp này không phải video",
+    "import": "Nhập video",
+    "menu": {
+      "copy": "Sao chép",
+      "paste": "Dán",
+      "duplicate": "Nhân đôi",
+      "split": "Cắt tại playhead",
+      "trimStart": "Xén đầu tới playhead",
+      "trimEnd": "Xén cuối tới playhead",
+      "ripple": "Xóa và dồn khoảng trống",
+      "delete": "Xóa",
+      "addAbove": "Thêm layer phía trên",
+      "addBelow": "Thêm layer phía dưới",
+      "duplicateTrack": "Nhân đôi layer",
+      "up": "Đưa layer lên",
+      "down": "Đưa layer xuống",
+      "hide": "Ẩn layer",
+      "show": "Hiện layer",
+      "lock": "Khóa layer",
+      "unlock": "Mở khóa layer",
+      "rename": "Đổi tên layer",
+      "removeTrack": "Xóa layer",
+      "layerUp": "Chuyển lên layer trên",
+      "layerDown": "Chuyển xuống layer dưới"
+    },
+    "bin": {
+      "title": "Video của workspace",
+      "subtitle": "Video đã lưu trong “{{name}}”.",
+      "search": "Tìm theo mô tả",
+      "sortLabel": "Sắp xếp",
+      "sort": {
+        "newest": "Mới nhất",
+        "oldest": "Cũ nhất",
+        "largest": "Dung lượng lớn nhất"
+      },
+      "source": {
+        "all": "Tất cả",
+        "generated": "Đã tạo",
+        "upload": "Tải lên",
+        "edit": "Đã chỉnh sửa"
+      },
+      "add": "Thêm “{{name}}” vào timeline",
+      "untitled": "Video không có mô tả",
+      "loading": "Đang tải…",
+      "retry": "Thử lại",
+      "emptyTitle": "Workspace chưa có video",
+      "emptyText": "Tạo video trong Studio hoặc tải video lên để dùng ở đây.",
+      "noMatchTitle": "Không có video phù hợp",
+      "noMatchText": "Thử đổi từ khóa hoặc bỏ bớt bộ lọc.",
+      "clear": "Xóa bộ lọc",
+      "count": "Hiển thị {{shown}}/{{total}} video"
+    },
+    "fullscreen": {
+      "enter": "Toàn màn hình",
+      "exit": "Thoát toàn màn hình"
+    },
+    "addLayer": "Thêm layer"
   }
 }

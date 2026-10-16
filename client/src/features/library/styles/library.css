@@ -25,6 +25,8 @@
 .lib-tools .filters button, .lib-tools .filters-mine { padding: 2px 11px; font-size: 13px; }
 .lib-tools .filters button { gap: 6px; }
 .lib-body { flex: 1; min-height: 0; overflow-y: auto; padding: 14px 16px 20px; background: var(--bg); }
+.lib-upload { margin-left: auto; }
+.lib-body.is-over { outline: 3px dashed var(--orange); outline-offset: -6px; }
 .lib-side .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
 
 @media (max-width: 900px) {
@@ -59,3 +61,17 @@
 .media-neg b, .viewer-neg b, .pending .neg b { font-weight: 600; color: var(--ink); }
 .viewer-neg { margin-top: -6px; }
 .pending small.neg { -webkit-line-clamp: 1; }
+
+.jgrid { display: flex; align-items: flex-start; gap: 8px; padding: 0 4px 4px 0; }
+.jgrid-col { display: flex; flex-direction: column; gap: 8px; }
+.media--fixed { flex: none; box-sizing: border-box; }
+.media--fixed .media-hit { height: 100%; }
+.media--fixed img, .media--fixed video { height: 100%; object-fit: contain; }
+.media--fixed figcaption { position: absolute; left: 0; right: 0; bottom: 0; border-top: 0; opacity: 0; transition: opacity 0.12s; }
+.media--fixed:hover figcaption, .media--fixed:focus-within figcaption { opacity: 1; }
+.media--fixed figcaption.media-neg { display: none; }
+.media--fixed:hover, .media--fixed:focus-within { z-index: 3; }
+.media--fixed .media-actions { z-index: 2; top: 4px; right: 4px; gap: 4px; flex-wrap: wrap; justify-content: flex-end; max-width: calc(100% - 8px); }
+.media--fixed .media-actions .icon-btn { width: 28px; height: 28px; padding: 0; }
+.media--fixed .media-actions .icon-btn svg { width: 16px; height: 16px; }
+.media--fixed figcaption { padding: 3px 8px; font-size: 12px; background: rgba(255, 255, 255, 0.92); pointer-events: none; }

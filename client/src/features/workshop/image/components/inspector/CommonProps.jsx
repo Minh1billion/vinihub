@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import Button from '@/shared/ui/Button.jsx'
 import { Field } from '@/shared/ui/Field.jsx'
 import Select from '@/shared/ui/Select.jsx'
-import Slider from '../controls/Slider.jsx'
+import Slider from '../../../shared/controls/Slider.jsx'
 import { BLEND_KEYS } from '../../utils/layers.js'
 
 export default function CommonProps({ layer, patch, actions }) {

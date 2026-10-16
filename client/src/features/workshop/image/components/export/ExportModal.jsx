@@ -6,7 +6,7 @@ import { Field, FieldError } from '@/shared/ui/Field.jsx'
 import Modal from '@/shared/ui/Modal.jsx'
 import Segmented from '@/shared/ui/Segmented.jsx'
 import PlatformLogo from '@/features/workshop/simulator/components/PlatformLogo.jsx'
-import Slider from '../controls/Slider.jsx'
+import Slider from '../../../shared/controls/Slider.jsx'
 import { PLATFORM_PRESETS, exportWidth } from '../../utils/edit.js'
 
 const FORMATS = ['png', 'jpeg', 'webp']
