@@ -227,6 +227,10 @@
 .ed-align .ed-lbtn:active:not(:disabled) { background: var(--orange); }
 
 .ed.is-full { position: fixed; inset: 0; z-index: 45; padding-top: env(safe-area-inset-top, 0px); }
+.ed-hollow { flex: 1; min-height: 0; }
+.ed.is-full { will-change: transform; }
+.ed[data-fs] { overflow: hidden; transform-origin: center; }
+.ed-scrim { position: fixed; inset: 0; z-index: 44; background: rgba(15, 15, 25, 0.55); backdrop-filter: blur(6px); }
 .ed-drop { position: absolute; inset: 12px; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; pointer-events: none; font-family: var(--font-display); color: var(--ink); background: rgba(251, 235, 221, 0.85); border: 3px dashed var(--orange); border-radius: var(--r-m); }
 .ed-layers-panel.is-drop { background: var(--tint-2); outline: 3px dashed var(--orange); outline-offset: -3px; }
 .ed-zoom .icon-btn[aria-pressed='true'] { background: var(--tint-2); }

@@ -41,6 +41,12 @@
 .sim-lights i { width: 11px; height: 11px; background: #fff; border: 1.5px solid var(--ink); border-radius: 50%; }
 .sim-url { flex: 1; max-width: 420px; margin: 0 auto; padding: 3px 14px; font-size: 12px; color: var(--muted); text-align: center; background: #fff; border: 1.5px solid var(--ink); border-radius: 999px; }
 
+.sim-stack { position: relative; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; border-radius: 32px; }
+.sim-device[data-device='tablet'] .sim-stack { border-radius: 20px; }
+.sim-device[data-device='desktop'] .sim-stack { border-radius: 0; }
+.sim-screen.is-leaving { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.sim-screen[data-enter] { z-index: 1; }
+
 .sim-screen {
   --s-bg: #fff; --s-fg: #0f1419; --s-mute: #65676b; --s-line: #e4e6eb; --s-card: #fff; --s-chip: #f0f2f5; --s-link: #1a5fd1;
   position: relative; display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; border-radius: 32px;

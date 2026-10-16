@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { api, uploadFile } from '../../../api/client.js'
@@ -51,6 +52,7 @@ export default function EditorPanel({ active, onSend, onPreview }) {
   const [exporting, setExporting] = useState(false)
   const [saved, setSaved] = useSessionState('editor.saved', null)
   const [full, setFull] = useState(false)
+  const [leaving, setLeaving] = useState(false)
   const [snap, setSnap] = useSessionState('editor.snap', true)
   const [copied, setCopied] = useState(false)
   const [menu, setMenu] = useState(null)
@@ -64,6 +66,10 @@ export default function EditorPanel({ active, onSend, onPreview }) {
   const rzLayers = useResizable({ id: 'editor.layers', def: 280, min: 150, max: 640, minRest: 200, axis: 'y', reverse: true })
   const latest = useRef({})
   const root = useRef(null)
+  const hollow = useRef(null)
+  const scrim = useRef(null)
+  const wasFull = useRef(false)
+  const reveal = useRef(null)
   const clip = useSessionRef('editor.clip')
   const canvasMemo = useSessionRef('editor.canvasMemo')
   const getView = () => {
@@ -148,25 +154,77 @@ export default function EditorPanel({ active, onSend, onPreview }) {
     for (const [i, file] of images.entries()) await actions.addImage(file, at && { x: at.x + i * step, y: at.y + i * step })
   }
 
+  const leave = () => {
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) setLeaving(true)
+    setFull(false)
+  }
   const toggleFull = async () => {
     if (full) {
       if (document.fullscreenElement) await document.exitFullscreen().catch(() => null)
-      setFull(false)
+      leave()
       return
     }
     setFull(true)
-    await Promise.resolve(document.documentElement.requestFullscreen?.()).catch(() => null)
   }
   latest.current.toggleFull = toggleFull
+  latest.current.leave = leave
 
   useEffect(() => {
-    const sync = () => { if (!document.fullscreenElement) setFull(false) }
+    const sync = () => { if (!document.fullscreenElement) latest.current.leave() }
     document.addEventListener('fullscreenchange', sync)
     return () => {
       document.removeEventListener('fullscreenchange', sync)
+      reveal.current?.cancel()
       if (document.fullscreenElement) document.exitFullscreen().catch(() => null)
     }
   }, [])
+
+  useLayoutEffect(() => {
+    if (wasFull.current === full) return
+    wasFull.current = full
+    const el = root.current
+    const r = hollow.current?.getBoundingClientRect()
+    reveal.current?.cancel()
+    reveal.current = null
+    if (el) delete el.dataset.fs
+    if (full) setLeaving(false)
+    const goNative = () => {
+      if (document.fullscreenElement) return
+      Promise.resolve(document.documentElement.requestFullscreen?.()).catch(() => null)
+    }
+    if (!el || !r || !r.width || !r.height || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setLeaving(false)
+      if (full) goNative()
+      return
+    }
+    const b = el.getBoundingClientRect()
+    const k = Math.min(r.width / b.width, r.height / b.height)
+    const dx = r.left + r.width / 2 - (b.left + b.width / 2)
+    const dy = r.top + r.height / 2 - (b.top + b.height / 2)
+    const small = `translate(${dx}px, ${dy}px) scale(${k})`
+    const rest = 'translate(0px, 0px) scale(1)'
+    const round = `${Math.round(18 / k)}px`
+    const lift = '0 40px 120px rgba(0, 0, 0, 0.45)'
+    const none = '0 0 0 rgba(0, 0, 0, 0)'
+    const from = { transform: small, borderRadius: round, boxShadow: lift, opacity: 0.55 }
+    const to = { transform: rest, borderRadius: '0px', boxShadow: none, opacity: 1 }
+    el.dataset.fs = full ? 'in' : 'out'
+    const opts = full
+      ? { duration: 640, easing: 'cubic-bezier(0.2, 0.9, 0.2, 1)', fill: 'backwards' }
+      : { duration: 420, easing: 'cubic-bezier(0.5, 0, 0.2, 1)', fill: 'forwards' }
+    const a = el.animate(full ? [from, { ...to, opacity: 1, offset: 1 }] : [to, from], opts)
+    const dim = scrim.current?.animate(full ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }], { ...opts, easing: 'ease-out' })
+    reveal.current = a
+    a.onfinish = () => {
+      if (reveal.current !== a) return
+      reveal.current = null
+      delete el.dataset.fs
+      if (!full) flushSync(() => setLeaving(false))
+      a.cancel()
+      dim?.cancel()
+      if (full) goNative()
+    }
+  }, [full])
 
   useEffect(() => {
     if (!active && full) latest.current.toggleFull()
@@ -414,7 +472,9 @@ export default function EditorPanel({ active, onSend, onPreview }) {
   const items = menu ? menuItems(menu.id) : []
 
   return (
-    <div className={'ed ed-theme' + (full ? ' is-full' : '')} ref={root}>
+    <>
+    {(full || leaving) && <div ref={scrim} className="ed-scrim" aria-hidden="true" />}
+    <div className={'ed ed-theme' + (full || leaving ? ' is-full' : '')} ref={root}>
       <Tip />
       <header className="ed-bar">
         <div className="ed-brand">
@@ -529,5 +589,7 @@ export default function EditorPanel({ active, onSend, onPreview }) {
       {menu && items.length > 0 && <ContextMenu x={menu.x} y={menu.y} items={items} onClose={closeMenu} />}
       {exporting && <ExportModal hasSelection={Boolean(layer)} measure={(what) => (what === 'selection' && layer ? contentBox([layer]) : frame)} onSave={save} onDownload={download} onClose={() => setExporting(false)} />}
     </div>
+    {(full || leaving) && <div ref={hollow} className="ed-hollow" aria-hidden="true" />}
+    </>
   )
 }
